@@ -1,6 +1,5 @@
 package de.sirati97.bex_proto;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class StringStream implements Stream {
