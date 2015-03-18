@@ -183,13 +183,27 @@ public final class BExStatic {
 
 	
 	public static String getString(ExtractorDat dat, Charset charset) {
-		int streamLenght = getInteger(dat.getMulti(4));
+		int streamLenght = getInteger(dat);
 		byte[] stream = dat.getMulti(streamLenght);
 		return new String(stream, charset);
 	}
 	
+
+	public static int getInteger(ExtractorDat dat) {
+		return getInteger(dat.getMulti(4));
+	}
 	
+
+	public static short getShort(ExtractorDat dat) {
+		return getShort(dat.getMulti(2));
+	}
+
+	public static long getLong(ExtractorDat dat) {
+		return getLong(dat.getMulti(8));
+	}
 	
+
+	public static short getShort(byte[] data) {return getShort(data,0);}
 	public static short getShort(byte[] data ,int startIndex) {return getShort(data[startIndex], data[startIndex+1]);}
 	public static short getShort(byte b1, byte b2) {
 		return (short) (((b1 & 0xFF) << 8) | (b2 & 0xFF));
@@ -215,6 +229,41 @@ public final class BExStatic {
 		buffer.putInt(value);
 		return buffer.array();
 	}
+	
+	public static int getLong(byte[] data) {
+		return getLong(data, 0);
+	}
+	
+	public static int getLong(byte[] data ,int startIndex) {return getLong(data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3],data[startIndex+4], data[startIndex+5], data[startIndex+6], data[startIndex+7] );}
+	public static int getLong(byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7, byte b8) {
+		return ((b1 & 0xFF) << 56) | ((b2 & 0xFF) << 48) | ((b3 & 0xFF) << 40) | ((b4 & 0xFF) << 32) | ((b5 & 0xFF) << 24) | ((b6 & 0xFF) << 16) | ((b7 & 0xFF) << 8) | (b8 & 0xFF);
+	}
+	
+	public static byte[] setLong(long value) {
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.putLong(value);
+		return buffer.array();
+	}
+	
+
+	public static byte getByte(ExtractorDat dat) {
+		return dat.getOne();
+	}
+
+	public static byte[] setByte(byte b) {
+		return new byte[]{b};
+	}
+	
+
+	public static double getDouble(ExtractorDat dat) {
+		return dat.getOne();
+	}
+
+	public static double getDouble(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		return buffer.getDouble();
+	}
+	
 	
 	public static class String_Value {
 		public final byte[] data;
