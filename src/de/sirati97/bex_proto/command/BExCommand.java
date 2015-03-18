@@ -1,13 +1,9 @@
 package de.sirati97.bex_proto.command;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.MultiStream;
-import de.sirati97.bex_proto.PremitivType;
 import de.sirati97.bex_proto.Stream;
-import de.sirati97.bex_proto.Type;
 import de.sirati97.bex_proto.TypeBase;
 import de.sirati97.bex_proto.VoidExtractor;
 
