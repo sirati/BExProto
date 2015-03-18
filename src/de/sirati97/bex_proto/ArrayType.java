@@ -7,6 +7,7 @@ public final class ArrayType implements TypeBase {
 	
 	public ArrayType(TypeBase type) {
 		this.type = type;
+		this.extractor = new ArrayExtractor(type);
 	}
 	
 	@Override
@@ -20,7 +21,7 @@ public final class ArrayType implements TypeBase {
 	
 	@Override
 	public Stream createStream(Object obj) {
-		return new ArrayStream(type, (Object[]) obj);
+		return new ArrayStream(type, obj);
 	}
 
 	@Override

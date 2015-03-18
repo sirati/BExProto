@@ -27,6 +27,10 @@ public abstract class Type implements TypeBase{
 		@Override public Object toPremitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Integer[])obj);
 		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((int[])obj);
+		}
 	};
 	public static final Type Long = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new LongExtractor();
@@ -45,6 +49,10 @@ public abstract class Type implements TypeBase{
 
 		@Override public Object toPremitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Long[])obj);
+		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((long[])obj);
 		}
 	};
 	public static final Type Short = new PremitivType() {
@@ -65,6 +73,10 @@ public abstract class Type implements TypeBase{
 		@Override public Object toPremitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Short[])obj);
 		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((long[])obj);
+		}
 	};
 	public static final Type Byte = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new ByteExtractor();
@@ -84,6 +96,10 @@ public abstract class Type implements TypeBase{
 		@Override public Object toPremitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Byte[])obj);
 		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((long[])obj);
+		}
 	};
 	public static final Type Double = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new DoubleExtractor();
@@ -102,6 +118,10 @@ public abstract class Type implements TypeBase{
 
 		@Override public Object toPremitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Double[])obj);
+		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((long[])obj);
 		}
 	};
 	

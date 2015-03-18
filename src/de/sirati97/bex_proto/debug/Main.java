@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.debug;
 
+import java.io.IOException;
+
 import de.sirati97.bex_proto.SendStream;
 import de.sirati97.bex_proto.StreamExtractor;
 import de.sirati97.bex_proto.StreamReader;
@@ -11,6 +13,12 @@ public class Main {
 		
 		TestCommand command = new TestCommand();
 		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[]{9,8,7})).getBytes();
+//		try {
+//			System.out.write(stream);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		StreamReader reader = new StreamReader(command);
 		reader.read(stream);
 		
