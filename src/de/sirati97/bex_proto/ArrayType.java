@@ -36,5 +36,14 @@ public final class ArrayType implements TypeBase {
 
 	@Override
 	public boolean isPremitive() {return false;}
+	
+	public Object toPremitiveArray(Object obj) {
+		if (type instanceof PremitivType) {
+			return ((PremitivType) type).toPremitiveArray(obj);
+		} else if (type instanceof ArrayType) {
+			return ((ArrayType) type).toPremitiveArray(obj);
+		}
+		return obj;
+	}
 
 }
