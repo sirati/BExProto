@@ -256,12 +256,19 @@ public final class BExStatic {
 	
 
 	public static double getDouble(ExtractorDat dat) {
-		return dat.getOne();
+		return getDouble(dat.getMulti(8));
 	}
 
 	public static double getDouble(byte[] data) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		return buffer.getDouble();
+	}
+	
+
+	public static byte[] setDouble(double value) {
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.putDouble(value);
+		return buffer.array();
 	}
 	
 	
