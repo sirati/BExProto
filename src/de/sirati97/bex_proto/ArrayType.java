@@ -20,8 +20,7 @@ public final class ArrayType implements TypeBase {
 	
 	@Override
 	public Stream createStream(Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayStream(type, (Object[]) obj);
 	}
 
 	@Override
