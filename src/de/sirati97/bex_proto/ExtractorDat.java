@@ -1,20 +1,19 @@
 package de.sirati97.bex_proto;
 
-public class ExtractorDat {
-	byte[] bytes;
-	int location = 0;
+import de.sirati97.bex_proto.network.NetConnection;
 
-	public ExtractorDat(byte[] bytes) {
+public class ExtractorDat {
+	private byte[] bytes;
+	private int location = 0;
+	private NetConnection sender;
+	
+	public ExtractorDat(byte[] bytes, NetConnection sender) {
 		this.bytes = bytes;
+		this.sender = sender;
 	}
 
 	public byte getOne() {
 		return bytes[location++];
-//		try {
-//			
-//		} catch (ArrayIndexOutOfBoundsException e) {
-//			
-//		}
 	}
 	
 	
@@ -23,6 +22,10 @@ public class ExtractorDat {
 		System.arraycopy(bytes, location, result, 0, length);
 		location += length;
 		return result;
+	}
+	
+	public NetConnection getSender() {
+		return sender;
 	}
 	
 }

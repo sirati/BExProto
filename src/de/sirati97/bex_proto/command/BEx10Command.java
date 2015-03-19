@@ -4,11 +4,14 @@ import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.MultiStream;
 import de.sirati97.bex_proto.Stream;
+import de.sirati97.bex_proto.Type;
 import de.sirati97.bex_proto.TypeBase;
+import de.sirati97.bex_proto.network.NetConnection;
 
 public class BEx10Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements CommandBase{
 	TypeBase[] types;
 	private short id;
+	private CommandBase parent;
 	
 	public BEx10Command(short id, TypeBase...types) {
 		this.types = types;
@@ -26,11 +29,11 @@ public class BEx10Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements CommandBase
 			 }
 			 r[counter++] = tempObj;
 		}
-		receive((t1)r[0],(t2)r[1],(t3)r[2],(t4)r[3],(t5)r[4],(t6)r[5],(t7)r[6],(t8)r[7],(t9)r[8],(t10)r[9]);
+		receive((t1)r[0],(t2)r[1],(t3)r[2],(t4)r[3],(t5)r[4],(t6)r[5],(t7)r[6],(t8)r[7],(t9)r[8],(t10)r[9], dat.getSender());
 		return null;
 	}
 	
-	public void receive(t1 arg1, t2 arg2, t3 arg3, t4 arg4, t5 arg5, t6 arg6, t7 arg7, t8 arg8, t9 arg9, t10 arg10) {
+	public void receive(t1 arg1, t2 arg2, t3 arg3, t4 arg4, t5 arg5, t6 arg6, t7 arg7, t8 arg8, t9 arg9, t10 arg10, NetConnection sender) {
 		
 	}
 
@@ -69,5 +72,25 @@ public class BEx10Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements CommandBase
 		return id;
 	}
 
+
+	@Override
+	public void setId(short id) {
+		this.id = id;
+	}
+	
+	@Override
+	public void send(Stream stream, NetConnection... connections) {
+		getParent().send(new MultiStream(Type.Short.createStream(getId()),stream), connections);
+	}
+
+	@Override
+	public void setParent(CommandBase parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public CommandBase getParent() {
+		return parent;
+	}
 	
 }

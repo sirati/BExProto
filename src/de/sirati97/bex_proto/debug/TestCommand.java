@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.debug;
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.Type;
 import de.sirati97.bex_proto.command.BEx10Command;
+import de.sirati97.bex_proto.network.NetConnection;
 
 public class TestCommand extends BEx10Command<String, String, String, String, Long, Integer, Short, Byte, Double, int[][]> {
 
@@ -11,7 +12,7 @@ public class TestCommand extends BEx10Command<String, String, String, String, Lo
 	}
 	
 	@Override
-	public void receive(String arg1, String arg2, String arg3, String arg4, Long arg5, Integer arg6, Short arg7, Byte arg8, Double arg9, int[][] arg10) {
+	public void receive(String arg1, String arg2, String arg3, String arg4, Long arg5, Integer arg6, Short arg7, Byte arg8, Double arg9, int[][] arg10, NetConnection sender) {
 		System.out.println(arg1);
 		System.out.println(arg2);
 		System.out.println(arg3);

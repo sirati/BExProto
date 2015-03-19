@@ -37,7 +37,7 @@ public class NetConnection {
 							socket.getInputStream().read(buffer);
 							asyncHelper.runAsync(new Runnable() {
 								public void run() {
-									streamReader.read(buffer);
+									streamReader.read(buffer, NetConnection.this);
 								}
 							});
 
@@ -82,6 +82,10 @@ public class NetConnection {
 	public void stop() {
 		enabled = false;
 		readerTask.stop();
+	}
+	
+	protected StreamReader getStreamReader() {
+		return streamReader;
 	}
 
 }

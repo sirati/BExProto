@@ -38,6 +38,7 @@ public class NetServer {
 							} else if ((socket = serverSocket.accept()) != null) {
 								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader);
 								connection.start();
+								onConnected(connection);
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -74,4 +75,10 @@ public class NetServer {
 	public Set<NetConnection> getConnections() {
 		return netConnectionManager.getConnections();
 	}
+	
+	protected StreamReader getStreamReader() {
+		return streamReader;
+	}
+	
+	protected void onConnected(NetConnection connection) {}
 }
