@@ -10,7 +10,7 @@ public class NetClient extends NetConnection {
 	private int port;
 	
 	public NetClient(AsyncHelper asyncHelper, String ip, int port, StreamReader streamReader) {
-		super(asyncHelper, null, new NetConnectionManager(), streamReader);
+		super(asyncHelper, null, new NetConnectionManager(), streamReader, null);
 		this.ip = ip;
 		this.port = port;
 	}

@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto;
 
 
+
 public class MultiStream implements Stream {
 
 	Stream[] streams;

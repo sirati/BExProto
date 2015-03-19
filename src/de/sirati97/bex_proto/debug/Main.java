@@ -1,7 +1,6 @@
 package de.sirati97.bex_proto.debug;
 
-import de.sirati97.bex_proto.SendStream;
-import de.sirati97.bex_proto.StreamReader;
+import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetClient;
 import de.sirati97.bex_proto.network.NetServer;
@@ -14,19 +13,20 @@ public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		//Auswerter der daten instanzieren
 		TestCommand command = new TestCommand();
-		StreamReader streamReader = new StreamReader(command);
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		AsyncHelper asyncHelper = new AsyncHelperImpl();
 		//Server & Client instanzieren
-		NetServer server = new AdvServer(asyncHelper, 10000);
-		NetClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", false);
+		NetServer server = new AdvServer(asyncHelper, 10000, command);
+		NetClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
 		server.start();
 		client.start();
 		//testdaten zu byte[] 
-		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}})).getBytes();
+		Stream stream = command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}});
 		//testdaten senden
-//		client.send(stream);
+//		System.out.println(bytesToString(stream.getBytes()));
+		command.send(stream,client);
+		
 		//Server & Client stoppen
 		server.stop();
 		client.stop();

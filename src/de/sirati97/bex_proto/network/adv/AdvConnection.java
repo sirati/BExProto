@@ -25,7 +25,11 @@ public class AdvConnection {
 		return generic;
 	}
 	
+	public AdvServer getServer() {
+		return (AdvServer) getNetConnection().getCreator();
+	}
+	
 	public void closeConnection() {
-		
+		getServer().getCloseConnectionCommand().send(getNetConnection());
 	}
 }

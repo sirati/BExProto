@@ -8,7 +8,7 @@ import java.util.Set;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
-public class NetServer {
+public class NetServer  implements NetCreator{
 	private AsyncHelper asyncHelper;
 	private int port;
 	private ServerSocket serverSocket;
@@ -36,7 +36,7 @@ public class NetServer {
 							if (serverSocket.isClosed()) {
 								System.out.println("The socket was closed!");
 							} else if ((socket = serverSocket.accept()) != null) {
-								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader);
+								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this);
 								connection.start();
 								onConnected(connection);
 							}

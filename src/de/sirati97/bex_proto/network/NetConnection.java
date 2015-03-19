@@ -6,20 +6,22 @@ import java.net.Socket;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
-public class NetConnection {
+public class NetConnection implements NetCreator {
 	private AsyncHelper asyncHelper;
 	private Socket socket;
 	private boolean enabled = false;
 	private NetConnectionManager netConnectionManager;
 	private StreamReader streamReader;
 	private AsyncTask readerTask;
+	private NetCreator creator;
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
-			NetConnectionManager netConnectionManager, StreamReader streamReader) {
+			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator) {
 		this.asyncHelper = asyncHelper;
 		this.socket = socket;
 		this.netConnectionManager = netConnectionManager;
 		this.streamReader = streamReader;
+		this.creator = creator==null?this:creator;
 	}
 
 	public void start() {
@@ -86,6 +88,14 @@ public class NetConnection {
 	
 	protected StreamReader getStreamReader() {
 		return streamReader;
+	}
+	
+	public NetCreator getCreator() {
+		return creator;
+	}
+	
+	protected void setCreator(NetCreator creator) {
+		this.creator = creator;
 	}
 
 }

@@ -12,6 +12,7 @@ public class CloseConnectionCommand extends CommandNone {
 	@Override
 	public void receive(NetConnection sender) {
 		sender.stop();
+		System.out.println("Closed connection");
 	}
 
 }
