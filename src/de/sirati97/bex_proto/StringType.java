@@ -27,4 +27,9 @@ public class StringType extends ObjType {
 		return new String[lenght];
 	}
 
+	@Override
+	public Class<?> getType() {
+		return String.class;
+	}
+
 }

@@ -7,4 +7,5 @@ public interface TypeBase {
 	Stream createStream(Object obj);
 	StreamExtractor<? extends Object> getExtractor();
 	Object[] createArray(int lenght);
+	Class<?> getType();
 }

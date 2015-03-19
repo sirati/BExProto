@@ -90,7 +90,7 @@ public final class BExStatic {
 	public static byte[] mergeStream(byte[][] streams) {
 		int resultLenght = 0;
 		for (byte[] element:streams) {
-			if (element != null && element.length > 0)resultLenght += 4+element.length;
+			if (element != null && element.length > 0)resultLenght += element.length;
 		}
 		byte[] result = new byte[resultLenght];
 		byte[] tmp;

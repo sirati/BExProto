@@ -9,7 +9,7 @@ public abstract class Type implements TypeBase{
 	public static final Type String_Utf_16 = new StringType(Charsets.UTF_16);
 	public static final Type String_ISO_8859_1 = new StringType(Charsets.ISO_8859_1);
 	public static final Type String_US_ASCII = new StringType(Charsets.US_ASCII);
-	public static final Type Integer = new PremitivType() {
+	public static final PremitivType Integer = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new IntegerExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -25,14 +25,19 @@ public abstract class Type implements TypeBase{
 		}
 
 		@Override public Object toPremitiveArray(Object obj) {
+			System.out.println(ArrayUtils.toPrimitive((Integer[])obj).length);
 			return ArrayUtils.toPrimitive((Integer[])obj);
 		}
 
 		@Override public Object toObjectArray(Object obj) {
 			return ArrayUtils.toObject((int[])obj);
 		}
+
+		@Override public Class<?> getType() {
+			return int.class;
+		}
 	};
-	public static final Type Long = new PremitivType() {
+	public static final PremitivType Long = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new LongExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -54,8 +59,12 @@ public abstract class Type implements TypeBase{
 		@Override public Object toObjectArray(Object obj) {
 			return ArrayUtils.toObject((long[])obj);
 		}
+
+		@Override public Class<?> getType() {
+			return long.class;
+		}
 	};
-	public static final Type Short = new PremitivType() {
+	public static final PremitivType Short = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new ShortExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -75,10 +84,14 @@ public abstract class Type implements TypeBase{
 		}
 
 		@Override public Object toObjectArray(Object obj) {
-			return ArrayUtils.toObject((long[])obj);
+			return ArrayUtils.toObject((short[])obj);
+		}
+
+		@Override public Class<?> getType() {
+			return short.class;
 		}
 	};
-	public static final Type Byte = new PremitivType() {
+	public static final PremitivType Byte = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new ByteExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -98,10 +111,14 @@ public abstract class Type implements TypeBase{
 		}
 
 		@Override public Object toObjectArray(Object obj) {
-			return ArrayUtils.toObject((long[])obj);
+			return ArrayUtils.toObject((byte[])obj);
+		}
+
+		@Override public Class<?> getType() {
+			return byte.class;
 		}
 	};
-	public static final Type Double = new PremitivType() {
+	public static final PremitivType Double = new PremitivType() {
 		StreamExtractor<? extends Object> extractor = new DoubleExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -121,7 +138,11 @@ public abstract class Type implements TypeBase{
 		}
 
 		@Override public Object toObjectArray(Object obj) {
-			return ArrayUtils.toObject((long[])obj);
+			return ArrayUtils.toObject((double[])obj);
+		}
+
+		@Override public Class<?> getType() {
+			return double.class;
 		}
 	};
 	
