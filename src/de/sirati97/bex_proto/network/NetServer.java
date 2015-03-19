@@ -30,7 +30,7 @@ public class NetServer {
 			serverSocket = new ServerSocket(port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {
-					while (enabled) {
+					while (enabled && !Thread.interrupted()) {
 						Socket socket = null;
 						try {
 							if (serverSocket.isClosed()) {

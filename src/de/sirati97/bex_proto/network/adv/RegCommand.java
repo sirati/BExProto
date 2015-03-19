@@ -13,9 +13,9 @@ public class RegCommand
 	}
 
 	@Override
-	public void receive(String name, Boolean isGeneric, Void arg3, Void arg4, Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10, NetConnection sender) {}
+	public void receive(String name, Boolean generic, Void arg3, Void arg4, Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10, NetConnection sender) {}
 	
-	public void send(String name, boolean isGeneric, NetConnection...connections) {
-		send(send(name, isGeneric, null, null, null, null, null, null, null, null), connections);
+	public void send(String name, boolean generic, NetConnection...connections) {
+		send(send(name, generic, null, null, null, null, null, null, null, null), connections);
 	}
 }

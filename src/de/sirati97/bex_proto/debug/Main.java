@@ -5,6 +5,8 @@ import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetClient;
 import de.sirati97.bex_proto.network.NetServer;
+import de.sirati97.bex_proto.network.adv.AdvClient;
+import de.sirati97.bex_proto.network.adv.AdvServer;
 
 
 public class Main {
@@ -16,20 +18,46 @@ public class Main {
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		AsyncHelper asyncHelper = new AsyncHelperImpl();
 		//Server & Client instanzieren
-		NetServer server = new NetServer(asyncHelper, 10000, streamReader);
-		NetClient client = new NetClient(asyncHelper, "127.0.0.1", 10000, streamReader);
+		NetServer server = new AdvServer(asyncHelper, 10000);
+		NetClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", false);
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
 		server.start();
 		client.start();
 		//testdaten zu byte[] 
 		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}})).getBytes();
 		//testdaten senden
-		client.send(stream);
+//		client.send(stream);
 		//Server & Client stoppen
 		server.stop();
 		client.stop();
 		Thread.sleep(100);
 		System.exit(0);
+		
+		
+		
+		
+//		//Auswerter der daten instanzieren
+//		TestCommand command = new TestCommand();
+//		StreamReader streamReader = new StreamReader(command);
+//		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
+//		AsyncHelper asyncHelper = new AsyncHelperImpl();
+//		//Server & Client instanzieren
+//		NetServer server = new NetServer(asyncHelper, 10000, streamReader);
+//		NetClient client = new NetClient(asyncHelper, "127.0.0.1", 10000, streamReader);
+//		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
+//		server.start();
+//		client.start();
+//		//testdaten zu byte[] 
+//		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}})).getBytes();
+//		//testdaten senden
+//		client.send(stream);
+//		//Server & Client stoppen
+//		server.stop();
+//		client.stop();
+//		Thread.sleep(100);
+//		System.exit(0);
+		
+		
 ////		MACommand command = new MACommand();
 //		TestCommand command = new TestCommand();
 //		

@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.network.NetConnection;
 
 public class ClientRegCommand extends RegCommand {
 	@Override
-	public void receive(String name, Boolean isGeneric, Void arg3, Void arg4,
+	public void receive(String name, Boolean generic, Void arg3, Void arg4,
 			Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10,
 			NetConnection sender) {
 		AdvClient client = (AdvClient) sender;

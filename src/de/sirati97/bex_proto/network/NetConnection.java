@@ -29,7 +29,7 @@ public class NetConnection {
 		netConnectionManager.add(this);
 		readerTask = asyncHelper.runAsync(new Runnable() {
 			public void run() {
-				while (enabled) {
+				while (enabled && !Thread.interrupted()) {
 					try {
 						if (socket.getInputStream().available() > 0) {
 							int available = socket.getInputStream().available();
