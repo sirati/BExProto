@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto;
 
+import de.sirati97.bex_proto.network.NetConnection;
+
 
 public class SendStream implements Stream {
 	Stream[] streams;
@@ -23,6 +25,10 @@ public class SendStream implements Stream {
 		System.arraycopy(lenghtBytes, 0, result, 0, lenghtBytes.length);
 		System.arraycopy(mergedBytes, 0, result, lenghtBytes.length, mergedBytes.length);
 		return result;
+	}
+	
+	public void send(NetConnection connection) {
+		connection.send(getBytes());
 	}
 
 

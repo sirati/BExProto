@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto;
 
 public class StreamReader {
-	StreamExtractor<?>[] extractors;
+	VoidExtractor extractor;
 	
-	public StreamReader(StreamExtractor<?>... extractors) {
-		this.extractors = extractors;
+	public StreamReader(VoidExtractor extractor) {
+		this.extractor = extractor;
 	}
 	
 	public void read(byte[] bytes) {
@@ -16,18 +16,11 @@ public class StreamReader {
 			System.arraycopy(bytes, location, stream, 0, streamLenght);
 			location +=streamLenght;
 			ExtractorDat dat = new ExtractorDat(stream);
-			Object[] extractedData = new Object[extractors.length];
-			for (int i=0;i<extractors.length;i++) {
-				extractedData[i] = extractors[i].extract(dat);
-			}
-			run(extractedData);
+			extractor.extract(dat);
 		} while (location < bytes.length);
 		
 	}
 	
-	public void run(Object... data) {
-		
-	}
 	
 	
 }

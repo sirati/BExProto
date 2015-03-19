@@ -21,12 +21,11 @@ public class TestCommand extends BEx10Command<String, String, String, String, Lo
 		System.out.println(arg7);
 		System.out.println(arg8);
 		System.out.println(arg9);
+		// Multidimensions Array Testen
 		System.out.println(arg10[0][0]);
 		System.out.println(arg10[1][0]);
 		System.out.println(arg10[1][1]);
 		System.out.println(arg10[2][0]);
-		
-		
 	}
 	
 }
