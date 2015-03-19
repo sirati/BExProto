@@ -10,13 +10,13 @@ public abstract class Type implements TypeBase{
 	public static final Type String_ISO_8859_1 = new StringType(Charsets.ISO_8859_1);
 	public static final Type String_US_ASCII = new StringType(Charsets.US_ASCII);
 	public static final PremitivType Integer = new PremitivType() {
-		StreamExtractor<? extends Object> extractor = new IntegerExtractor();
+		IntegerExtractor extractor = new IntegerExtractor();
 		
 		@Override public Stream createStream(Object obj) {
 			return new IntegerStream((int)obj);
 		}
 
-		@Override public StreamExtractor<? extends Object> getExtractor() {
+		@Override public IntegerExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -25,7 +25,6 @@ public abstract class Type implements TypeBase{
 		}
 
 		@Override public Object toPremitiveArray(Object obj) {
-			System.out.println(ArrayUtils.toPrimitive((Integer[])obj).length);
 			return ArrayUtils.toPrimitive((Integer[])obj);
 		}
 
@@ -38,13 +37,13 @@ public abstract class Type implements TypeBase{
 		}
 	};
 	public static final PremitivType Long = new PremitivType() {
-		StreamExtractor<? extends Object> extractor = new LongExtractor();
+		LongExtractor extractor = new LongExtractor();
 		
 		@Override public Stream createStream(Object obj) {
 			return new LongStream((long)obj);
 		}
 
-		@Override public StreamExtractor<? extends Object> getExtractor() {
+		@Override public LongExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -65,13 +64,13 @@ public abstract class Type implements TypeBase{
 		}
 	};
 	public static final PremitivType Short = new PremitivType() {
-		StreamExtractor<? extends Object> extractor = new ShortExtractor();
+		ShortExtractor extractor = new ShortExtractor();
 		
 		@Override public Stream createStream(Object obj) {
 			return new ShortStream((short)obj);
 		}
 
-		@Override public StreamExtractor<? extends Object> getExtractor() {
+		@Override public ShortExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -92,13 +91,13 @@ public abstract class Type implements TypeBase{
 		}
 	};
 	public static final PremitivType Byte = new PremitivType() {
-		StreamExtractor<? extends Object> extractor = new ByteExtractor();
+		ByteExtractor extractor = new ByteExtractor();
 		
 		@Override public Stream createStream(Object obj) {
 			return new ByteStream((byte)obj);
 		}
 
-		@Override public StreamExtractor<? extends Object> getExtractor() {
+		@Override public ByteExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -119,13 +118,13 @@ public abstract class Type implements TypeBase{
 		}
 	};
 	public static final PremitivType Double = new PremitivType() {
-		StreamExtractor<? extends Object> extractor = new DoubleExtractor();
+		DoubleExtractor extractor = new DoubleExtractor();
 		
 		@Override public Stream createStream(Object obj) {
 			return new DoubleStream((double)obj);
 		}
 
-		@Override public StreamExtractor<? extends Object> getExtractor() {
+		@Override public DoubleExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -143,6 +142,60 @@ public abstract class Type implements TypeBase{
 
 		@Override public Class<?> getType() {
 			return double.class;
+		}
+	};
+	public static final PremitivType Float = new PremitivType() {
+		FloatExtractor extractor = new FloatExtractor();
+		
+		@Override public Stream createStream(Object obj) {
+			return new FloatStream((float)obj);
+		}
+
+		@Override public FloatExtractor getExtractor() {
+			return extractor;
+		}
+
+		@Override public Object[] createArray(int lenght) {
+			return new Float[lenght];
+		}
+
+		@Override public Object toPremitiveArray(Object obj) {
+			return ArrayUtils.toPrimitive((Float[])obj);
+		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((float[])obj);
+		}
+
+		@Override public Class<?> getType() {
+			return float.class;
+		}
+	};
+	public static final PremitivType Boolean = new PremitivType() {
+		BooleanExtractor extractor = new BooleanExtractor();
+		
+		@Override public Stream createStream(Object obj) {
+			return new BooleanStream((boolean)obj);
+		}
+
+		@Override public BooleanExtractor getExtractor() {
+			return extractor;
+		}
+
+		@Override public Object[] createArray(int lenght) {
+			return new Boolean[lenght];
+		}
+
+		@Override public Object toPremitiveArray(Object obj) {
+			return ArrayUtils.toPrimitive((Boolean[])obj);
+		}
+
+		@Override public Object toObjectArray(Object obj) {
+			return ArrayUtils.toObject((boolean[])obj);
+		}
+
+		@Override public Class<?> getType() {
+			return boolean.class;
 		}
 	};
 	

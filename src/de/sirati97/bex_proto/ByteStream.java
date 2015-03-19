@@ -5,7 +5,6 @@ public class ByteStream implements Stream {
 
 	public ByteStream(byte data) {
 		this.data = data;
-		System.out.println("new ByteStream("+data+")");
 	}
 
 	@Override

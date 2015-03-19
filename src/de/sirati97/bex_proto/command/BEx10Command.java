@@ -5,21 +5,14 @@ import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.MultiStream;
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.TypeBase;
-import de.sirati97.bex_proto.VoidExtractor;
 
-public class BExCommand<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements VoidExtractor{
-//	TypeHandler[] handlers;
+public class BEx10Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements CommandBase{
 	TypeBase[] types;
+	private short id;
 	
-	public BExCommand(TypeBase...types) {
-//		this.handlers = new TypeHandler[types.length>=10?10:types.length];
+	public BEx10Command(short id, TypeBase...types) {
 		this.types = types;
-//		int counter=0;
-//		for (TypeBase type:types) {
-//			this.types[counter] = type;
-//			this.handlers[counter] = new TypeHandler(type);
-//			if (++counter>=10)return;
-//		}
+		this.id = id;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -69,6 +62,11 @@ public class BExCommand<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10> implements VoidExtractor
 			break;
 		}
 		return new MultiStream(streams);
+	}
+
+	@Override
+	public short getId() {
+		return id;
 	}
 
 	

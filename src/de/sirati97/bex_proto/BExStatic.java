@@ -254,6 +254,14 @@ public final class BExStatic {
 		return new byte[]{b};
 	}
 	
+	public static boolean getBoolean(ExtractorDat dat) {
+		return dat.getOne()!=0;
+	}
+
+	public static byte[] setBoolean(boolean b) {
+		return new byte[]{b?(byte)1:(byte)0};
+	}
+	
 
 	public static double getDouble(ExtractorDat dat) {
 		return getDouble(dat.getMulti(8));
@@ -268,6 +276,23 @@ public final class BExStatic {
 	public static byte[] setDouble(double value) {
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putDouble(value);
+		return buffer.array();
+	}
+	
+	
+	public static float getFloat(ExtractorDat dat) {
+		return getFloat(dat.getMulti(8));
+	}
+
+	public static float getFloat(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		return buffer.getFloat();
+	}
+	
+
+	public static byte[] setFloat(float value) {
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.putFloat(value);
 		return buffer.array();
 	}
 	

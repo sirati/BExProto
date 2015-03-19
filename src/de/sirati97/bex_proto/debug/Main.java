@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.debug;
 
+import java.io.IOException;
+
 import de.sirati97.bex_proto.SendStream;
 import de.sirati97.bex_proto.StreamExtractor;
 import de.sirati97.bex_proto.StreamReader;
@@ -13,16 +15,24 @@ public class Main {
 		g1[0][0] = new int[1];
 		
 		
-		MACommand command = new MACommand();
-//		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8},{7}})).getBytes();
-		byte[] stream = new SendStream(command.send(new byte[][]{{9},{8, 8},{7}}, null, null, null, null, null, null, null, null, null)).getBytes();
+//		MACommand command = new MACommand();
+		TestCommand command = new TestCommand();
+		
+		byte[] stream = new SendStream(command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}})).getBytes();
+//		byte[] stream = new SendStream(command.send(new byte[][]{{9},{8, 8},{7}}, null, null, null, null, null, null, null, null, null)).getBytes();
 		StringBuilder sb = new StringBuilder();
 		for (byte b:stream) {
 			sb.append(b);
 			sb.append(' ');
 		}
 		System.out.println(sb.toString());
-		
+		try {
+			System.out.write(stream);
+			System.out.println();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		StreamReader reader = new StreamReader(command);
 		reader.read(stream);

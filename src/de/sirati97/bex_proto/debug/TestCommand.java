@@ -2,12 +2,12 @@ package de.sirati97.bex_proto.debug;
 
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.Type;
-import de.sirati97.bex_proto.command.BExCommand;
+import de.sirati97.bex_proto.command.BEx10Command;
 
-public class TestCommand extends BExCommand<String, String, String, String, Long, Integer, Short, Byte, Double, int[][]> {
+public class TestCommand extends BEx10Command<String, String, String, String, Long, Integer, Short, Byte, Double, int[][]> {
 
 	public TestCommand() {
-		super(Type.String_Utf_8, Type.String_Utf_16, Type.String_US_ASCII, Type.String_ISO_8859_1, Type.Long, Type.Integer, Type.Short, Type.Byte, Type.Double, new ArrayType(new ArrayType(Type.Integer)));
+		super((short)0, Type.String_Utf_8, Type.String_Utf_16, Type.String_US_ASCII, Type.String_ISO_8859_1, Type.Long, Type.Integer, Type.Short, Type.Byte, Type.Double, new ArrayType(new ArrayType(Type.Integer)));
 	}
 	
 	@Override
@@ -22,7 +22,8 @@ public class TestCommand extends BExCommand<String, String, String, String, Long
 		System.out.println(arg8);
 		System.out.println(arg9);
 		System.out.println(arg10[0][0]);
-//		System.out.println(arg10[1][0]);
+		System.out.println(arg10[1][0]);
+		System.out.println(arg10[1][1]);
 		System.out.println(arg10[2][0]);
 		
 		

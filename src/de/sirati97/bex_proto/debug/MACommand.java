@@ -2,13 +2,13 @@ package de.sirati97.bex_proto.debug;
 
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.Type;
-import de.sirati97.bex_proto.command.BExCommand;
+import de.sirati97.bex_proto.command.BEx10Command;
 
-public class MACommand extends BExCommand<byte[][], Void, Void, Void, Void, Void, Void, Void, Void, Void> {
+public class MACommand extends BEx10Command<byte[][], Void, Void, Void, Void, Void, Void, Void, Void, Void> {
 
 	
 	public MACommand() {
-		super(new ArrayType(new ArrayType(Type.Byte)));
+		super((short)1, new ArrayType(new ArrayType(Type.Byte)));
 	}
 	
 	@Override
