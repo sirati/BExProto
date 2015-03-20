@@ -9,10 +9,10 @@ import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetConnection;
 import de.sirati97.bex_proto.network.NetServer;
 
-public class AdvServer extends NetServer {
+public class AdvServer extends NetServer implements AdvCreator{
 	private CommandRegisterBase register;
 	private ServerRegCommand serverRegCommand;
-	private ConnectionManager clientManager = new ConnectionManager();
+	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	
 	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command) {
@@ -20,7 +20,7 @@ public class AdvServer extends NetServer {
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (CommandRegisterBase) sender.getCommand();
 		register.register(new CommandWrapper(command, (short) 0));
-		register.register(serverRegCommand= new ServerRegCommand(clientManager));
+		register.register(serverRegCommand= new ServerRegCommand(connectionManager));
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
 	}
 
@@ -37,5 +37,15 @@ public class AdvServer extends NetServer {
 	@Override
 	protected void onConnected(NetConnection connection) {
 		getServerRegCommand().send("HOST", false, connection);
+	}
+
+	@Override
+	public AdvConnection getServerSideConnection(String clientName, boolean generic, int id) {
+		for (AdvConnection connection: connectionManager.getConnections(clientName)) {
+			if (connection.getId() == id) {
+				return connection;
+			}
+		}
+		return null;
 	}
 }

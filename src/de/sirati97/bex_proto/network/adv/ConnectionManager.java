@@ -9,37 +9,41 @@ import java.util.Set;
 import de.sirati97.bex_proto.network.NetConnection;
 
 public class ConnectionManager {
-	private Map<String, Set<AdvConnection>> connections = new HashMap<String, Set<AdvConnection>>();
+	private Map<String, ConnectionData> connections = new HashMap<String, ConnectionData>();
 	private Map<NetConnection,AdvConnection> netAdvMap = new HashMap<NetConnection, AdvConnection>();
 	
 	public void register(AdvConnection advConnection) {
 		if (connections.containsKey(advConnection.getClientName())) {
-			Set<AdvConnection> connections2 = connections.get(advConnection.getClientName());
+			ConnectionData connectionData = connections.get(advConnection.getClientName());
 			if (connections.size() == 1) {
 				boolean generic = false;
 				AdvConnection advConnection2 = null;
-				for (AdvConnection advConnection3:connections2) {
+				for (AdvConnection advConnection3:connectionData.connections) {
 					generic = advConnection3.isGeneric();
 					advConnection2 = advConnection3;
 				}
 				if (!generic) {
-					connections2.clear();
+					connectionData.connections.clear();
+					connectionData.highestId = 0;
 					advConnection2.closeConnection();
 					netAdvMap.remove(advConnection2.getNetConnection());
 				}
 			}
 			if (!advConnection.isGeneric()) {
-				for (AdvConnection advConnection2:connections2) {
+				for (AdvConnection advConnection2:connectionData.connections) {
 					advConnection2.closeConnection();
 					netAdvMap.remove(advConnection2.getNetConnection());
 				}
-				connections2.clear();
+				connectionData.connections.clear();
+				connectionData.highestId = 0;
 			}
-			connections2.add(advConnection);
+			connectionData.connections.add(advConnection);
+			advConnection.setId(connectionData.highestId++);
 		} else {
-			Set<AdvConnection> connections2 = new HashSet<AdvConnection>();
-			connections2.add(advConnection);
-			connections.put(advConnection.getClientName(), connections2);
+			ConnectionData connectionData = new ConnectionData();
+			connectionData.connections.add(advConnection);
+			advConnection.setId(connectionData.highestId++);
+			connections.put(advConnection.getClientName(), connectionData);
 		}
 		netAdvMap.put(advConnection.getNetConnection(), advConnection);
 	}
@@ -47,7 +51,7 @@ public class ConnectionManager {
 
 	public void unregister(AdvConnection advConnection) {
 		if (connections.containsKey(advConnection.getClientName())) {
-			Set<AdvConnection> connections2 = connections.get(advConnection.getClientName());
+			Set<AdvConnection> connections2 = connections.get(advConnection.getClientName()).connections;
 			connections2.remove(advConnection);
 			if (connections2.size() < 1) {
 				connections.remove(advConnection.getClientName());
@@ -59,11 +63,16 @@ public class ConnectionManager {
 	
 	public Set<AdvConnection> getConnections(String clientName) {
 		if (!connections.containsKey(clientName)) return new HashSet<AdvConnection>();
-		return Collections.unmodifiableSet(connections.get(clientName));
+		return Collections.unmodifiableSet(connections.get(clientName).connections);
 	}
 	
 
 	public AdvConnection getAdvConnection(NetConnection connection) {
 		return netAdvMap.get(connection);
+	}
+	
+	private static class ConnectionData {
+		public int highestId = 0;
+		public Set<AdvConnection> connections = new HashSet<AdvConnection>();;
 	}
 }

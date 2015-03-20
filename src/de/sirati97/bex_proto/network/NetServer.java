@@ -8,7 +8,7 @@ import java.util.Set;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
-public class NetServer  implements NetCreator{
+public class NetServer implements NetCreator{
 	private AsyncHelper asyncHelper;
 	private int port;
 	private ServerSocket serverSocket;

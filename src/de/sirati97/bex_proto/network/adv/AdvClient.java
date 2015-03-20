@@ -8,7 +8,7 @@ import de.sirati97.bex_proto.command.CommandWrapper;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetClient;
 
-public class AdvClient extends NetClient {
+public class AdvClient extends NetClient implements AdvCreator{
 	private CommandRegisterBase register;
 	private String clientName;
 	private boolean generic;
@@ -35,6 +35,12 @@ public class AdvClient extends NetClient {
 	
 	public boolean isGeneric() {
 		return generic;
+	}
+
+	@Override
+	public ServerSideConnection getServerSideConnection(String clientName,
+			boolean generic, int id) {
+		return new ServerSideConnection(clientName, generic, id);
 	}
 
 }

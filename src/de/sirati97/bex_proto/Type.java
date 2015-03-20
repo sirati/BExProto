@@ -4,7 +4,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.base.Charsets;
 
+import de.sirati97.bex_proto.network.adv.SSCWrapperType;
+
 public abstract class Type implements TypeBase{
+	public static final Type SSCWrapper = new SSCWrapperType();
 	public static final Type String_Utf_8 = new StringType(Charsets.UTF_8);
 	public static final Type String_Utf_16 = new StringType(Charsets.UTF_16);
 	public static final Type String_ISO_8859_1 = new StringType(Charsets.ISO_8859_1);

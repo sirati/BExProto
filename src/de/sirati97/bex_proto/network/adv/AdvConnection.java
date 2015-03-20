@@ -2,28 +2,19 @@ package de.sirati97.bex_proto.network.adv;
 
 import de.sirati97.bex_proto.network.NetConnection;
 
-public class AdvConnection {
-	private String clientName;
-	private boolean generic;
+public class AdvConnection extends ServerSideConnection {
 	private NetConnection netConnection;
 	
 	public AdvConnection(NetConnection netConnection, String clientName, boolean generic) {
+		super(clientName, generic, 0);
 		this.netConnection = netConnection;
-		this.clientName = clientName;
-		this.generic = generic;
 	}
 	
-	public String getClientName() {
-		return clientName;
-	}
 	
 	public NetConnection getNetConnection() {
 		return netConnection;
 	}
 	
-	public boolean isGeneric() {
-		return generic;
-	}
 	
 	public AdvServer getServer() {
 		return (AdvServer) getNetConnection().getCreator();
@@ -31,5 +22,10 @@ public class AdvConnection {
 	
 	public void closeConnection() {
 		getServer().getCloseConnectionCommand().send(getNetConnection());
+	}
+	
+	
+	public void setId(int id) {
+		super.setId(id);
 	}
 }
