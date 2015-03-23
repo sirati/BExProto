@@ -36,7 +36,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	
 	@Override
 	protected void onConnected(NetConnection connection) {
-		getServerRegCommand().send("HOST", false, connection);
+		getServerRegCommand().send("H", false, 0, connection);
 	}
 
 	@Override
@@ -47,5 +47,9 @@ public class AdvServer extends NetServer implements AdvCreator{
 			}
 		}
 		return null;
+	}
+	
+	public ConnectionManager getConnectionManager() {
+		return connectionManager;
 	}
 }

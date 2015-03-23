@@ -10,8 +10,9 @@ public class ServerRegCommand extends RegCommand {
 	}
 	
 	@Override
-	public void receive(String name, Boolean generic, Void arg3, Void arg4, Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10, NetConnection sender) {
+	public void receive(String name, Boolean generic, Integer id, Void arg4, Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10, NetConnection sender) {
 		AdvConnection connection = new AdvConnection(sender, name, generic);
 		clientManager.register(connection);
+		send("I", connection.isGeneric(), connection.getId(), sender);
 	}
 }

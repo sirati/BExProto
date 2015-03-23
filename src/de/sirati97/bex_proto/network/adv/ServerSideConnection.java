@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.network.adv;
 
-public class ServerSideConnection {
+public class ServerSideConnection implements IServerSideConnection {
 	private String clientName;
 	private boolean generic;
 	private int id;
@@ -19,7 +19,7 @@ public class ServerSideConnection {
 		return id;
 	}
 	
-	protected void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -30,7 +30,7 @@ public class ServerSideConnection {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this)return true;
-		if (obj instanceof ServerSideConnection) {
+		if (obj instanceof IServerSideConnection) {
 			ServerSideConnection other = (ServerSideConnection)obj;
 			if (other.getId() == this.getId() && other.isGeneric() == this.isGeneric() && getClientName().equals(other.getClientName()))return true;
 		}

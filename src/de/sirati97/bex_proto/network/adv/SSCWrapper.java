@@ -10,7 +10,7 @@ public class SSCWrapper {
 	private boolean generic;
 	private int id;
 
-	public SSCWrapper(ServerSideConnection ssc) {
+	public SSCWrapper(IServerSideConnection ssc) {
 		this(ssc.getClientName(), ssc.isGeneric(), ssc.getId());
 	}
 	
@@ -33,7 +33,7 @@ public class SSCWrapper {
 		return generic;
 	}
 	
-	public ServerSideConnection getSSC(NetCreator creator) {
+	public IServerSideConnection getSSC(NetCreator creator) {
 		return ((AdvCreator) creator).getServerSideConnection(getClientName(), isGeneric(), getId());
 	}
 	
