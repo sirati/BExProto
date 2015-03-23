@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.debug;
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetServer;
+import de.sirati97.bex_proto.network.ThreadAsyncHelper;
 import de.sirati97.bex_proto.network.adv.AdvClient;
 import de.sirati97.bex_proto.network.adv.AdvServer;
 
@@ -13,7 +14,7 @@ public class Main {
 		//Auswerter der daten instanzieren
 		TestCommand command = new TestCommand();
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
-		AsyncHelper asyncHelper = new AsyncHelperImpl();
+		AsyncHelper asyncHelper = new ThreadAsyncHelper();
 		//Server & Client instanzieren
 		NetServer server = new AdvServer(asyncHelper, 10000, command);
 		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
@@ -94,30 +95,7 @@ public class Main {
 		return sb.toString();
 	}
 	
-	static class AsyncHelperImpl implements AsyncHelper{
-
-		@Override
-		public AsyncTaskImpl runAsync(Runnable runnable) {
-			Thread thread = new Thread(runnable);
-			thread.start();
-			return new AsyncTaskImpl(thread);
-		}
-		
-		static class AsyncTaskImpl implements AsyncTask {
-			private Thread thread;
-
-			public AsyncTaskImpl(Thread thread) {
-				this.thread = thread;
-			}
-			
-			@Override
-			public void stop() {
-				thread.interrupt();
-				
-			}
-			
-		}
-	}
+	
 
 	
 	
