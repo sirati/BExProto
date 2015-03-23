@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.network.adv;
 
+import de.sirati97.bex_proto.Stream;
+import de.sirati97.bex_proto.Type;
 import de.sirati97.bex_proto.network.NetCreator;
 
 public class SSCWrapper {
@@ -33,5 +35,9 @@ public class SSCWrapper {
 	
 	public ServerSideConnection getSSC(NetCreator creator) {
 		return ((AdvCreator) creator).getServerSideConnection(getClientName(), isGeneric(), getId());
+	}
+	
+	public Stream getStream() {
+		return Type.SSCWrapper.createStream(this);
 	}
 }
