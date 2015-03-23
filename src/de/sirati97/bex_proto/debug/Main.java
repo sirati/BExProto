@@ -2,7 +2,6 @@ package de.sirati97.bex_proto.debug;
 
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.network.AsyncHelper;
-import de.sirati97.bex_proto.network.NetClient;
 import de.sirati97.bex_proto.network.NetServer;
 import de.sirati97.bex_proto.network.adv.AdvClient;
 import de.sirati97.bex_proto.network.adv.AdvServer;
@@ -17,16 +16,21 @@ public class Main {
 		AsyncHelper asyncHelper = new AsyncHelperImpl();
 		//Server & Client instanzieren
 		NetServer server = new AdvServer(asyncHelper, 10000, command);
-		NetClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
+		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
+		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
+		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
 		server.start();
 		client.start();
+		client2.start();
+		
 		//testdaten zu byte[] 
 		Stream stream = command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}});
 		//testdaten senden
 //		System.out.println(bytesToString(stream.getBytes()));
 		command.send(stream,client);
 		
+		Thread.sleep(100);
 		//Server & Client stoppen
 		server.stop();
 		client.stop();
