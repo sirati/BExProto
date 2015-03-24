@@ -99,7 +99,7 @@ public class NetConnection implements NetCreator {
 		readerTask.stop();
 		try {
 			socket.shutdownOutput();
-		} catch (IOException e) {e.printStackTrace();}
+		} catch (IOException e) {}
 		getCreator().onSocketClosed(this);
 	}
 	

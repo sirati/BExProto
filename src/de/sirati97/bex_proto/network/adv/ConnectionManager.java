@@ -57,6 +57,7 @@ public class ConnectionManager {
 	}
 
 	public void unregister(AdvConnection advConnection) {
+		if (advConnection == null)return;
 		synchronized(this) {
 			if (connections.containsKey(advConnection.getClientName())) {
 				Set<AdvConnection> connections2 = connections.get(advConnection.getClientName()).connections;
