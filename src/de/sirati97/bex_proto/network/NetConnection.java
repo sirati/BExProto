@@ -15,6 +15,8 @@ public class NetConnection implements NetCreator {
 	private StreamReader streamReader;
 	private AsyncTask readerTask;
 	private NetCreator creator;
+	private boolean readingLocked = false;
+	private boolean registered = true;
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
 			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator) {
@@ -34,7 +36,7 @@ public class NetConnection implements NetCreator {
 			public void run() {
 				while (enabled && !Thread.interrupted()) {
 					try {
-						if (socket.isClosed() || socket.getInputStream().available() > 0) {
+						if (!isReadingLocked() && (socket.isClosed() || socket.getInputStream().available() > 0)) {
 							if (socket.isClosed()) {
 								stop();
 								return;
@@ -116,9 +118,23 @@ public class NetConnection implements NetCreator {
 	}
 
 	@Override
-	public void onSocketClosed(NetConnection connection) {
-		// TODO Auto-generated method stub
-		
+	public void onSocketClosed(NetConnection connection) {}
+
+	public boolean isReadingLocked() {
+		return readingLocked;
 	}
+	
+	public void setReadingLocked(boolean readingLocked) {
+		this.readingLocked = readingLocked;
+	}
+	
+	public boolean isRegistered() {
+		return registered;
+	}
+	
+	public void setRegistered(boolean registered) {
+		this.registered = registered;
+	}
+
 
 }

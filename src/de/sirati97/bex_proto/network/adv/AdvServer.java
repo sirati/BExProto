@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.network.adv;
 
+import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
 import de.sirati97.bex_proto.command.CommandRegisterBase;
@@ -16,7 +17,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private CloseConnectionCommand closeConnectionCommand;
 	
 	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command) {
-		super(asyncHelper, port, new StreamReader(new CommandSender(new CommandRegisterBase())));
+		super(asyncHelper, port, new StreamReader(new CommandSender(new AdvServerCommandRegister())));
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (CommandRegisterBase) sender.getCommand();
 		register.register(new CommandWrapper(command, (short) 0));
@@ -37,6 +38,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	@Override
 	protected void onConnected(NetConnection connection) {
 		getServerRegCommand().send("H", false, 0, connection);
+		connection.setRegistered(false);
 	}
 
 	@Override
@@ -53,9 +55,24 @@ public class AdvServer extends NetServer implements AdvCreator{
 		return connectionManager;
 	}
 	
+	
+	
 	@Override
 	public void onSocketClosed(NetConnection connection) {
 		super.onSocketClosed(connection);
 		connectionManager.unregister(connection);
+	}
+	
+	private static class AdvServerCommandRegister extends CommandRegisterBase {
+	@Override
+	protected void checkID(short commandId, ExtractorDat dat) {
+		if (commandId!=0)return;
+		while (!dat.getSender().isRegistered()) {
+			try {
+				Thread.sleep(0, 1);
+			} catch (InterruptedException e) {e.printStackTrace();}
+		}
+	}
+		
 	}
 }

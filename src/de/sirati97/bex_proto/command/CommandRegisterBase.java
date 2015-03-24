@@ -24,9 +24,12 @@ public class CommandRegisterBase implements CommandBase {
 	@Override
 	public Void extract(ExtractorDat dat) {
 		short commandId = (Short) Type.Short.getExtractor().extract(dat);
+		checkID(commandId, dat);
 		CommandBase command = commands.get(commandId);
 		return command.extract(dat);
 	}
+	
+	protected void checkID(short commandId, ExtractorDat dat){}
 	
 	public void register(CommandBase command) {
 		commands.put(command.getId(), command);
