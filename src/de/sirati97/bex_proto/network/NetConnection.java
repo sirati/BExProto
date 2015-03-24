@@ -2,6 +2,7 @@ package de.sirati97.bex_proto.network;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
@@ -73,7 +74,10 @@ public class NetConnection implements NetCreator {
 		
 		try {
 			socket.getOutputStream().write(stream);
-		} catch (IOException e) {
+		} catch (SocketException e) {
+			stop();
+			return;
+		}	catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
