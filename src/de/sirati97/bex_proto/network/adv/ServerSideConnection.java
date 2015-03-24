@@ -37,7 +37,7 @@ public class ServerSideConnection implements IServerSideConnection {
 		return super.equals(obj);
 	}
 	
-	public SSCWrapper getWrapper() {
+	public SSCWrapper toWrapper() {
 		return new SSCWrapper(this);
 	}
 }

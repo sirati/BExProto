@@ -60,6 +60,8 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		return super.equals(arg0);
 	}
 	
-	
+	public SSCWrapper toWrapper() {
+		return new SSCWrapper(this);
+	}
 
 }

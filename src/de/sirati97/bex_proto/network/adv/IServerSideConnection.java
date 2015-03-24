@@ -5,4 +5,5 @@ public interface IServerSideConnection {
 	public int getId();
 	void setId(int id);
 	public boolean isGeneric();
+	public SSCWrapper toWrapper();
 }
