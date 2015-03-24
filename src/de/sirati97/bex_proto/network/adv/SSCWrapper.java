@@ -40,4 +40,9 @@ public class SSCWrapper {
 	public Stream getStream() {
 		return Type.SSCWrapper.createStream(this);
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " Clientname=" + clientName + ",generic=" + generic + ",id=" + id;
+	}
 }

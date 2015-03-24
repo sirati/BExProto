@@ -8,7 +8,7 @@ import de.sirati97.bex_proto.network.NetConnection;
 public class TestCommand extends BEx10Command<String, String, String, String, Long, Integer, Short, Byte, Double, int[][]> {
 
 	public TestCommand() {
-		super((short)0, Type.String_Utf_8, Type.String_Utf_16, Type.String_US_ASCII, Type.String_ISO_8859_1, Type.Long, Type.Integer, Type.Short, Type.Byte, Type.Double, new ArrayType(new ArrayType(Type.Integer)));
+		super((short)2, Type.String_Utf_8, Type.String_Utf_16, Type.String_US_ASCII, Type.String_ISO_8859_1, Type.Long, Type.Integer, Type.Short, Type.Byte, Type.Double, new ArrayType(new ArrayType(Type.Integer)));
 	}
 	
 	@Override

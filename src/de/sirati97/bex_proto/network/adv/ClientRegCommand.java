@@ -14,6 +14,5 @@ public class ClientRegCommand extends RegCommand {
 			AdvClient client = (AdvClient) sender;
 			client.setId(id);
 		}
-		
 	}
 }

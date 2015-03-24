@@ -11,6 +11,9 @@ public class CommandRegister extends CommandRegisterBase {
 		super(id);
 	}
 	
+	public CommandRegister() {
+		this((short)0);
+	}
 
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
