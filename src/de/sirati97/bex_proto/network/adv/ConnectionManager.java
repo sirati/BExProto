@@ -52,6 +52,10 @@ public class ConnectionManager {
 	}
 	
 
+	public void unregister(NetConnection netConnection) {
+		unregister(getAdvConnection(netConnection));
+	}
+
 	public void unregister(AdvConnection advConnection) {
 		synchronized(this) {
 			if (connections.containsKey(advConnection.getClientName())) {
