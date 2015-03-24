@@ -37,6 +37,7 @@ public class NetServer implements NetCreator{
 								System.out.println("The socket was closed!");
 							} else if ((socket = serverSocket.accept()) != null) {
 								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this);
+								onPreConnected(connection);
 								connection.start();
 								onConnected(connection);
 							}
@@ -81,6 +82,8 @@ public class NetServer implements NetCreator{
 	}
 	
 	protected void onConnected(NetConnection connection) {}
+	protected void onPreConnected(NetConnection connection) {}
+	
 
 	@Override
 	public void onSocketClosed(NetConnection connection) {

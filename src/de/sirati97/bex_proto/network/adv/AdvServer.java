@@ -34,11 +34,14 @@ public class AdvServer extends NetServer implements AdvCreator{
 		return closeConnectionCommand;
 	}
 	
+	@Override
+	protected void onPreConnected(NetConnection connection) {
+		connection.setRegistered(false);
+	}
 	
 	@Override
 	protected void onConnected(NetConnection connection) {
 		getServerRegCommand().send("H", false, 0, connection);
-		connection.setRegistered(false);
 	}
 
 	@Override
