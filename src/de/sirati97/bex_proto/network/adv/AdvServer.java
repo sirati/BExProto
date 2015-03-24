@@ -52,4 +52,10 @@ public class AdvServer extends NetServer implements AdvCreator{
 	public ConnectionManager getConnectionManager() {
 		return connectionManager;
 	}
+	
+	@Override
+	public void onSocketClosed(NetConnection connection) {
+		super.onSocketClosed(connection);
+		connectionManager.unregister(connection);
+	}
 }

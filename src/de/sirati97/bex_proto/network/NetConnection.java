@@ -33,7 +33,11 @@ public class NetConnection implements NetCreator {
 			public void run() {
 				while (enabled && !Thread.interrupted()) {
 					try {
-						if (socket.getInputStream().available() > 0) {
+						if (socket.isClosed() || socket.getInputStream().available() > 0) {
+							if (socket.isClosed()) {
+								stop();
+								return;
+							}
 							int available = socket.getInputStream().available();
 							final byte[] buffer = new byte[available];
 							socket.getInputStream().read(buffer);
@@ -62,6 +66,11 @@ public class NetConnection implements NetCreator {
 	}
 
 	public void send(byte[] stream) {
+		if (socket.isClosed()) {
+			stop();
+			return;
+		}
+		
 		try {
 			socket.getOutputStream().write(stream);
 		} catch (IOException e) {
@@ -84,6 +93,10 @@ public class NetConnection implements NetCreator {
 	public void stop() {
 		enabled = false;
 		readerTask.stop();
+		try {
+			socket.shutdownOutput();
+		} catch (IOException e) {e.printStackTrace();}
+		getCreator().onSocketClosed(this);
 	}
 	
 	protected StreamReader getStreamReader() {
@@ -96,6 +109,12 @@ public class NetConnection implements NetCreator {
 	
 	protected void setCreator(NetCreator creator) {
 		this.creator = creator;
+	}
+
+	@Override
+	public void onSocketClosed(NetConnection connection) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

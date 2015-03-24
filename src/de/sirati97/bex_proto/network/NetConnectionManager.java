@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NetConnectionManager {
-	Set<NetConnection> connections = new HashSet<>();
+	private Set<NetConnection> connections = new HashSet<>();
 	
 	public void add(NetConnection connection) {
 		connections.add(connection);

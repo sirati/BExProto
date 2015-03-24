@@ -81,4 +81,10 @@ public class NetServer implements NetCreator{
 	}
 	
 	protected void onConnected(NetConnection connection) {}
+
+	@Override
+	public void onSocketClosed(NetConnection connection) {
+		netConnectionManager.remove(connection);
+		
+	}
 }
