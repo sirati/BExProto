@@ -98,9 +98,7 @@ public class NetConnection implements NetCreator {
 	}
 
 	public void stop() {
-		System.out.println("stoped1");
 		if (stoped)return;
-		System.out.println("stoped2");
 		synchronized (this) {
 			stoped = true;
 			enabled = false;
@@ -111,6 +109,10 @@ public class NetConnection implements NetCreator {
 			getCreator().onSocketClosed(this);
 		}
 		
+	}
+	
+	public int getPort() {
+		return socket.getPort();
 	}
 	
 	protected StreamReader getStreamReader() {

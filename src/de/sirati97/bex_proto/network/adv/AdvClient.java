@@ -26,8 +26,12 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
 	}
 	
-	public CloseConnectionCommand getCloseConnectionCommand() {
+	protected CloseConnectionCommand getCloseConnectionCommand() {
 		return closeConnectionCommand;
+	}
+	
+	public void closeConnectionSoft() {
+		getCloseConnectionCommand().send(this);
 	}
 	
 	public String getClientName() {

@@ -48,12 +48,10 @@ public class ConnectionManager {
 			}
 			netAdvMap.put(advConnection.getNetConnection(), advConnection);	
 		}
-		System.out.println("register connection");
 	}
 	
 
 	public void unregister(NetConnection netConnection) {
-		System.out.println("unregister netConnection");
 		unregister(getAdvConnection(netConnection));
 	}
 
@@ -70,7 +68,6 @@ public class ConnectionManager {
 			netAdvMap.remove(advConnection.getNetConnection());
 			advConnection.closeConnection();
 		}
-		System.out.println("unregister advConnection");
 	}
 	
 	public Set<AdvConnection> getConnections(String clientName) {
@@ -80,7 +77,6 @@ public class ConnectionManager {
 	
 
 	public AdvConnection getAdvConnection(NetConnection connection) {
-		System.out.println("getAdvConnection");
 		return netAdvMap.get(connection);
 	}
 	
