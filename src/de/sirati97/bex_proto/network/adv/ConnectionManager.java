@@ -48,8 +48,6 @@ public class ConnectionManager {
 			}
 			netAdvMap.put(advConnection.getNetConnection(), advConnection);	
 		}
-		AdvConnection advConnectionDEBUG = getAdvConnection(advConnection.getNetConnection());
-		System.out.println(advConnection == advConnectionDEBUG);
 	}
 	
 
