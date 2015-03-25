@@ -17,6 +17,7 @@ public class NetConnection implements NetCreator {
 	private NetCreator creator;
 	private boolean readingLocked = false;
 	private boolean registered = true;
+	private boolean stoped = false;
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
 			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator) {
@@ -97,12 +98,19 @@ public class NetConnection implements NetCreator {
 	}
 
 	public void stop() {
-		enabled = false;
-		readerTask.stop();
-		try {
-			socket.shutdownOutput();
-		} catch (IOException e) {}
-		getCreator().onSocketClosed(this);
+		System.out.println("stoped1");
+		if (stoped)return;
+		System.out.println("stoped2");
+		synchronized (this) {
+			stoped = true;
+			enabled = false;
+			readerTask.stop();
+			try {
+				socket.shutdownOutput();
+			} catch (IOException e) {}
+			getCreator().onSocketClosed(this);
+		}
+		
 	}
 	
 	protected StreamReader getStreamReader() {
