@@ -201,7 +201,29 @@ public abstract class Type implements TypeBase{
 			return boolean.class;
 		}
 	};
-	
+	public static Type UUID = new ObjType() {
+		UUIDExtractor extractor = new UUIDExtractor();
+		
+		@Override
+		public Class<?> getType() {
+			return java.util.UUID.class;
+		}
+		
+		@Override
+		public StreamExtractor<? extends Object> getExtractor() {
+			return extractor;
+		}
+		
+		@Override
+		public Stream createStream(Object obj) {
+			return new UUIDStream((java.util.UUID) obj);
+		}
+		
+		@Override
+		public Object[] createArray(int lenght) {
+			return new java.util.UUID[lenght];
+		}
+	};
 	
 	@Override public boolean isArray() {return false;}
 }
