@@ -62,8 +62,10 @@ public class AdvServer extends NetServer implements AdvCreator{
 	
 	@Override
 	public void onSocketClosed(NetConnection connection) {
+		AdvConnection advConnection = connectionManager.getAdvConnection(connection);
+		System.out.println("Closed connection" + advConnection.varsToString());
 		super.onSocketClosed(connection);
-		connectionManager.unregister(connection);
+		connectionManager.unregister(advConnection);
 	}
 	
 	private static class AdvServerCommandRegister extends CommandRegisterBase {

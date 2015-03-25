@@ -12,12 +12,11 @@ public class CloseConnectionCommand extends CommandNone {
 	@Override
 	public void receive(NetConnection sender) {
 		sender.stop();
-		if (sender.getCreator() instanceof AdvServer) {
-			AdvServer server = (AdvServer)sender.getCreator();
-			ConnectionManager connectionManager = server.getConnectionManager();
-			connectionManager.unregister(sender);
-		}
-		System.out.println("Closed connection");
+//		if (sender.getCreator() instanceof AdvServer) {
+//			AdvServer server = (AdvServer)sender.getCreator();
+//			ConnectionManager connectionManager = server.getConnectionManager();
+//			connectionManager.unregister(sender);
+//		}
 	}
 
 }

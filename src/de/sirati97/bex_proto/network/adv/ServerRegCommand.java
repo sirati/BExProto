@@ -14,7 +14,7 @@ public class ServerRegCommand extends RegCommand {
 		AdvConnection connection = new AdvConnection(sender, name, generic);
 		clientManager.register(connection);
 		sender.setRegistered(true);
-		System.out.println("Registered new connection(cilent name="+connection.getClientName()+",port="+sender.getPort()+",generic="+connection.isGeneric()+",id="+connection.getId()+")");
+		System.out.println("Registered new connection" + connection.varsToString());
 		send("I", connection.isGeneric(), connection.getId(), sender);
 	}
 }
