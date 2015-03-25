@@ -79,6 +79,7 @@ public class NetConnection implements NetCreator {
 		try {
 			socket.getOutputStream().write(stream);
 		} catch (SocketException e) {
+			if (!registered)e.printStackTrace();
 			stop();
 			return;
 		}	catch (IOException e) {
