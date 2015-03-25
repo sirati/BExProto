@@ -37,6 +37,7 @@ public class NetServer implements NetCreator{
 								System.out.println("The socket was closed!");
 							} else if ((socket = serverSocket.accept()) != null) {
 								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this);
+								System.out.println("Connected at " + connection.getInetAddress().getHostAddress() + ":" +  connection.getPort());
 								onPreConnected(connection);
 								connection.start();
 								onConnected(connection);

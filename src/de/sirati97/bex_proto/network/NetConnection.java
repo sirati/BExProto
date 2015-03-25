@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -144,6 +145,10 @@ public class NetConnection implements NetCreator {
 	
 	public void setRegistered(boolean registered) {
 		this.registered = registered;
+	}
+	
+	public InetAddress getInetAddress() {
+		return socket.getInetAddress();
 	}
 
 
