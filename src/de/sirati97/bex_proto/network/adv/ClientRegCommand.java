@@ -14,6 +14,7 @@ public class ClientRegCommand extends RegCommand {
 		} else if ("I".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			client.setId(id);
+			System.out.println("Set client id to " + id);
 		}
 	}
 }

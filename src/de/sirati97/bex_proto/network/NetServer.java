@@ -28,6 +28,7 @@ public class NetServer implements NetCreator{
 		enabled = true;
 		try {
 			serverSocket = new ServerSocket(port);
+			System.out.println("Listening on port " + port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {
 					while (enabled && !Thread.interrupted()) {
