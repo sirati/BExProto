@@ -201,7 +201,7 @@ public abstract class Type implements TypeBase{
 			return boolean.class;
 		}
 	};
-	public static Type UUID = new ObjType() {
+	public static final Type UUID = new ObjType() {
 		UUIDExtractor extractor = new UUIDExtractor();
 		
 		@Override
@@ -222,6 +222,52 @@ public abstract class Type implements TypeBase{
 		@Override
 		public Object[] createArray(int lenght) {
 			return new java.util.UUID[lenght];
+		}
+	};
+	public static final Type InetAddress = new ObjType() {
+		InetAddressExtractor extractor = new InetAddressExtractor();
+		
+		@Override
+		public Class<?> getType() {
+			return java.net.InetAddress.class;
+		}
+		
+		@Override
+		public StreamExtractor<? extends Object> getExtractor() {
+			return extractor;
+		}
+		
+		@Override
+		public Stream createStream(Object obj) {
+			return new InetAddressStream((java.net.InetAddress) obj);
+		}
+		
+		@Override
+		public Object[] createArray(int lenght) {
+			return new java.net.InetAddress[lenght];
+		}
+	};
+	public static final Type InetAddressPort = new ObjType() {
+		InetAddressPortExtractor extractor = new InetAddressPortExtractor();
+		
+		@Override
+		public Class<?> getType() {
+			return InetAddressPort.class;
+		}
+		
+		@Override
+		public StreamExtractor<? extends Object> getExtractor() {
+			return extractor;
+		}
+		
+		@Override
+		public Stream createStream(Object obj) {
+			return new InetAddressPortStream((InetAddressPort) obj);
+		}
+		
+		@Override
+		public Object[] createArray(int lenght) {
+			return new InetAddressPort[lenght];
 		}
 	};
 	
