@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.debug;
 
+import java.util.UUID;
+
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetServer;
@@ -12,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
 		//Auswerter der daten instanzieren
-		TestCommand command = new TestCommand();
+		MACommand command = new MACommand();
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		AsyncHelper asyncHelper = new ThreadAsyncHelper();
 		//Server & Client instanzieren
@@ -26,7 +28,13 @@ public class Main {
 		client2.start();
 		
 		//testdaten zu byte[] 
-		Stream stream = command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}});
+//		Stream stream = command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}});
+		UUID uuid = UUID.randomUUID();
+		long longg = Long.MIN_VALUE;
+		System.out.println(uuid.toString());
+		System.out.println(longg);
+		Stream stream = command.send(uuid, longg, null, null, null, null, null, null, null, null);
+		
 		//testdaten senden
 //		System.out.println(bytesToString(stream.getBytes()));
 		command.send(stream,client);

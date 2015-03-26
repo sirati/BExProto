@@ -3,7 +3,6 @@ package de.sirati97.bex_proto;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class BExStatic {
@@ -42,24 +41,24 @@ public final class BExStatic {
 		return result;
 	}
 	
-	public static byte[][] getStreamArray(List<Byte> data ,int startIndex) {
-		List<byte[]> result = new ArrayList<>();
-		byte[] dataArray = tobyteArray(data);
-		int loc = startIndex;
-		int fullArrayLenght = getInteger(dataArray, startIndex);
-		loc += 4;
-		for (int i=0;i<fullArrayLenght;i++) {
-			if (loc >= dataArray.length)break;
-			int elementArrayLenght  = getInteger(dataArray, + loc);
-			byte[] element = new byte[elementArrayLenght];
-			loc += 4;
-			System.arraycopy(dataArray, loc, element, 0, (loc+elementArrayLenght>dataArray.length)?dataArray.length-loc:elementArrayLenght);
-			loc += elementArrayLenght;
-			result.add(element);
-		}
-		result.removeAll(Collections.singleton(null));
-		return toStreamArray(result);
-	}
+//	public static byte[][] getStreamArray(List<Byte> data ,int startIndex) {
+//		List<byte[]> result = new ArrayList<>();
+//		byte[] dataArray = tobyteArray(data);
+//		int loc = startIndex;
+//		int fullArrayLenght = getInteger(dataArray, startIndex);
+//		loc += 4;
+//		for (int i=0;i<fullArrayLenght;i++) {
+//			if (loc >= dataArray.length)break;
+//			int elementArrayLenght  = getInteger(dataArray, + loc);
+//			byte[] element = new byte[elementArrayLenght];
+//			loc += 4;
+//			System.arraycopy(dataArray, loc, element, 0, (loc+elementArrayLenght>dataArray.length)?dataArray.length-loc:elementArrayLenght);
+//			loc += elementArrayLenght;
+//			result.add(element);
+//		}
+//		result.removeAll(Collections.singleton(null));
+//		return toStreamArray(result);
+//	}
 	
 	public static byte[] setStreamArray(byte[][] streams) {
 		int resultLenght = 4;
@@ -139,34 +138,41 @@ public final class BExStatic {
 	
 	
 	
-	public static String[] getStringArray(List<Byte> data ,int startIndex, Charset charset) {
-		byte[] dataArray = tobyteArray(data);
-		List<String> result = new ArrayList<String>();
-		int temp = startIndex;
-		//int arrayLenght = getInteger(data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1));
-		int arrayLenght = getInteger(dataArray, startIndex);
-		
-		temp += 4;
-		if (arrayLenght < 0)return new String[]{};
-		for (int i = 0;i < arrayLenght;i++) {
-			int streamPartLenght = getInteger(dataArray, temp);
-			String streamPartEncoded = getString(data, temp, charset);
-			result.add(streamPartEncoded);
-			temp += 4+streamPartLenght;
-		}
-		return (String[]) result.toArray(new String[result.size()]);
-	}
+//	public static String[] getStringArray(List<Byte> data ,int startIndex, Charset charset) {
+//		byte[] dataArray = tobyteArray(data);
+//		List<String> result = new ArrayList<String>();
+//		int temp = startIndex;
+//		//int arrayLenght = getInteger(data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1));
+//		int arrayLenght = getInteger(dataArray, startIndex);
+//		
+//		temp += 4;
+//		if (arrayLenght < 0)return new String[]{};
+//		for (int i = 0;i < arrayLenght;i++) {
+//			int streamPartLenght = getInteger(dataArray, temp);
+//			String streamPartEncoded = getString(data, temp, charset);
+//			result.add(streamPartEncoded);
+//			temp += 4+streamPartLenght;
+//		}
+//		return (String[]) result.toArray(new String[result.size()]);
+//	}
 	
 
-	public static String_Value getString_Value(List<Byte> data ,int startIndex, Charset charset) {
-		byte[] dataStream = tobyteArray(data);
-		int streamLenght = getInteger(dataStream, startIndex);
-		byte[] stream = tobyteArray(data, startIndex + 4, streamLenght);
-		return new String_Value(stream, new String(stream, charset), charset, stream.length + 4);
-	}
+//	public static String_Value getString_Value(List<Byte> data ,int startIndex, Charset charset) {
+//		byte[] dataStream = tobyteArray(data);
+//		int streamLenght = getInteger(dataStream, startIndex);
+//		byte[] stream = tobyteArray(data, startIndex + 4, streamLenght);
+//		return new String_Value(stream, new String(stream, charset), charset, stream.length + 4);
+//	}
+//	
+//	public static String getString(List<Byte> data ,int startIndex, Charset charset) {
+//		return getString_Value(data, startIndex, charset).str;
+//	}
 	
-	public static String getString(List<Byte> data ,int startIndex, Charset charset) {
-		return getString_Value(data, startIndex, charset).str;
+
+	public static String getString(ExtractorDat dat ,int startIndex, Charset charset) {
+		int streamLenght = getInteger(dat);
+		byte[] stream = dat.getMulti(streamLenght);//tobyteArray(data, startIndex + 4, streamLenght);
+		return  new String(stream, charset);
 	}
 	
 	public static byte[] setString(String str , Charset charset) {
@@ -194,20 +200,16 @@ public final class BExStatic {
 	}
 	
 
-	public static short getShort(ExtractorDat dat) {
-		return getShort(dat.getMulti(2));
-	}
 
 	public static long getLong(ExtractorDat dat) {
 		return getLong(dat.getMulti(8));
 	}
 	
-
-	public static short getShort(byte[] data) {return getShort(data,0);}
-	public static short getShort(byte[] data ,int startIndex) {return getShort(data[startIndex], data[startIndex+1]);}
-	public static short getShort(byte b1, byte b2) {
-		return (short) (((b1 & 0xFF) << 8) | (b2 & 0xFF));
+	public static short getShort(ExtractorDat dat) {
+		return getShort(dat.getMulti(2));
 	}
+	
+
 	
 	public static byte[] setShort(short value) {
 		ByteBuffer buffer = ByteBuffer.allocate(2);
@@ -215,13 +217,9 @@ public final class BExStatic {
 		return buffer.array();
 	}
 	
-	public static int getInteger(byte[] data) {
-		return getInteger(data, 0);
-	}
-	public static int getInteger(byte[] data ,int startIndex) {return getInteger(data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );}
-	public static int getInteger(byte b1, byte b2, byte b3, byte b4) {
-		return ((b1 & 0xFF) << 24) | ((b2 & 0xFF) << 16)
-		        | ((b3 & 0xFF) << 8) | (b4 & 0xFF);
+	public static short getShort(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		return buffer.getShort();
 	}
 	
 	public static byte[] setInteger(int value) {
@@ -230,13 +228,21 @@ public final class BExStatic {
 		return buffer.array();
 	}
 	
-	public static int getLong(byte[] data) {
-		return getLong(data, 0);
+	public static int getInteger(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		return buffer.getInt();
 	}
 	
-	public static int getLong(byte[] data ,int startIndex) {return getLong(data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3],data[startIndex+4], data[startIndex+5], data[startIndex+6], data[startIndex+7] );}
-	public static int getLong(byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7, byte b8) {
-		return ((b1 & 0xFF) << 56) | ((b2 & 0xFF) << 48) | ((b3 & 0xFF) << 40) | ((b4 & 0xFF) << 32) | ((b5 & 0xFF) << 24) | ((b6 & 0xFF) << 16) | ((b7 & 0xFF) << 8) | (b8 & 0xFF);
+	public static int getInteger(byte[] data, int startpos) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		buffer.position(startpos);
+		return buffer.getInt();
+	}
+	
+	
+	public static long getLong(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		return buffer.getLong();
 	}
 	
 	public static byte[] setLong(long value) {

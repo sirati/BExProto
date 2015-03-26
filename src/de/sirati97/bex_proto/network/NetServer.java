@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
 
 import de.sirati97.bex_proto.StreamReader;
@@ -70,7 +71,7 @@ public class NetServer implements NetCreator{
 	public void stop() {
 		enabled = false;
 		readerTask.stop();
-		for (NetConnection connection:getConnections()) {
+		for (NetConnection connection:new HashSet<>(getConnections())) {
 			connection.stop();
 		}
 	}

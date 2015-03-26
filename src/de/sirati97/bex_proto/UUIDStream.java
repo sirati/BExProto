@@ -11,6 +11,8 @@ public class UUIDStream implements Stream {
 
 	@Override
 	public byte[] getBytes() {
+		
+		
 		Stream stream1 = Type.Long.createStream(data.getMostSignificantBits());
 		Stream stream2 = Type.Long.createStream(data.getLeastSignificantBits());
 		return new MultiStream(stream1,stream2).getBytes();
