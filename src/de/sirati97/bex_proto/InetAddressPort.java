@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class InetAddressPort {
 	private InetAddress inetAddress;
@@ -19,4 +20,8 @@ public class InetAddressPort {
 		return port;
 	}
 
+	public InetSocketAddress toInetSocketAddress() {
+		return new InetSocketAddress(getInetAddress(), getPort());
+	}
+	
 }

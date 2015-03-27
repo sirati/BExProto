@@ -7,6 +7,8 @@ public class ClientRegCommand extends RegCommand {
 	public void receive(String name, Boolean generic, Integer id, Void arg4,
 			Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10,
 			NetConnection sender) {
+		if (!sender.isRegistered())return;
+		
 		if ("H".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			send(client.getClientName(), client.isGeneric(), 0, sender);
@@ -15,6 +17,7 @@ public class ClientRegCommand extends RegCommand {
 			AdvClient client = (AdvClient) sender;
 			client.setId(id);
 			System.out.println("Set client id to " + id);
+			sender.setRegistered(true);
 		}
 	}
 }
