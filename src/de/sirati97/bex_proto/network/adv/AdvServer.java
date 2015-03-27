@@ -72,8 +72,9 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private static class AdvServerCommandRegister extends CommandRegisterBase {
 		private AdvServer server;
 		@Override protected void checkID(short commandId, ExtractorDat dat) {
-			if (dat.getSender().isRegistered() || commandId != 0)
-				return;
+//			System.out.println("connection did recieved stream");
+			if (dat.getSender().isRegistered() || commandId != 0) return;
+//			System.out.println("stream was blocked!");
 			server.onConnected(dat.getSender());
 			while (!dat.getSender().isRegistered()) {
 				try {
