@@ -152,5 +152,9 @@ public class NetConnection implements NetCreator {
 		return socket.getInetAddress();
 	}
 
-
+	@Override
+	public String toString() {
+		return super.toString() + "{ip=" + socket.getInetAddress().getHostAddress() + ",port=" + socket.getPort() + "}";
+	}
+	
 }
