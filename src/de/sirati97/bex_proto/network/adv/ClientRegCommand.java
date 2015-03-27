@@ -12,12 +12,11 @@ public class ClientRegCommand extends RegCommand {
 		if ("H".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			send(client.getClientName(), client.isGeneric(), 0, sender);
-			System.out.println("Register client");
 		} else if ("I".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			client.setId(id);
-			System.out.println("Set client id to " + id);
 			sender.setRegistered(true);
+			System.out.println("Handshake completed!");
 		}
 	}
 }
