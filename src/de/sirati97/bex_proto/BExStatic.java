@@ -317,5 +317,9 @@ public final class BExStatic {
 			this.usedLength = usedLength;
 		}
 	}
+	
+	public static String getVersion() {
+		return "1.1.02";
+	}
 
 }
