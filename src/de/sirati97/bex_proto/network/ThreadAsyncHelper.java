@@ -4,8 +4,8 @@ package de.sirati97.bex_proto.network;
 public class ThreadAsyncHelper implements AsyncHelper {
 
 	@Override
-	public AsyncTaskImpl runAsync(Runnable runnable) {
-		Thread thread = new Thread(runnable);
+	public AsyncTaskImpl runAsync(Runnable runnable, String name) {
+		Thread thread = new Thread(runnable, name);
 		thread.start();
 		return new AsyncTaskImpl(thread);
 	}

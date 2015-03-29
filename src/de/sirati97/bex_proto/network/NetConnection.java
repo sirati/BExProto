@@ -50,7 +50,7 @@ public class NetConnection implements NetCreator {
 								public void run() {
 									streamReader.read(buffer, NetConnection.this);
 								}
-							});
+							},  "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 
 						} else {
 							Thread.sleep(0, 1);
@@ -67,7 +67,7 @@ public class NetConnection implements NetCreator {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, "Socket Reader Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 
 	public void send(byte[] stream) {
