@@ -76,6 +76,15 @@ public class ConnectionManager {
 	}
 	
 
+	public Set<AdvConnection> getConnections() {
+		Set<AdvConnection> result = new HashSet<>();
+		for (AdvConnection connection:netAdvMap.values()) {
+			result.add(connection);
+		}
+		return Collections.unmodifiableSet(result);
+	}
+	
+
 	public AdvConnection getAdvConnection(NetConnection connection) {
 		return netAdvMap.get(connection);
 	}
