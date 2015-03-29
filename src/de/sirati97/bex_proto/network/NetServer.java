@@ -29,7 +29,7 @@ public class NetServer implements NetCreator{
 		enabled = true;
 		try {
 			serverSocket = new ServerSocket(port);
-			System.out.println("Listening on port " + port);
+			System.out.println("Stating server on port " + port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {
 					while (enabled && !Thread.interrupted()) {
@@ -56,7 +56,7 @@ public class NetServer implements NetCreator{
 					}
 					
 				}
-			}, "Server Listener Thread porr=" + port);
+			}, "Server Listener Thread port=" + port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
