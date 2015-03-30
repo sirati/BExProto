@@ -1,5 +1,8 @@
 package de.sirati97.bex_proto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.base.Charsets;
@@ -7,6 +10,24 @@ import com.google.common.base.Charsets;
 import de.sirati97.bex_proto.network.adv.SSCWrapperType;
 
 public abstract class Type implements TypeBase{
+	private static Map<String, Type> types = new HashMap<>();
+	
+	public Type() {
+		if(earlyRegister())register();
+	}
+	
+	public static Type get(String name) {
+		return types.get(name);
+	}
+	
+	protected boolean earlyRegister() {
+		return true;
+	}
+	
+	protected void register() {
+		types.put(getTypeName(), this);
+	}
+	
 	public static final Type SSCWrapper = new SSCWrapperType();
 	public static final Type String_Utf_8 = new StringType(Charsets.UTF_8);
 	public static final Type String_Utf_16 = new StringType(Charsets.UTF_16);
@@ -38,6 +59,10 @@ public abstract class Type implements TypeBase{
 		@Override public Class<?> getType() {
 			return int.class;
 		}
+		
+		public String getTypeName() {
+			return "Integer";
+		}
 	};
 	public static final PremitivType Long = new PremitivType() {
 		LongExtractor extractor = new LongExtractor();
@@ -64,6 +89,10 @@ public abstract class Type implements TypeBase{
 
 		@Override public Class<?> getType() {
 			return long.class;
+		}
+		
+		public String getTypeName() {
+			return "Long";
 		}
 	};
 	public static final PremitivType Short = new PremitivType() {
@@ -92,6 +121,10 @@ public abstract class Type implements TypeBase{
 		@Override public Class<?> getType() {
 			return short.class;
 		}
+		
+		public String getTypeName() {
+			return "Short";
+		}
 	};
 	public static final PremitivType Byte = new PremitivType() {
 		ByteExtractor extractor = new ByteExtractor();
@@ -118,6 +151,10 @@ public abstract class Type implements TypeBase{
 
 		@Override public Class<?> getType() {
 			return byte.class;
+		}
+		
+		public String getTypeName() {
+			return "Byte";
 		}
 	};
 	public static final PremitivType Double = new PremitivType() {
@@ -146,6 +183,10 @@ public abstract class Type implements TypeBase{
 		@Override public Class<?> getType() {
 			return double.class;
 		}
+		
+		public String getTypeName() {
+			return "Double";
+		}
 	};
 	public static final PremitivType Float = new PremitivType() {
 		FloatExtractor extractor = new FloatExtractor();
@@ -172,6 +213,10 @@ public abstract class Type implements TypeBase{
 
 		@Override public Class<?> getType() {
 			return float.class;
+		}
+		
+		public String getTypeName() {
+			return "Float";
 		}
 	};
 	public static final PremitivType Boolean = new PremitivType() {
@@ -200,6 +245,10 @@ public abstract class Type implements TypeBase{
 		@Override public Class<?> getType() {
 			return boolean.class;
 		}
+		
+		public String getTypeName() {
+			return "Boolean";
+		}
 	};
 	public static final Type UUID = new ObjType() {
 		UUIDExtractor extractor = new UUIDExtractor();
@@ -222,6 +271,10 @@ public abstract class Type implements TypeBase{
 		@Override
 		public Object[] createArray(int lenght) {
 			return new java.util.UUID[lenght];
+		}
+		
+		public String getTypeName() {
+			return "UUID";
 		}
 	};
 	public static final Type InetAddress = new ObjType() {
@@ -246,6 +299,10 @@ public abstract class Type implements TypeBase{
 		public Object[] createArray(int lenght) {
 			return new java.net.InetAddress[lenght];
 		}
+		
+		public String getTypeName() {
+			return "InetAddress";
+		}
 	};
 	public static final Type InetAddressPort = new ObjType() {
 		InetAddressPortExtractor extractor = new InetAddressPortExtractor();
@@ -268,6 +325,66 @@ public abstract class Type implements TypeBase{
 		@Override
 		public Object[] createArray(int lenght) {
 			return new InetAddressPort[lenght];
+		}
+		
+		public String getTypeName() {
+			return "InetAddressPort";
+		}
+	};
+	public static final ObjType Type = new ObjType() {
+		TypeExtractor extractor = new TypeExtractor();
+		
+		@Override
+		public String getTypeName() {
+			return "Type";
+		}
+		
+		@Override
+		public Class<?> getType() {
+			return TypeBase.class;
+		}
+		
+		@Override
+		public StreamExtractor<? extends Object> getExtractor() {
+			return extractor;
+		}
+		
+		@Override
+		public Stream createStream(Object obj) {
+			return new TypeStream((TypeBase) obj);
+		}
+		
+		@Override
+		public Object[] createArray(int lenght) {
+			return new TypeBase[lenght];
+		}
+	};
+	public static final ObjType DynamicObj = new ObjType() {
+		DynamicObjExtractor extractor = new DynamicObjExtractor();
+		
+		@Override
+		public String getTypeName() {
+			return "DynamicObj";
+		}
+		
+		@Override
+		public Class<?> getType() {
+			return DynamicObj.class;
+		}
+		
+		@Override
+		public StreamExtractor<? extends Object> getExtractor() {
+			return extractor;
+		}
+		
+		@Override
+		public Stream createStream(Object obj) {
+			return new DynamicObjStream((de.sirati97.bex_proto.DynamicObj) obj);
+		}
+		
+		@Override
+		public Object[] createArray(int lenght) {
+			return new DynamicObj[lenght];
 		}
 	};
 	

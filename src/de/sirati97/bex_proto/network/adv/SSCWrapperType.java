@@ -27,4 +27,9 @@ public class SSCWrapperType extends ObjType {
 		return SSCWrapper.class;
 	}
 
+	@Override
+	public String getTypeName() {
+		return "SSCWrapper";
+	}
+
 }

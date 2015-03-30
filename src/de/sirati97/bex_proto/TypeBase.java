@@ -8,4 +8,5 @@ public interface TypeBase {
 	StreamExtractor<? extends Object> getExtractor();
 	Object[] createArray(int lenght);
 	Class<?> getType();
+	public String getTypeName();
 }

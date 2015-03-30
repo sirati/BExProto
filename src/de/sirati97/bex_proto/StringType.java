@@ -10,6 +10,7 @@ public class StringType extends ObjType {
 	public StringType(Charset charset) {
 		this.charset = charset;
 		this.extractor = new StringExtractor(charset);
+		register();
 	}
 
 	@Override
@@ -32,4 +33,14 @@ public class StringType extends ObjType {
 		return String.class;
 	}
 
+	@Override
+	public String getTypeName() {
+		return "String_" + charset.name();
+	}
+
+	
+	@Override
+	protected boolean earlyRegister() {
+		return false;
+	}
 }

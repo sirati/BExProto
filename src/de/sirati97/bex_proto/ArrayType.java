@@ -3,11 +3,17 @@ package de.sirati97.bex_proto;
 import java.lang.reflect.Array;
 
 
-public final class ArrayType implements TypeBase {
+public final class ArrayType extends DerivedType {
 	private TypeBase type;
 	private StreamExtractor<? extends Object> extractor;
 	
+
 	public ArrayType(TypeBase type) {
+		this(DerivedTypeBase.Register.ARRAY_TYPE_FACTORY, type);
+	}
+	
+	public ArrayType(ArrayTypeFactory factory, TypeBase type) {
+		super(factory);
 		this.type = type;
 		this.extractor = new ArrayExtractor(type);
 	}
@@ -78,5 +84,34 @@ public final class ArrayType implements TypeBase {
 	public Class<?> getType() {
 		return null;
 	}
+	
+	@Override
+	public boolean equals(Object arg0) {
+		if (arg0 instanceof ArrayType) {
+			return getInnerType().equals(((ArrayType)arg0).getInnerType());
+		}
+		return super.equals(arg0);
+	}
+
+	@Override
+	public String getTypeName() {
+		return "Array<"+getInnerType().getTypeName()+">";
+	}
+
+	@Override
+	public ArrayType getInnerArray() {
+		return this;
+	}
+
+	@Override
+	public boolean isBasePremitive() {
+		if (getInnerType() instanceof DerivedTypeBase) {
+			return ((DerivedTypeBase)getInnerType()).isBasePremitive();
+		} else {
+			return getInnerType().isPremitive();
+		}
+	}
+
+	
 	
 }
