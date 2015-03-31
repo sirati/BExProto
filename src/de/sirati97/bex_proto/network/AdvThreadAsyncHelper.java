@@ -36,9 +36,12 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 			synchronized (activeThreads) {
 				activeThreads.add(thread);
 			}
-			runnable.run();
-			synchronized (activeThreads) {
-				activeThreads.remove(thread);
+			try {
+				runnable.run();
+			} finally {
+				synchronized (activeThreads) {
+					activeThreads.remove(thread);
+				}
 			}
 		}
 		
