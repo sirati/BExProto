@@ -36,6 +36,7 @@ public class NetConnection implements NetCreator {
 		netConnectionManager.add(this);
 		readerTask = asyncHelper.runAsync(new Runnable() {
 			public void run() {
+				byte[] overflow=null;
 				while (enabled && !Thread.interrupted()) {
 					try {
 						if (!isReadingLocked() && (socket.isClosed() || socket.getInputStream().available() > 0)) {
@@ -44,14 +45,16 @@ public class NetConnection implements NetCreator {
 								return;
 							}
 							int available = socket.getInputStream().available();
-							final byte[] buffer = new byte[available];
+							byte[] buffer = new byte[available];
 							socket.getInputStream().read(buffer);
-							asyncHelper.runAsync(new Runnable() {
-								public void run() {
-									streamReader.read(buffer, NetConnection.this);
-								}
-							},  "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-
+							if (overflow != null) {
+								byte[] buffer2 = new byte[overflow.length + buffer.length];
+								System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
+								System.arraycopy(buffer, 0, buffer2, overflow.length, buffer.length);
+								buffer = buffer2;
+								overflow = null;
+							}
+							overflow=streamReader.read(buffer, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 						} else {
 							Thread.sleep(0, 1);
 						}
