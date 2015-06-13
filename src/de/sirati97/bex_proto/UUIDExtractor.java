@@ -6,9 +6,8 @@ public class UUIDExtractor implements StreamExtractor<UUID> {
 
 	@Override
 	public UUID extract(ExtractorDat dat) {
-		long most = (Long) Type.Long.getExtractor().extract(dat);
-		long least = (Long) Type.Long.getExtractor().extract(dat);
-		return new UUID(most, least);
+		String str = (String) Type.String_US_ASCII.getExtractor().extract(dat);
+		return UUID.fromString(str);
 	}
 
 }
