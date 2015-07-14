@@ -57,7 +57,7 @@ public class BEx0Command implements CommandBase{
 	
 
 	public void send(NetConnection... connections) {
-		send(connections);
+		send(send(), connections);
 	}
 	
 }
