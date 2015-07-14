@@ -25,7 +25,8 @@ public class NetClient extends NetConnection {
 			setSocket(socket);
 			super.start();
 		} catch (IOException e) {
-			e.printStackTrace();
+			setEnabled(false);
+			throw new IllegalStateException(e);
 		}
 		
 	}

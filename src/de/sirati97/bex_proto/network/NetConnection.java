@@ -154,6 +154,10 @@ public class NetConnection implements NetCreator {
 	public InetAddress getInetAddress() {
 		return socket.getInetAddress();
 	}
+	
+	protected void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	@Override
 	public String toString() {

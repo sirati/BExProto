@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class NetServer implements NetCreator{
 		enabled = true;
 		try {
 			serverSocket = new ServerSocket(port);
-			System.out.println("Stating server on port " + port);
+			System.out.println("Starting server on port " + port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {
 					while (enabled && !Thread.interrupted()) {
@@ -63,6 +64,10 @@ public class NetServer implements NetCreator{
 		
 	}
 	
+	public void bind(SocketAddress address) throws IOException {
+		if (!enabled)return;
+		serverSocket.bind(address);
+	}
 
 	public boolean isEnabled() {
 		return enabled;
@@ -73,6 +78,11 @@ public class NetServer implements NetCreator{
 		readerTask.stop();
 		for (NetConnection connection:new HashSet<>(getConnections())) {
 			connection.stop();
+		}
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
