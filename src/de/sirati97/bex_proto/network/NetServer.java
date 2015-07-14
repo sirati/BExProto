@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -18,18 +19,25 @@ public class NetServer implements NetCreator{
 	private NetConnectionManager netConnectionManager = new NetConnectionManager();
 	private StreamReader streamReader;
 	private AsyncTask readerTask;
+	private InetAddress address;
 	
 	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader) {
+		this(asyncHelper, port, null, streamReader);
+	}
+	
+	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader) {
 		this.asyncHelper = asyncHelper;
 		this.port = port;
 		this.streamReader = streamReader;
+		this.address = address;
 	}
+	
 	
 	public void start() {
 		if (enabled)return;
 		enabled = true;
 		try {
-			serverSocket = new ServerSocket(port);
+			serverSocket = address==null?new ServerSocket(port):new ServerSocket(port, -1, address);
 			System.out.println("Starting server on port " + port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {

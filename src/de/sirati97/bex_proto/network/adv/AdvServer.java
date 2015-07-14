@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.network.adv;
 
+import java.net.InetAddress;
+
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
@@ -16,14 +18,19 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	
-	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command) {
-		super(asyncHelper, port, new StreamReader(new CommandSender(new AdvServerCommandRegister())));
+	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command) {
+		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())));
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (AdvServerCommandRegister) sender.getCommand();
 		register.setServer(this);
 		register.register(new CommandWrapper(command, (short) 0));
 		register.register(serverRegCommand= new ServerRegCommand(connectionManager));
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
+	}
+	
+
+	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command) {
+		this(asyncHelper, port, null, command);
 	}
 
 	public ServerRegCommand getServerRegCommand() {
