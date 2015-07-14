@@ -72,10 +72,6 @@ public class NetServer implements NetCreator{
 		
 	}
 	
-	public void bind(SocketAddress address) throws IOException {
-		if (!enabled)return;
-		serverSocket.bind(address);
-	}
 
 	public boolean isEnabled() {
 		return enabled;
