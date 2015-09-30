@@ -45,7 +45,7 @@ public class Main {
 		server.stop();
 		client.stop();
 		Thread.sleep(100);
-		System.exit(0);
+		//System.exit(0);
 		
 		
 		

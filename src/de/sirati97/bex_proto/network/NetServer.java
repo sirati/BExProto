@@ -53,7 +53,9 @@ public class NetServer implements NetCreator{
 								onConnected(connection);
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							if (!(e instanceof java.net.SocketException) && !enabled) {
+								e.printStackTrace();
+							}
 						}
 					}
 
@@ -83,6 +85,7 @@ public class NetServer implements NetCreator{
 			connection.stop();
 		}
 		try {
+			serverSocket.setSoTimeout(0);
 			serverSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
