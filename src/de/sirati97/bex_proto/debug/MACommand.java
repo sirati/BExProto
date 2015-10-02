@@ -2,10 +2,10 @@ package de.sirati97.bex_proto.debug;
 
 import de.sirati97.bex_proto.DynamicObj;
 import de.sirati97.bex_proto.Type;
-import de.sirati97.bex_proto.command.BEx10Command;
+import de.sirati97.bex_proto.command.BEx1Command;
 import de.sirati97.bex_proto.network.NetConnection;
 
-public class MACommand extends BEx10Command<DynamicObj, Void, Void, Void, Void, Void, Void, Void, Void, Void> {
+public class MACommand extends BEx1Command<DynamicObj> {
 
 	
 	public MACommand() {
@@ -13,8 +13,22 @@ public class MACommand extends BEx10Command<DynamicObj, Void, Void, Void, Void, 
 	}
 	
 	@Override
-	public void receive(DynamicObj arg1, Void arg2, Void arg3, Void arg4, Void arg5, Void arg6, Void arg7, Void arg8, Void arg9, Void arg10, NetConnection sender) {
-		System.out.println(arg1.getValue()==null?"Object is null":arg1.getValue().toString());
-			
+	public void receive(DynamicObj arg1, NetConnection sender) {
+		System.out.println(arg1.getValue()==null?"Received object is null":"Received object type is " + arg1.getValue().toString());
+		if (arg1.getValue()!=null) {
+			try {
+				Object[] array = (Object[])arg1.getValue();
+				System.out.println("Received object is a non primitiv array.");
+				for (int i=0;i<array.length;i++) {
+					if (array[i]==null) {
+						System.out.println("Array[" + i + "]=null");
+					} else {
+						System.out.println("Array[" + i + "]=" + array[i].toString());
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Received object is a not an array or a primitiv array.");
+			}
+		}
 	}
 }

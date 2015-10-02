@@ -34,7 +34,7 @@ public class Main {
 //		Stream stream = command.send("ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", "ABCabcÄÖÜäöü^°123óò", 1L, 2, (short)3, (byte)4, 3.5, new int[][]{{9},{8, 1000000000},{7}});
 		TypeBase type = new NullableType(new ArrayType(new NullableType(Type.Integer)));
 		System.out.println(type.getTypeName());
-		Stream stream = command.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}), null, null, null, null, null, null, null, null, null);
+		Stream stream = command.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
 		
 		//testdaten senden
 		System.out.println(bytesToString(stream.getBytes()));
