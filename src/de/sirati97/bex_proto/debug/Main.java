@@ -40,11 +40,11 @@ public class Main {
 		System.out.println(bytesToString(stream.getBytes()));
 		command.send(stream,client);
 		
-		Thread.sleep(100);
+		Thread.sleep(50);
 		//Server & Client stoppen
 		server.stop();
 		client.stop();
-		Thread.sleep(100);
+		//Thread.sleep(100);
 		//System.exit(0);
 		
 		
