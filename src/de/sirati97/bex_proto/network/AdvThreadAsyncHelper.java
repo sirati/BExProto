@@ -62,6 +62,21 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 			thread.interrupt();
 			
 		}
+
+		@Override
+		public boolean isRunning() {
+			return thread.isAlive();
+		}
+
+		@Override
+		public String getName() {
+			return thread.getName();
+		}
+
+		@Override
+		public void setName(String name) {
+			thread.setName(name);
+		}
 		
 	}
 }

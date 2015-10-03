@@ -9,6 +9,7 @@ public class AsyncHelperExecutorService extends AbstractExecutorService{
 	private AsyncHelper asyncHelper;
 	private String name;
 	private int id=0;
+	//private Set<AsyncTask> asyncTasks = new HashSet<AsyncHelper.AsyncTask>();
 	
 	public AsyncHelperExecutorService(AsyncHelper asyncHelper, String name) {
 		this.asyncHelper = asyncHelper;
@@ -41,7 +42,13 @@ public class AsyncHelperExecutorService extends AbstractExecutorService{
 
 	@Override
 	public void execute(Runnable runnable) {
+		//AsyncTask task = 
 		asyncHelper.runAsync(runnable, name + "-" + id);
+		//asyncTasks.add(task)
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 

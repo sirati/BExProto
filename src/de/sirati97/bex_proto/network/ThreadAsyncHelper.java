@@ -22,6 +22,21 @@ public class ThreadAsyncHelper implements AsyncHelper {
 			thread.interrupt();
 			
 		}
+
+		@Override
+		public boolean isRunning() {
+			return false;
+		}
+
+		@Override
+		public String getName() {
+			return thread.getName();
+		}
+
+		@Override
+		public void setName(String name) {
+			thread.getName();
+		}
 		
 	}
 }

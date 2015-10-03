@@ -5,5 +5,8 @@ public interface AsyncHelper {
 	
 	public static interface AsyncTask {
 		void stop();
+		boolean isRunning();
+		String getName();
+		void setName(String name);
 	}
 }
