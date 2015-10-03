@@ -3,88 +3,113 @@ package de.sirati97.bex_proto.network;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class AdvThreadAsyncHelper implements AsyncHelper {
 	private Set<Thread> activeThreads = new HashSet<>();
-	private ThreadFactory threadFactory;
+//	private ThreadFactory threadFactory;
+	private ExecutorService executorService;
 	
 	public AdvThreadAsyncHelper() {
-		threadFactory = (new ThreadFactoryBuilder()).build();
+//		threadFactory = (new ThreadFactoryBuilder()).build();
+        executorService = Executors.newFixedThreadPool(40);
+
 		
 	}
 	
 	@Override
-	public AsyncTaskImpl runAsync(Runnable runnable, String name) {
-		AdvRunnbale advRunnbale = new AdvRunnbale(runnable);
-		Thread thread = threadFactory.newThread(advRunnbale);//new Thread(advRunnbale, name);
-		thread.setName(name);
-		advRunnbale.setThread(thread);
-		thread.start();
-		return new AsyncTaskImpl(thread);
+	public AsyncTaskImpl runAsync(Runnable r, String name) {
+		AdvRunnbale advRunnbale = new AdvRunnbale(r, name);
+		//Thread thread = threadFactory.newThread(advRunnbale);//new Thread(advRunnbale, name);
+		executorService.execute(advRunnbale);
+//		thread.setName(name);
+//		advRunnbale.setThread(thread);
+//		thread.start();
+		return new AsyncTaskImpl(advRunnbale);
 	}
 	
 	public Set<Thread> getActiveThreads() {
 		return Collections.unmodifiableSet(activeThreads);
 	}
 	
+
+	
 	class AdvRunnbale implements Runnable {
 		private Runnable runnable;
-		private Thread thread;
+		boolean running = false;
+		private String name;
+		private Thread thread = null;
 		
-		
-		public AdvRunnbale(Runnable runnable) {
+		public AdvRunnbale(Runnable runnable, String name) {
 			this.runnable = runnable;
+			this.name = name;
 		}
 		
 		@Override
 		public void run() {
+			thread = Thread.currentThread();
+			thread.setName(name);
 			synchronized (activeThreads) {
 				activeThreads.add(thread);
 			}
+			running = true;
 			try {
 				runnable.run();
 			} finally {
 				synchronized (activeThreads) {
 					activeThreads.remove(thread);
 				}
+				running = false;
 			}
 		}
 		
-		public void setThread(Thread thread) {
-			this.thread = thread;
+		public boolean isRunning() {
+			return running;
 		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void setName(String name) {
+			if (thread!=null)thread.setName(name);
+			this.name = name;
+		}
+		
+		public void stop() {
+			if (thread!=null)thread.interrupt();
+		}
+		
 	}
 	
 	static class AsyncTaskImpl implements AsyncTask {
-		private Thread thread;
+		private AdvRunnbale advRunnbale;
 
-		public AsyncTaskImpl(Thread thread) {
-			this.thread = thread;
+		public AsyncTaskImpl(AdvRunnbale advRunnbale) {
+			this.advRunnbale = advRunnbale;
 		}
 		
 		@Override
 		public void stop() {
-			thread.interrupt();
-			
+			advRunnbale.stop();
 		}
+
 
 		@Override
 		public boolean isRunning() {
-			return thread.isAlive();
+			return advRunnbale.isRunning();
 		}
 
 		@Override
 		public String getName() {
-			return thread.getName();
+			return advRunnbale.getName();
 		}
 
 		@Override
 		public void setName(String name) {
-			thread.setName(name);
+			advRunnbale.setName(name);
 		}
 		
 	}
