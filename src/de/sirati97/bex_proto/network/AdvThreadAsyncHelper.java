@@ -3,16 +3,25 @@ package de.sirati97.bex_proto.network;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 
 public class AdvThreadAsyncHelper implements AsyncHelper {
 	private Set<Thread> activeThreads = new HashSet<>();
+	private ThreadFactory threadFactory;
 	
+	public AdvThreadAsyncHelper() {
+		threadFactory = (new ThreadFactoryBuilder()).build();
+		
+	}
 	
 	@Override
 	public AsyncTaskImpl runAsync(Runnable runnable, String name) {
 		AdvRunnbale advRunnbale = new AdvRunnbale(runnable);
-		Thread thread = new Thread(advRunnbale, name);
+		Thread thread = threadFactory.newThread(advRunnbale);//new Thread(advRunnbale, name);
+		thread.setName(name);
 		advRunnbale.setThread(thread);
 		thread.start();
 		return new AsyncTaskImpl(thread);
