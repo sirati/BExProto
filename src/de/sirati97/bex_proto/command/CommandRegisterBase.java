@@ -26,6 +26,9 @@ public class CommandRegisterBase implements CommandBase {
 		short commandId = (Short) Type.Short.getExtractor().extract(dat);
 		checkID(commandId, dat);
 		CommandBase command = commands.get(commandId);
+		if (command==null) {
+			throw new IllegalStateException("There is no command handler registered for id " + commandId + " in " + getClass().toString());
+		}
 		return command.extract(dat);
 	}
 	
