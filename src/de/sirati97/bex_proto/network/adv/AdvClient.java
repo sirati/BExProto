@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.network.adv;
 
+import javax.crypto.SecretKey;
+
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
 import de.sirati97.bex_proto.command.CommandRegisterBase;
@@ -15,8 +17,8 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private CloseConnectionCommand closeConnectionCommand;
 	private int id = 0;
 	
-	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command) {
-		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())));
+	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, SecretKey secretKey) {
+		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), secretKey);
 		this.clientName = clientName;
 		this.generic = generic;
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();

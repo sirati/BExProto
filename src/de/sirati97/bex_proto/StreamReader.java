@@ -1,10 +1,15 @@
 package de.sirati97.bex_proto;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetConnection;
 
 public class StreamReader {
-	VoidExtractor extractor;
+	private VoidExtractor extractor;
+	private Cipher cipher;
 	
 	public StreamReader(VoidExtractor extractor) {
 		this.extractor = extractor;
@@ -25,6 +30,13 @@ public class StreamReader {
 			
 			System.arraycopy(bytes, location, stream, 0, streamLenght);
 			location +=streamLenght;
+			if (cipher != null) {
+				try {
+					stream = cipher.doFinal(stream);
+				} catch (IllegalBlockSizeException | BadPaddingException e) {
+					throw new IllegalStateException(e);
+				}
+			}
 			final ExtractorDat dat = new ExtractorDat(stream, sender);
 			asyncHelper.runAsync(new Runnable() {
 				public void run() {
@@ -37,6 +49,14 @@ public class StreamReader {
 	
 	public VoidExtractor getExtractor() {
 		return extractor;
+	}
+	
+	public void setCipher(Cipher cipher) {
+		this.cipher = cipher;
+	}
+	
+	public Cipher getCipher() {
+		return cipher;
 	}
 	
 }

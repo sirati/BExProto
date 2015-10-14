@@ -1,5 +1,12 @@
 package de.sirati97.bex_proto.debug;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.DynamicObj;
 import de.sirati97.bex_proto.NullableType;
@@ -15,14 +22,18 @@ import de.sirati97.bex_proto.network.adv.AdvServer;
 
 public class Main {
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException {
 		//Auswerter der daten instanzieren
 		MACommand command = new MACommand();
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		AsyncHelper asyncHelper = new ThreadAsyncHelper();
 		//Server & Client instanzieren
-		NetServer server = new AdvServer(asyncHelper, 10000, command);
-		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");  
+		keyGenerator.init(128);
+		System.out.println(keyGenerator.getProvider().toString());
+		SecretKey secretKey = keyGenerator.generateKey();
+		NetServer server = new AdvServer(asyncHelper, 10000, command, secretKey);
+		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command, secretKey);
 //		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
@@ -104,8 +115,25 @@ public class Main {
 		return sb.toString();
 	}
 	
+	public static Map<Thread, Integer> trap = new HashMap<>();
+	public static String getTrap() {
+		int t = trap.get(Thread.currentThread());
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0;i<t;i++) {
+			sb.append(' ');
+		}
+		return sb.toString();
+	}
 	
-
+	public static void changeTrap(int i) {
+		if (!trap.containsKey(Thread.currentThread())) {
+			trap.put(Thread.currentThread(), i);
+		} else {
+			trap.put(Thread.currentThread(), trap.get(Thread.currentThread())+i);
+		}
+			
+	}
+			
 	
 	
 	

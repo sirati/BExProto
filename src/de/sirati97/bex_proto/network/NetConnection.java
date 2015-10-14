@@ -5,7 +5,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
+import javax.crypto.Cipher;
+
 import de.sirati97.bex_proto.StreamReader;
+import de.sirati97.bex_proto.debug.Main;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
 public class NetConnection implements NetCreator {
@@ -19,14 +22,16 @@ public class NetConnection implements NetCreator {
 	private boolean readingLocked = false;
 	private boolean registered = true;
 	private boolean stoped = false;
+	private Cipher writeCipher;
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
-			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator) {
+			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, Cipher writeCipher) {
 		this.asyncHelper = asyncHelper;
 		this.socket = socket;
 		this.netConnectionManager = netConnectionManager;
 		this.streamReader = streamReader;
 		this.creator = creator==null?this:creator;
+		this.writeCipher = writeCipher;
 	}
 
 	public void start() {
@@ -81,6 +86,7 @@ public class NetConnection implements NetCreator {
 		
 		try {
 			socket.getOutputStream().write(stream);
+			System.out.println(Main.bytesToString(stream));
 		} catch (SocketException e) {
 			if (!registered)e.printStackTrace();
 			stop();
@@ -162,6 +168,10 @@ public class NetConnection implements NetCreator {
 	@Override
 	public String toString() {
 		return super.toString() + "{ip=" + socket.getInetAddress().getHostAddress() + ",port=" + socket.getPort() + "}";
+	}
+	
+	public Cipher getWriteCipher() {
+		return writeCipher;
 	}
 	
 }
