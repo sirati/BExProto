@@ -11,6 +11,7 @@ import de.sirati97.bex_proto.command.CommandRegisterBase;
 import de.sirati97.bex_proto.command.CommandSender;
 import de.sirati97.bex_proto.command.CommandWrapper;
 import de.sirati97.bex_proto.network.AsyncHelper;
+import de.sirati97.bex_proto.network.ISocketFactory;
 import de.sirati97.bex_proto.network.NetConnection;
 import de.sirati97.bex_proto.network.NetServer;
 
@@ -20,8 +21,8 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	
-	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, SecretKey secretKey) {
-		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), secretKey);
+	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
+		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory, secretKey);
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (AdvServerCommandRegister) sender.getCommand();
 		register.setServer(this);
@@ -31,8 +32,8 @@ public class AdvServer extends NetServer implements AdvCreator{
 	}
 	
 
-	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command, SecretKey secretKey) {
-		this(asyncHelper, port, null, command, secretKey);
+	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
+		this(asyncHelper, port, null, command, socketFactory, secretKey);
 	}
 
 	public ServerRegCommand getServerRegCommand() {

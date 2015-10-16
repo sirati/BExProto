@@ -19,7 +19,6 @@ public class CommandSender extends CommandSBase {
 			if (connection.getWriteCipher() == null) {
 				connection.send(byteStream);
 			} else {
-				System.out.println("Encrypting stream out!");
 				connection.send(new SendStream(new CryptoStream(sendStream.getInnerByteStream(), connection.getWriteCipher())).getBytes());
 			}
 			

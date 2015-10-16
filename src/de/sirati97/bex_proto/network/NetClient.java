@@ -15,11 +15,13 @@ public class NetClient extends NetConnection {
 	private String ip;
 	private int port;
 	private Cipher readCipher;
+	private ISocketFactory socketFactory;
 	
-	public NetClient(AsyncHelper asyncHelper, String ip, int port, StreamReader streamReader, SecretKey secretKey) {
-		super(asyncHelper, null, new NetConnectionManager(), streamReader, null, createCipher(secretKey, Cipher.ENCRYPT_MODE));
+	public NetClient(AsyncHelper asyncHelper, String ip, int port, StreamReader streamReader, ISocketFactory socketFactory, SecretKey secretKey) {
+		super(asyncHelper, null, new NetConnectionManager(), streamReader, null, socketFactory, createCipher(secretKey, Cipher.ENCRYPT_MODE));
 		this.ip = ip;
 		this.port = port;
+		this.socketFactory = socketFactory;
 		if (secretKey != null) {
 			try {
 				this.readCipher = Cipher.getInstance(secretKey.getAlgorithm());
@@ -49,7 +51,7 @@ public class NetClient extends NetConnection {
 		if (isEnabled()) return;
 
 		try {
-			Socket socket = new Socket(ip, port);
+			Socket socket = socketFactory.createSocket(ip, port);
 			setSocket(socket);
 			super.start();
 		} catch (IOException e) {

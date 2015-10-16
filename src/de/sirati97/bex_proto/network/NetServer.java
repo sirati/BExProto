@@ -27,17 +27,18 @@ public class NetServer implements NetCreator{
 	private InetAddress address;
 	private Cipher readCipher;
 	private Cipher writeCipher;
+	private ISocketFactory socketFactory;
 	
-	
-	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader, SecretKey secretKey) {
-		this(asyncHelper, port, null, streamReader, secretKey);
+	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader, ISocketFactory socketFactory, SecretKey secretKey) {
+		this(asyncHelper, port, null, streamReader, socketFactory, secretKey);
 	}
 	
-	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, SecretKey secretKey) {
+	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, ISocketFactory socketFactory, SecretKey secretKey) {
 		this.asyncHelper = asyncHelper;
 		this.port = port;
 		this.streamReader = streamReader;
 		this.address = address;
+		this.socketFactory = socketFactory;
 		if (secretKey != null) {
 			try {
 				this.readCipher = Cipher.getInstance(secretKey.getAlgorithm());
@@ -56,7 +57,7 @@ public class NetServer implements NetCreator{
 		if (enabled)return;
 		enabled = true;
 		try {
-			serverSocket = address==null?new ServerSocket(port):new ServerSocket(port, -1, address);
+			serverSocket = address==null?socketFactory.createServerSocket(port):socketFactory.createServerSocket(port, address);
 			System.out.println("Starting server on port " + port);
 			readerTask = asyncHelper.runAsync(new Runnable() {
 				public void run() {
@@ -66,7 +67,7 @@ public class NetServer implements NetCreator{
 							if (serverSocket.isClosed()) {
 								System.out.println("The socket was closed!");
 							} else if ((socket = serverSocket.accept()) != null) {
-								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this, writeCipher);
+								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this, socketFactory, writeCipher);
 								System.out.println("Connected at " + connection.getInetAddress().getHostAddress() + ":" +  connection.getPort());
 								onPreConnected(connection);
 								connection.start();

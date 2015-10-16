@@ -1,22 +1,21 @@
 package de.sirati97.bex_proto;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.google.common.base.Charsets;
-
 import de.sirati97.bex_proto.network.adv.SSCWrapperType;
 
 public abstract class Type implements TypeBase{
-	private static Map<String, Type> types = new HashMap<>();
+	private static Map<String, TypeBase> types = new HashMap<>();
 	
 	public Type() {
 		if(earlyRegister())register();
 	}
 	
-	public static Type get(String name) {
+	public static TypeBase get(String name) {
 		return types.get(name);
 	}
 	
@@ -29,10 +28,10 @@ public abstract class Type implements TypeBase{
 	}
 	
 	public static final Type SSCWrapper = new SSCWrapperType();
-	public static final Type String_Utf_8 = new StringType(Charsets.UTF_8);
-	public static final Type String_Utf_16 = new StringType(Charsets.UTF_16);
-	public static final Type String_ISO_8859_1 = new StringType(Charsets.ISO_8859_1);
-	public static final Type String_US_ASCII = new StringType(Charsets.US_ASCII);
+	public static final Type String_Utf_8 = new StringType(StandardCharsets.UTF_8);
+	public static final Type String_Utf_16 = new StringType(StandardCharsets.UTF_16);
+	public static final Type String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
+	public static final Type String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
 	public static final PremitivType Integer = new PremitivType() {
 		IntegerExtractor extractor = new IntegerExtractor();
 		

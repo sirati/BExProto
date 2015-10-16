@@ -1,14 +1,15 @@
 package de.sirati97.bex_proto.network;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
 import javax.crypto.Cipher;
+import javax.net.ssl.SSLSocket;
 
 import de.sirati97.bex_proto.StreamReader;
-import de.sirati97.bex_proto.debug.Main;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
 public class NetConnection implements NetCreator {
@@ -23,15 +24,17 @@ public class NetConnection implements NetCreator {
 	private boolean registered = true;
 	private boolean stoped = false;
 	private Cipher writeCipher;
+	private ISocketFactory socketFactory;
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
-			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, Cipher writeCipher) {
+			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory, Cipher writeCipher) {
 		this.asyncHelper = asyncHelper;
 		this.socket = socket;
 		this.netConnectionManager = netConnectionManager;
 		this.streamReader = streamReader;
 		this.creator = creator==null?this:creator;
 		this.writeCipher = writeCipher;
+		this.socketFactory = socketFactory;
 	}
 
 	public void start() {
@@ -39,37 +42,45 @@ public class NetConnection implements NetCreator {
 			return;
 		enabled = true;
 		netConnectionManager.add(this);
+		if (socket instanceof SSLSocket) {
+			try {
+				((SSLSocket) socket).startHandshake();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		readerTask = asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				byte[] overflow=null;
-				while (enabled && !Thread.interrupted()) {
-					try {
-						if (!isReadingLocked() && (socket.isClosed() || socket.getInputStream().available() > 0)) {
-							if (socket.isClosed()) {
-								stop();
-								return;
-							}
-							int available = socket.getInputStream().available();
-							byte[] buffer = new byte[available];
-							socket.getInputStream().read(buffer);
-							if (overflow != null) {
-								byte[] buffer2 = new byte[overflow.length + buffer.length];
-								System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
-								System.arraycopy(buffer, 0, buffer2, overflow.length, buffer.length);
-								buffer = buffer2;
-								overflow = null;
-							}
-							overflow=streamReader.read(buffer, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-						} else {
-							Thread.sleep(0, 1);
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-					}
-
-				}
 				try {
+					InputStream in = socketFactory.getSocketInputStream(socket);
+					while (enabled && !Thread.interrupted()) {
+						try {
+							if (!isReadingLocked() && (socket.isClosed() || in.available() > 0)) {
+								if (socket.isClosed()) {
+									stop();
+									return;
+								}
+								int available = in.available();
+								byte[] buffer = new byte[available];
+								in.read(buffer);
+								if (overflow != null) {
+									byte[] buffer2 = new byte[overflow.length + buffer.length];
+									System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
+									System.arraycopy(buffer, 0, buffer2, overflow.length, buffer.length);
+									buffer = buffer2;
+									overflow = null;
+								}
+								overflow = streamReader.read(buffer, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+							} else {
+								Thread.sleep(0, 1);
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+						}
+
+					}
 					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -77,7 +88,7 @@ public class NetConnection implements NetCreator {
 			}
 		}, "Socket Reader Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
-
+	
 	public void send(byte[] stream) {
 		if (socket.isClosed()) {
 			stop();
@@ -86,7 +97,8 @@ public class NetConnection implements NetCreator {
 		
 		try {
 			socket.getOutputStream().write(stream);
-			System.out.println(Main.bytesToString(stream));
+			socket.getOutputStream().flush();
+			
 		} catch (SocketException e) {
 			if (!registered)e.printStackTrace();
 			stop();
@@ -114,9 +126,9 @@ public class NetConnection implements NetCreator {
 			stoped = true;
 			enabled = false;
 			readerTask.stop();
-			try {
-				socket.shutdownOutput();
-			} catch (IOException e) {}
+//			try {
+//				socket.shutdownOutput();
+//			} catch (IOException e) {}
 			getCreator().onSocketClosed(this);
 		}
 		

@@ -8,6 +8,7 @@ import de.sirati97.bex_proto.command.CommandRegisterBase;
 import de.sirati97.bex_proto.command.CommandSender;
 import de.sirati97.bex_proto.command.CommandWrapper;
 import de.sirati97.bex_proto.network.AsyncHelper;
+import de.sirati97.bex_proto.network.ISocketFactory;
 import de.sirati97.bex_proto.network.NetClient;
 
 public class AdvClient extends NetClient implements AdvCreator, IServerSideConnection{
@@ -17,8 +18,8 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private CloseConnectionCommand closeConnectionCommand;
 	private int id = 0;
 	
-	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, SecretKey secretKey) {
-		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), secretKey);
+	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
+		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory, secretKey);
 		this.clientName = clientName;
 		this.generic = generic;
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();

@@ -14,7 +14,7 @@ public class MACommand extends BEx1Command<DynamicObj> {
 	
 	@Override
 	public void receive(DynamicObj arg1, NetConnection sender) {
-		System.out.println(arg1.getValue()==null?"Received object is null":"Received object type is " + arg1.getValue().toString());
+		System.out.println(arg1.getValue()==null?"Received object is null":"Received object type is " + arg1.getValue().getClass().toString());
 		if (arg1.getValue()!=null) {
 			try {
 				Object[] array = (Object[])arg1.getValue();
@@ -27,7 +27,8 @@ public class MACommand extends BEx1Command<DynamicObj> {
 					}
 				}
 			} catch (Exception e) {
-				System.out.println("Received object is a not an array or a primitiv array.");
+				System.out.println("Received object is not a non primitiv array.");
+				System.out.println(".toString()="+arg1.getValue().toString());
 			}
 		}
 	}
