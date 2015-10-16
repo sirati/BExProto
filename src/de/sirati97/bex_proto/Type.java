@@ -30,6 +30,8 @@ public abstract class Type implements TypeBase{
 	public static final Type SSCWrapper = new SSCWrapperType();
 	public static final Type String_Utf_8 = new StringType(StandardCharsets.UTF_8);
 	public static final Type String_Utf_16 = new StringType(StandardCharsets.UTF_16);
+	public static final Type String_Utf_16BE = new StringType(StandardCharsets.UTF_16BE);
+	public static final Type String_Utf_16LE = new StringType(StandardCharsets.UTF_16LE);
 	public static final Type String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
 	public static final Type String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
 	public static final PremitivType Integer = new PremitivType() {
