@@ -40,11 +40,13 @@ public class Main {
 		KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");  
 		keyGenerator.init(128);
 		SecretKey secretKey = keyGenerator.generateKey();
-		ISocketFactory socketFactory = new TLSv1_2SocketFactory(new File("server.jks"), "123456Server", "123456Server");
+		ISocketFactory socketFactoryServer = new TLSv1_2SocketFactory(new File("server2.jks"), "123456Server", "654321Server", true);
+		ISocketFactory socketFactoryClient = new TLSv1_2SocketFactory(new File("client2.jks"), "123456Client", "654321Client");
+		
 		
 		//socketFactory1 = new SocketFactory();
-		NetServer server = new AdvServer(asyncHelper, 10000, command,socketFactory, secretKey);
-		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command, socketFactory, secretKey);
+		NetServer server = new AdvServer(asyncHelper, 10000, command, socketFactoryServer, secretKey);
+		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command, socketFactoryClient, secretKey);
 //		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
@@ -57,7 +59,7 @@ public class Main {
 		System.out.println(type.getTypeName());
 		Stream stream = command.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
 		
-		//testdaten senden
+		//testdaten senden1
 		System.out.println(bytesToString(stream.getBytes()));
 		command.send(stream,client);
 		

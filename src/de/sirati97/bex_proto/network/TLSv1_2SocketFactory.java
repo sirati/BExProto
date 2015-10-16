@@ -18,12 +18,19 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TLSv1_2SocketFactory implements ISocketFactory {
 	private SSLContext sslContext;
+	private boolean needClientAuth;
 	
 	public TLSv1_2SocketFactory(File certificate, String certPass, String keyPass) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
+		this(certificate, certPass, keyPass, false);
+	}
+		
+		
+	public TLSv1_2SocketFactory(File certificate, String certPass, String keyPass, boolean needClientAuth) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	    keyStore.load(new FileInputStream(certificate), certPass.toCharArray());
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -33,6 +40,7 @@ public class TLSv1_2SocketFactory implements ISocketFactory {
 		kmf.init(keyStore, keyPass.toCharArray());
 		sslContext = SSLContext.getInstance("TLSv1.2");
 		sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+		this.needClientAuth = needClientAuth;
 	}
 	
 	@Override
@@ -42,12 +50,16 @@ public class TLSv1_2SocketFactory implements ISocketFactory {
 
 	@Override
 	public ServerSocket createServerSocket(int port) throws IOException {
-		return sslContext.getServerSocketFactory().createServerSocket(port);
+		SSLServerSocket result = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
+		result.setNeedClientAuth(needClientAuth);
+		return result;
 	}
 
 	@Override
 	public ServerSocket createServerSocket(int port, InetAddress address) throws IOException {
-		return sslContext.getServerSocketFactory().createServerSocket(port, -1, address);
+		SSLServerSocket result = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port, -1, address);
+		result.setNeedClientAuth(needClientAuth);
+		return result;
 	}
 
 	@Override
