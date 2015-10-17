@@ -30,14 +30,14 @@ public class TLSv1_2SocketFactory implements ISocketFactory {
 	}
 		
 		
-	public TLSv1_2SocketFactory(File certificate, String certPass, String keyPass, boolean needClientAuth) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
+	public TLSv1_2SocketFactory(File certificate, String keyStorePass, String certPass, boolean needClientAuth) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-	    keyStore.load(new FileInputStream(certificate), certPass.toCharArray());
+	    keyStore.load(new FileInputStream(certificate), keyStorePass.toCharArray());
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		tmf.init(keyStore);
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory
 	            .getDefaultAlgorithm());
-		kmf.init(keyStore, keyPass.toCharArray());
+		kmf.init(keyStore, certPass.toCharArray());
 		sslContext = SSLContext.getInstance("TLSv1.2");
 		sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 		this.needClientAuth = needClientAuth;
