@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.network.NetConnection;
 public class PingCommand extends BEx2Command<Long, Boolean> {
 
 	public PingCommand(int id) {
-		super((short)id, Type.Integer, Type.Boolean);
+		super((short)id, Type.Long, Type.Boolean);
 	}
 
 	

@@ -131,11 +131,17 @@ public class NetConnection implements NetCreator {
 		this.pingTimestamp = System.currentTimeMillis();
 	}
 	
-	public int getPingMicro() {
+	public synchronized int getPingMicro() {
 		long currentTimestamp = System.currentTimeMillis();
-		while (currentTimestamp/500<=pingTimestamp/500) {
+		
+		while (currentTimestamp/1000>pingTimestamp/1000) {
 			if (currentTimestamp/100>pingSendTimestamp/100) {
 				_sendPing();
+			}
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		return ping;
