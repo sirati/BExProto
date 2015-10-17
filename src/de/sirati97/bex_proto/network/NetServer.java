@@ -13,10 +13,9 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
 public class NetServer implements NetCreator{
 	private AsyncHelper asyncHelper;

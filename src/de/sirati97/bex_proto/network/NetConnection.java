@@ -9,10 +9,9 @@ import java.net.SocketException;
 import javax.crypto.Cipher;
 import javax.net.ssl.SSLSocket;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
 public class NetConnection implements NetCreator {
 	private AsyncHelper asyncHelper;
