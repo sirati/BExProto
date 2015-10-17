@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import javax.crypto.Cipher;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
 import de.sirati97.bex_proto.StreamReader;
@@ -76,6 +77,8 @@ public class NetConnection implements NetCreator {
 							} else {
 								Thread.sleep(0, 1);
 							}
+						} catch(SSLException e) {
+							stop();
 						} catch (IOException e) {
 							e.printStackTrace();
 						} catch (InterruptedException e) {
