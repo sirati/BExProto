@@ -13,6 +13,8 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
@@ -52,6 +54,9 @@ public class NetServer implements NetCreator{
 		}
 	}
 	
+	public void sendPing(NetConnection connection) {
+		throw new NotImplementedException("Ping is not supported by this connection");
+	}
 	
 	public void start() {
 		if (enabled)return;

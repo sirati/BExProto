@@ -9,6 +9,8 @@ import java.net.SocketException;
 import javax.crypto.Cipher;
 import javax.net.ssl.SSLSocket;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 
@@ -118,6 +120,39 @@ public class NetConnection implements NetCreator {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	
+	private long pingTimestamp=0;
+	private long pingSendTimestamp=0;
+	
+	private int ping=-1;
+	public void receivedPong(int ping) {
+		this.ping = ping;
+		this.pingTimestamp = System.currentTimeMillis();
+	}
+	
+	public int getPingMicro() {
+		long currentTimestamp = System.currentTimeMillis();
+		while (currentTimestamp/500<=pingTimestamp/500) {
+			if (currentTimestamp/100>pingSendTimestamp/100) {
+				_sendPing();
+			}
+		}
+		return ping;
+	}
+	
+
+	public int getPing() {
+		return getPingMicro()/1000;
+	}
+	private void _sendPing() {
+		pingSendTimestamp = System.currentTimeMillis();
+		getCreator().sendPing(this);
+	}
+	
+	public void sendPing(NetConnection connection) {
+		throw new NotImplementedException("Ping is not supported by this connection");
 	}
 
 	public void stop() {

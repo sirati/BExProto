@@ -10,6 +10,7 @@ import de.sirati97.bex_proto.command.CommandWrapper;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.ISocketFactory;
 import de.sirati97.bex_proto.network.NetClient;
+import de.sirati97.bex_proto.network.NetConnection;
 
 public class AdvClient extends NetClient implements AdvCreator, IServerSideConnection{
 	private CommandRegisterBase register;
@@ -17,6 +18,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private boolean generic;
 	private CloseConnectionCommand closeConnectionCommand;
 	private int id = 0;
+	private PingCommand pingCommand;
 	
 	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
 		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory, secretKey);
@@ -27,6 +29,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		register.register(new CommandWrapper(command, (short) 0));
 		register.register(new ClientRegCommand());
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
+		register.register(pingCommand=new PingCommand(3));
 		setRegistered(false);
 	}
 	
@@ -52,6 +55,11 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	@Override
+	public void sendPing(NetConnection connection) {
+		pingCommand.ping(connection);
 	}
 
 	@Override

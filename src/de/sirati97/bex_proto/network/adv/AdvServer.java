@@ -20,6 +20,8 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ServerRegCommand serverRegCommand;
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
+	private PingCommand pingCommand;
+	
 	
 	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
 		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory, secretKey);
@@ -29,6 +31,8 @@ public class AdvServer extends NetServer implements AdvCreator{
 		register.register(new CommandWrapper(command, (short) 0));
 		register.register(serverRegCommand= new ServerRegCommand(connectionManager));
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
+		register.register(pingCommand=new PingCommand(3));
+		
 	}
 	
 
@@ -69,6 +73,10 @@ public class AdvServer extends NetServer implements AdvCreator{
 		return connectionManager;
 	}
 	
+	@Override
+	public void sendPing(NetConnection connection) {
+		pingCommand.ping(connection);
+	}
 	
 	
 	@Override
