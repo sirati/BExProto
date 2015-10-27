@@ -93,7 +93,7 @@ public class NetConnection implements NetCreator {
 		}, "Socket Reader Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 	
-	public void send(byte[] stream) {
+	public synchronized void send(byte[] stream) {
 		if (socket.isClosed()) {
 			stop();
 			return;
