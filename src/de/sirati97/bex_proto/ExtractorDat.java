@@ -28,4 +28,8 @@ public class ExtractorDat {
 		return sender;
 	}
 	
+	public int getLocation() {
+		return location;
+	}
+	
 }
