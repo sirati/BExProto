@@ -19,4 +19,12 @@ public class CommandRegister extends CommandRegisterBase {
 	public void send(Stream stream, NetConnection... connections) {
 		getParent().send(new MultiStream(Type.Short.createStream(getId()),stream), connections);
 	}
+	
+
+
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+	}
 }

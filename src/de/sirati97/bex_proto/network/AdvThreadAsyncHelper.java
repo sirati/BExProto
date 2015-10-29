@@ -14,7 +14,7 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 	
 	public AdvThreadAsyncHelper() {
 //		threadFactory = (new ThreadFactoryBuilder()).build();
-        executorService = Executors.newFixedThreadPool(40);
+        executorService = Executors.newFixedThreadPool(1000);
 
 		
 	}
@@ -31,7 +31,9 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 	}
 	
 	public Set<Thread> getActiveThreads() {
-		return Collections.unmodifiableSet(activeThreads);
+		synchronized (activeThreads) {
+			return Collections.unmodifiableSet(activeThreads);
+		}
 	}
 	
 
@@ -57,11 +59,14 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 			running = true;
 			try {
 				runnable.run();
+			} catch(Throwable t) {
+				t.printStackTrace();
 			} finally {
 				synchronized (activeThreads) {
 					activeThreads.remove(thread);
 				}
 				running = false;
+				thread.setName("Thread finished exercution. Waiting on next Task.");
 			}
 		}
 		

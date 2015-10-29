@@ -24,12 +24,24 @@ public class ExtractorDat {
 		return result;
 	}
 	
+	public void moveCursor(int offset) {
+		location+=offset;
+	}
+	
+	public void setCursor(int pos) {
+		location = pos;
+	}
+	
 	public NetConnection getSender() {
 		return sender;
 	}
 	
 	public int getLocation() {
 		return location;
+	}
+	
+	public byte[] getBytes() {
+		return bytes;
 	}
 	
 }

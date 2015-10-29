@@ -52,4 +52,9 @@ public abstract class CommandNone implements CommandBase {
 	public void send(NetConnection... connections) {
 		getParent().send(Type.Short.createStream(getId()), connections);
 	}
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(stream, receiver);
+	}
 }

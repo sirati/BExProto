@@ -45,6 +45,11 @@ public class CommandSBase implements CommandBase {
 	}
 
 	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(stream, receiver);
+	}
+
+	@Override
 	public void setParent(CommandBase parent) {
 		this.parent = parent;
 	}

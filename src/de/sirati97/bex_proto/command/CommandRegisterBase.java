@@ -24,7 +24,7 @@ public class CommandRegisterBase implements CommandBase {
 	@Override
 	public Void extract(ExtractorDat dat) {
 		short commandId = (Short) Type.Short.getExtractor().extract(dat);
-		checkID(commandId, dat);
+		if (!checkID(commandId, dat))return null;
 		CommandBase command = commands.get(commandId);
 		if (command==null) {
 			throw new IllegalStateException("There is no command handler registered for id " + commandId + " in " + getClass().toString());
@@ -32,7 +32,7 @@ public class CommandRegisterBase implements CommandBase {
 		return command.extract(dat);
 	}
 	
-	protected void checkID(short commandId, ExtractorDat dat){}
+	protected boolean checkID(short commandId, ExtractorDat dat){return true;}
 	
 	public void register(CommandBase command) {
 		commands.put(command.getId(), command);
@@ -53,6 +53,11 @@ public class CommandRegisterBase implements CommandBase {
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
 		getParent().send(stream, connections);
+	}
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(stream, receiver);
 	}
 
 	@Override

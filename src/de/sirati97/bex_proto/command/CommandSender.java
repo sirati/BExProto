@@ -10,19 +10,27 @@ public class CommandSender extends CommandSBase {
 		super(command);
 	}
 
-	
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
 		SendStream sendStream = new SendStream(stream);
 		byte[] byteStream = sendStream.getBytes();
-		for (NetConnection connection:connections) {
+		for (NetConnection connection : connections) {
 			if (connection.getWriteCipher() == null) {
 				connection.send(byteStream);
 			} else {
 				connection.send(new SendStream(new CryptoStream(sendStream.getInnerByteStream(), connection.getWriteCipher())).getBytes());
 			}
-			
+
 		}
 	}
-	
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		if (receiver.getWriteCipher() == null) {
+			return new SendStream(stream);
+		} else {
+			return new SendStream(new CryptoStream(stream, receiver.getWriteCipher()));
+		}
+	}
+
 }

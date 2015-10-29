@@ -15,6 +15,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -24,6 +27,7 @@ import javax.net.ssl.TrustManagerFactory;
 public class TLSv1_2SocketFactory implements ISocketFactory {
 	private SSLContext sslContext;
 	private boolean needClientAuth;
+	private HashMap<Socket, SSLSocketInputStream> inStreams = new HashMap<Socket, SSLSocketInputStream>();
 	
 	public TLSv1_2SocketFactory(File certificate, String certPass, String keyPass) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
 		this(certificate, certPass, keyPass, false);
@@ -64,7 +68,24 @@ public class TLSv1_2SocketFactory implements ISocketFactory {
 
 	@Override
 	public InputStream getSocketInputStream(Socket socket) throws IOException {
-		return new SSLSocketInputStream(socket.getInputStream());
+		SSLSocketInputStream socketInputStream;
+		if ((socketInputStream=inStreams.get(socket))==null) {
+			socketInputStream = new SSLSocketInputStream(socket.getInputStream(), socket, this);
+			inStreams.put(socket, socketInputStream);
+			System.err.println("Created input stream " + socket.getLocalPort() + ":" + socket.getPort());
+		}
+		socketInputStream.open();
+		return socketInputStream;
+	}
+
+
+	public void unregister(SSLSocketInputStream sslSocketInputStream) {
+		inStreams.remove(sslSocketInputStream.getSocket());
+		System.err.println("Destroyed input stream " + sslSocketInputStream.getSocket().getLocalPort() + ":" + sslSocketInputStream.getSocket().getPort());
+	}
+	
+	public Collection<SSLSocketInputStream> getRegisteredInputStreams() {
+		return Collections.unmodifiableCollection(inStreams.values());
 	}
 
 }

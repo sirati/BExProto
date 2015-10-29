@@ -59,5 +59,10 @@ public class BEx0Command implements CommandBase{
 	public void send(NetConnection... connections) {
 		send(send(), connections);
 	}
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+	}
 	
 }

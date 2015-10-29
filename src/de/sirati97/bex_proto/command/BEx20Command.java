@@ -117,5 +117,10 @@ public class BEx20Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16
 	public void send(t1 arg1, t2 arg2, t3 arg3, t4 arg4, t5 arg5, t6 arg6, t7 arg7, t8 arg8, t9 arg9, t10 arg10, t11 arg11, t12 arg12, t13 arg13, t14 arg14, t15 arg15, t16 arg16, t17 arg17, t18 arg18, t19 arg19, t20 arg20, NetConnection... connections) {
 		send(send(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20), connections);
 	}
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+	}
 	
 }

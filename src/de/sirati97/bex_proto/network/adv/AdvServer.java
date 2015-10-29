@@ -1,6 +1,8 @@
 package de.sirati97.bex_proto.network.adv;
 
 import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Random;
 
 import javax.crypto.SecretKey;
 
@@ -21,7 +23,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	private PingCommand pingCommand;
-	
+	private Random rnd = new Random();
 	
 	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
 		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory, secretKey);
@@ -56,7 +58,9 @@ public class AdvServer extends NetServer implements AdvCreator{
 	
 	@Override
 	protected void onConnected(NetConnection connection) {
-		getServerRegCommand().send("H", false, 0, connection);
+		if (connection.getReconnectID()>0)return;
+		connection.setReconnectID(rnd.nextInt(Integer.MAX_VALUE-1)+1);
+		getServerRegCommand().send("H", false, 0, connection.getReconnectID(), connection);
 	}
 
 	@Override
@@ -82,21 +86,29 @@ public class AdvServer extends NetServer implements AdvCreator{
 	@Override
 	public void onSocketClosed(NetConnection connection) {
 		AdvConnection advConnection = connectionManager.getAdvConnection(connection);
-		System.out.println("Closed connection" + advConnection.varsToString());
 		super.onSocketClosed(connection);
-		connectionManager.unregister(advConnection);
+		if (advConnection!=null) {
+			System.out.println("Closed connection" + advConnection.varsToString());
+			connectionManager.unregister(advConnection);
+		}
 	}
 	
 	private static class AdvServerCommandRegister extends CommandRegisterBase {
 		private AdvServer server;
-		@Override protected void checkID(short commandId, ExtractorDat dat) {
-			if (dat.getSender().isRegistered() || commandId != 0) return;
+		@Override protected boolean checkID(short commandId, ExtractorDat dat) {
+			if (dat.getSender().isRegistered() || commandId != 0) return true;
 			server.onConnected(dat.getSender());
-			while (!dat.getSender().isRegistered()) {
+			while (!dat.getSender().isRegistered() && !dat.getSender().isPassAlong()) {
 				try {
 					Thread.sleep(0, 1);
 				} catch (InterruptedException e) {e.printStackTrace();}
 			}
+			if (dat.getSender().isPassAlong()) {
+				dat.setCursor(0);
+				dat.getSender().getPassAlong().exercuteInput(dat);
+				return false;
+			}
+			return true;
 		}
 
 		public void setServer(AdvServer server) {
@@ -105,4 +117,38 @@ public class AdvServer extends NetServer implements AdvCreator{
 		
 		
 	}
+
+	public void onReConnected(AdvConnection oldAdvConnection, NetConnection newConnection) {
+		Socket socket = newConnection.getSocket();
+		NetConnection oldConnection = oldAdvConnection.getNetConnection();
+		newConnection.passAlong(oldConnection);
+		oldConnection.reconnectWith(socket);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

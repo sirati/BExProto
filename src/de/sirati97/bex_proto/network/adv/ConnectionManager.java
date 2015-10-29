@@ -75,6 +75,15 @@ public class ConnectionManager {
 		return Collections.unmodifiableSet(connections.get(clientName).connections);
 	}
 	
+	public AdvConnection getAdvConnection(String clientName, int id) {
+		if (!connections.containsKey(clientName)) return null;
+		Set<AdvConnection> connections = getConnections(clientName);
+		for (AdvConnection connection:connections) {
+			if (connection.getId()==id)return connection;
+		}
+		return null;
+	}
+	
 
 	public Set<AdvConnection> getConnections() {
 		Set<AdvConnection> result = new HashSet<>();

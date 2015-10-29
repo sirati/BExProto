@@ -2,6 +2,7 @@ package de.sirati97.bex_proto.network;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -51,7 +52,7 @@ public class NetClient extends NetConnection {
 		if (isEnabled()) return;
 
 		try {
-			Socket socket = socketFactory.createSocket(ip, port);
+			Socket socket = createSocket();
 			setSocket(socket);
 			super.start();
 		} catch (IOException e) {
@@ -61,4 +62,8 @@ public class NetClient extends NetConnection {
 		
 	}
 
+	protected Socket createSocket() throws UnknownHostException, IOException {
+		return socketFactory.createSocket(ip, port);
+	}
+	
 }

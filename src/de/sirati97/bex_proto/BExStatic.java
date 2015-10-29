@@ -41,25 +41,6 @@ public final class BExStatic {
 		return result;
 	}
 	
-//	public static byte[][] getStreamArray(List<Byte> data ,int startIndex) {
-//		List<byte[]> result = new ArrayList<>();
-//		byte[] dataArray = tobyteArray(data);
-//		int loc = startIndex;
-//		int fullArrayLenght = getInteger(dataArray, startIndex);
-//		loc += 4;
-//		for (int i=0;i<fullArrayLenght;i++) {
-//			if (loc >= dataArray.length)break;
-//			int elementArrayLenght  = getInteger(dataArray, + loc);
-//			byte[] element = new byte[elementArrayLenght];
-//			loc += 4;
-//			System.arraycopy(dataArray, loc, element, 0, (loc+elementArrayLenght>dataArray.length)?dataArray.length-loc:elementArrayLenght);
-//			loc += elementArrayLenght;
-//			result.add(element);
-//		}
-//		result.removeAll(Collections.singleton(null));
-//		return toStreamArray(result);
-//	}
-	
 	public static byte[] setStreamArray(byte[][] streams) {
 		int resultLenght = 4;
 		for (byte[] element:streams) {
@@ -96,9 +77,6 @@ public final class BExStatic {
 		int loc = 0;
 		for (byte[] element:streams) {
 			if (element != null && element.length > 0) {
-//				tmp = setInteger(element.length);
-//				System.arraycopy(tmp, 0, result, loc, tmp.length);
-//				loc += tmp.length;
 				tmp = element;
 				System.arraycopy(tmp, 0, result, loc, tmp.length);
 				loc += tmp.length;
@@ -136,38 +114,6 @@ public final class BExStatic {
 		return result;
 	}
 	
-	
-	
-//	public static String[] getStringArray(List<Byte> data ,int startIndex, Charset charset) {
-//		byte[] dataArray = tobyteArray(data);
-//		List<String> result = new ArrayList<String>();
-//		int temp = startIndex;
-//		//int arrayLenght = getInteger(data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1), data.get(startIndex+1));
-//		int arrayLenght = getInteger(dataArray, startIndex);
-//		
-//		temp += 4;
-//		if (arrayLenght < 0)return new String[]{};
-//		for (int i = 0;i < arrayLenght;i++) {
-//			int streamPartLenght = getInteger(dataArray, temp);
-//			String streamPartEncoded = getString(data, temp, charset);
-//			result.add(streamPartEncoded);
-//			temp += 4+streamPartLenght;
-//		}
-//		return (String[]) result.toArray(new String[result.size()]);
-//	}
-	
-
-//	public static String_Value getString_Value(List<Byte> data ,int startIndex, Charset charset) {
-//		byte[] dataStream = tobyteArray(data);
-//		int streamLenght = getInteger(dataStream, startIndex);
-//		byte[] stream = tobyteArray(data, startIndex + 4, streamLenght);
-//		return new String_Value(stream, new String(stream, charset), charset, stream.length + 4);
-//	}
-//	
-//	public static String getString(List<Byte> data ,int startIndex, Charset charset) {
-//		return getString_Value(data, startIndex, charset).str;
-//	}
-	
 
 	public static String getString(ExtractorDat dat ,int startIndex, Charset charset) {
 		int streamLenght = getInteger(dat);
@@ -176,8 +122,6 @@ public final class BExStatic {
 	}
 	
 	public static byte[] setString(String str , Charset charset) {
-//		return str.getBytes(charset);
-		
 		byte[] strStream = str.getBytes(charset);
 		byte[] dataStream = setInteger(strStream.length);
 		byte[] result = new byte[dataStream.length + strStream.length];
@@ -319,7 +263,7 @@ public final class BExStatic {
 	}
 	
 	public static String getVersion() {
-		return "1.6.1.07";
+		return "1.7.0.57";
 	}
 
 }

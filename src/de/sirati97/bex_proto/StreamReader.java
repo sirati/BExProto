@@ -37,15 +37,19 @@ public class StreamReader {
 					throw new IllegalStateException(e);
 				}
 			}
-			
 			final ExtractorDat dat = new ExtractorDat(stream, sender);
-			asyncHelper.runAsync(new Runnable() {
-				public void run() {
-					extractor.extract(dat);
-				}
-			}, name);
+			exercute(dat, sender, asyncHelper, name);
+			
 		} while (location < bytes.length);
 		return null;
+	}
+	
+	public void exercute(final ExtractorDat dat, NetConnection sender, AsyncHelper asyncHelper, String name) {
+		asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				extractor.extract(dat);
+			}
+		}, name);
 	}
 	
 	public VoidExtractor getExtractor() {

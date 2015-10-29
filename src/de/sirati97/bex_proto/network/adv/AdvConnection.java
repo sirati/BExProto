@@ -49,4 +49,12 @@ public class AdvConnection extends ServerSideConnection {
 	public String toString() {
 		return super.toString() + varsToString();
 	}
+	
+	public void setReconnectID(int reconnectID) {
+		getNetConnection().setReconnectID(reconnectID);
+	}
+	
+	public int getReconnectID() {
+		return getNetConnection().getReconnectID();
+	}
 }

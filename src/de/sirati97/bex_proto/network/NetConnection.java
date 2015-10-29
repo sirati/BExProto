@@ -5,16 +5,20 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
+import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
+import de.sirati97.bex_proto.command.ConnectionInfo;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
-public class NetConnection implements NetCreator {
+public class NetConnection implements NetCreator, ConnectionInfo {
 	private AsyncHelper asyncHelper;
 	private Socket socket;
 	private boolean enabled = false;
@@ -27,6 +31,9 @@ public class NetConnection implements NetCreator {
 	private boolean stoped = false;
 	private Cipher writeCipher;
 	private ISocketFactory socketFactory;
+	private int reconnectID=-1;
+	private NetConnection passAlong;
+	private Set<AsyncTask> tasks = new HashSet<>();
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
 			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory, Cipher writeCipher) {
@@ -52,45 +59,90 @@ public class NetConnection implements NetCreator {
 			}
 		}
 		readerTask = asyncHelper.runAsync(new Runnable() {
+			
 			public void run() {
 				byte[] overflow=null;
+				InputStream in = null;
 				try {
-					InputStream in = socketFactory.getSocketInputStream(socket);
+					in = socketFactory.getSocketInputStream(socket);
 					while (enabled && !Thread.interrupted()) {
+						if (in instanceof SocketDepended && ((SocketDepended) in).getSocket()!=socket) {
+							System.err.println("create new");
+							in.close();
+							in = socketFactory.getSocketInputStream(socket);
+						} else if (in != socketFactory.getSocketInputStream(socket)) {
+							in = socketFactory.getSocketInputStream(socket);
+						}
+						
 						try {
-							if (!isReadingLocked() && (socket.isClosed() || in.available() > 0)) {
-								if (socket.isClosed()) {
-									stop();
-									return;
-								}
-								int available = in.available();
-								byte[] buffer = new byte[available];
-								in.read(buffer);
-								if (overflow != null) {
-									byte[] buffer2 = new byte[overflow.length + buffer.length];
-									System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
-									System.arraycopy(buffer, 0, buffer2, overflow.length, buffer.length);
-									buffer = buffer2;
-									overflow = null;
-								}
-								overflow = streamReader.read(buffer, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-							} else {
-								Thread.sleep(0, 1);
-							}
+							overflow = read(overflow, in);
 						} catch(SSLException e) {
 							stop();
 						} catch (IOException e) {
-							e.printStackTrace();
+							if (in != socketFactory.getSocketInputStream(socket)) { //if the old sockets get closed and it didnt already started reading.
+								in = socketFactory.getSocketInputStream(socket);
+								continue;
+							}
+							if (!socket.isClosed())e.printStackTrace();
 						} catch (InterruptedException e) {
 						}
 
 					}
-					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+				} finally {
+					try {
+						if (in!=null)in.close();
+						if (!isPassAlong()) {
+							socket.close();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}, "Socket Reader Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+	}
+	
+	protected byte[] read(byte[] overflow, InputStream in) throws SSLException, IOException, InterruptedException {
+		if (!isReadingLocked() && (socket.isClosed() || isPassAlong() || in.available() > 0)) {
+			if (socket.isClosed() || isPassAlong()) {
+				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow lenght=" + (overflow==null?0:overflow.length));
+				return overflow;
+			}
+			int available = in.available();
+			if (socket.isClosed() || isPassAlong()) {
+				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow lenght=" + (overflow==null?0:overflow.length));
+				return overflow;
+			}
+			
+			byte[] buffer = new byte[available];
+			in.read(buffer);
+			if (overflow != null) {
+				byte[] buffer2 = new byte[overflow.length + buffer.length];
+				System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
+				System.arraycopy(buffer, 0, buffer2, overflow.length, buffer.length);
+				buffer = buffer2;
+				overflow = null;
+			}
+			if (passAlong==null) {
+				overflow = exercuteInput(buffer);
+			} else {
+				passAlong.exercuteInput(buffer);
+			}
+			
+		} else {
+			Thread.sleep(0, 1);
+		}
+		return overflow;
+	}
+	
+	protected byte[] exercuteInput(byte[] received) {
+		return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+	}
+	
+	public void exercuteInput(ExtractorDat dat) {
+		streamReader.exercute(dat, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 	
 	public synchronized void send(byte[] stream) {
@@ -104,7 +156,8 @@ public class NetConnection implements NetCreator {
 			socket.getOutputStream().flush();
 			
 		} catch (SocketException e) {
-			if (!registered)e.printStackTrace();
+			if (!registered);
+			e.printStackTrace();
 			stop();
 			return;
 		}	catch (IOException e) {
@@ -169,6 +222,9 @@ public class NetConnection implements NetCreator {
 			stoped = true;
 			enabled = false;
 			readerTask.stop();
+			for (AsyncTask task:tasks) {
+				task.stop();
+			}
 //			try {
 //				socket.shutdownOutput();
 //			} catch (IOException e) {}
@@ -228,5 +284,114 @@ public class NetConnection implements NetCreator {
 	public Cipher getWriteCipher() {
 		return writeCipher;
 	}
+
 	
+	public void setReconnectID(int reconnectID) {
+		this.reconnectID = reconnectID;
+	}
+	
+	public int getReconnectID() {
+		return reconnectID;
+	}
+
+	public void passAlong(NetConnection connection) {
+		synchronized (this) {
+			passAlong = connection;
+			stoped = true;
+			enabled = false;
+		}
+	}
+	
+	public boolean isPassAlong() {
+		return passAlong!=null;
+	}
+
+	public NetConnection getPassAlong() {
+		return passAlong;
+	}
+	
+	public void reconnectWith(Socket newSocket) {
+		final Socket oldSocket = getSocket();
+		setSocket(newSocket);
+
+		class TaskWrap {
+			public AsyncHelper.AsyncTask task;
+		}
+		final TaskWrap task = new TaskWrap();
+
+		final long timpstampShutdown = System.currentTimeMillis()+50;
+		task.task = asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				byte[] overflow=null;
+				InputStream in = null;
+				try {
+					in = socketFactory.getSocketInputStream(oldSocket);
+					while (enabled&& timpstampShutdown>System.currentTimeMillis() && !Thread.interrupted()) {
+						try {
+							overflow = read(overflow, in);
+						} catch(IOException | InterruptedException e) {
+							break;
+						}
+
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						if(in!=null)in.close();
+						oldSocket.close();
+						System.out.println("Disconnected old socket (" + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort() + ")");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					tasks.remove(task.task);
+				}
+			}
+		}, "Socket Reader(Reconnect anti packet loss) Thread for " + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort());
+		tasks.add(task.task);
+
+		final TaskWrap task2 = new TaskWrap();
+		task2.task = asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				try {
+					while (timpstampShutdown>System.currentTimeMillis()) {
+						try {
+							Thread.sleep(100);
+						} catch(InterruptedException e) {
+							break;
+						}
+					}
+					System.out.println("Closed old socked(" + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort() + ")");
+					oldSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					tasks.remove(task2.task);
+				}
+			}
+		}, "Socket Destroyer Thread for " + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort());
+		tasks.add(task2.task);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -83,5 +83,10 @@ public class BEx3Command<t1,t2,t3> implements CommandBase{
 	public void send(t1 arg1, t2 arg2, t3 arg3, NetConnection... connections) {
 		send(send(arg1, arg2, arg3), connections);
 	}
+
+	@Override
+	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
+		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+	}
 	
 }
