@@ -15,7 +15,6 @@ import javax.net.ssl.SSLSocket;
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.ConnectionInfo;
-import de.sirati97.bex_proto.debug.Main;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
@@ -151,7 +150,7 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 	private Object exercuteInputMetux = new Object();
 	protected synchronized byte[] exercuteInput(byte[] received) {
 		synchronized (exercuteInputMetux) {
-			System.out.println("Exercute: " + Main.bytesToString(received));
+//			System.out.println("Exercute: " + Main.bytesToString(received));
 			return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 		}
 	}

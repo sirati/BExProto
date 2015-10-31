@@ -3,7 +3,6 @@ package de.sirati97.bex_proto;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
-import de.sirati97.bex_proto.debug.Main;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.NetConnection;
 
@@ -24,7 +23,7 @@ public class StreamReader {
 				location -=4;
 				byte[] overflow = new byte[bytes.length-location];
 				System.arraycopy(bytes, location, overflow, 0, bytes.length-location);
-				System.out.println("Overflow: "+Main.bytesToString(overflow));
+//				System.out.println("Overflow: "+Main.bytesToString(overflow));
 				return overflow;
 			}
 			
@@ -37,7 +36,7 @@ public class StreamReader {
 					throw new IllegalStateException(e);
 				}
 			}
-			System.out.println("Stream: " + Main.bytesToString(stream));
+//			System.out.println("Stream: " + Main.bytesToString(stream));
 			final ExtractorDat dat = new ExtractorDat(stream, sender);
 			exercute(dat, sender, asyncHelper, name);
 			
