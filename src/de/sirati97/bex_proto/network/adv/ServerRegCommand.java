@@ -27,8 +27,6 @@ public class ServerRegCommand extends RegCommand {
 			} else {
 				AdvConnection connection = new AdvConnection(sender, name, generic);
 				clientManager.register(connection);
-				sender.setRegistered(true);
-				System.out.println("Registered new connection" + connection.varsToString());
 				if (server.needEncryption()) {
 					server.sendEncyptionRequest(sender);
 				} else {
