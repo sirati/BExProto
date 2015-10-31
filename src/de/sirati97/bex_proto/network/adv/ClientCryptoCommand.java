@@ -73,7 +73,6 @@ public class ClientCryptoCommand extends CryptoCommand {
 		}
 	    
 	    try {
-	    	System.out.println("r");
 			Cipher cipherClientPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipherClientPrivate.init(Cipher.DECRYPT_MODE, client.getCryptoContainer().getPrivateKey());
 			byte[] secretKeyRawBytes = cipherClientPrivate.doFinal(dataKey);
