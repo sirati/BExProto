@@ -50,15 +50,17 @@ public class SSLSocketInputStream extends InputStream implements SocketDepended 
 	
 	
 	private int openCounter=0;
-	public void open() {
+	public void openIntern() {
+		System.out.println("open"+getSocket().getLocalPort() + ":" + getSocket().getPort()+": " + (openCounter+1));
 		openCounter++;
 	}
 	
 	@Override
 	public void close() throws IOException {
+		System.out.println("close"+getSocket().getLocalPort() + ":" + getSocket().getPort()+": " + (openCounter-1));
 		if (--openCounter<1) {
 			socketFactory.unregister(this);
-			super.close();
+//			super.close();
 		}
 	}
 

@@ -13,9 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
 import de.sirati97.bex_proto.ArrayType;
 import de.sirati97.bex_proto.DynamicObj;
 import de.sirati97.bex_proto.NullableType;
@@ -24,10 +21,11 @@ import de.sirati97.bex_proto.Type;
 import de.sirati97.bex_proto.TypeBase;
 import de.sirati97.bex_proto.command.CommandRegister;
 import de.sirati97.bex_proto.network.AdvThreadAsyncHelper;
-import de.sirati97.bex_proto.network.NetServer;
-import de.sirati97.bex_proto.network.TLSv1_2SocketFactory;
+import de.sirati97.bex_proto.network.ISocketFactory;
+import de.sirati97.bex_proto.network.SocketFactory;
 import de.sirati97.bex_proto.network.adv.AdvClient;
 import de.sirati97.bex_proto.network.adv.AdvServer;
+import de.sirati97.bex_proto.network.adv.CryptoContainer;
 
 
 public class Main {
@@ -58,32 +56,41 @@ public class Main {
 		commandRegister.register(iCount2Command);
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		//Server & Client instanzieren
-		KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");  
-		keyGenerator.init(128);
-		SecretKey secretKey = null;//keyGenerator.generateKey();
-		final TLSv1_2SocketFactory socketFactoryServer = new TLSv1_2SocketFactory(new File("server2.jks"), "123456Server", "654321Server", true);
-		final TLSv1_2SocketFactory socketFactoryClient = new TLSv1_2SocketFactory(new File("client2.jks"), "123456Client", "654321Client");
+		
+		CryptoContainer cryptoContainerServer = new CryptoContainer(new File("server2.jks"), "123456Server", "epicserver", "654321Server");
+		CryptoContainer cryptoContainerClient = new CryptoContainer(new File("client2.jks"), "123456Client", "epicclient", "654321Client");
+		final ISocketFactory socketFactoryServer = new SocketFactory();//new TLSv1_2SocketFactory(new File("server2.jks"), "123456Server", "654321Server", true);
+		final ISocketFactory socketFactoryClient = new SocketFactory();//new TLSv1_2SocketFactory(new File("client2.jks"), "123456Client", "654321Client");
 		
 		
 		//socketFactory1 = new SocketFactory();
-		NetServer server = new AdvServer(asyncHelper, 10000, commandRegister, socketFactoryServer, secretKey);
-		AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, commandRegister, socketFactoryClient, secretKey);
-//		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
+		AdvServer server = new AdvServer(asyncHelper, 10000, commandRegister, socketFactoryServer);
+		server.setCryptoContainer(cryptoContainerServer);
+		final AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, commandRegister, socketFactoryClient);
+		client.setCryptoContainer(cryptoContainerClient);
+		//		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
 		server.start();
 		client.start();
 //		client2.start();
 
+		
+		
+		
 		final long startTime = System.currentTimeMillis();
+		Stream stream;
+		TypeBase type;
 		//testdaten zu byte[] 
-		TypeBase type = new NullableType(new ArrayType(new NullableType(Type.Integer)));
+		type = new NullableType(new ArrayType(new NullableType(Type.Integer)));
 		System.out.println(type.getTypeName());
-		Stream stream = maCommand.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
+		stream = maCommand.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
 		
 		//testdaten senden1
 //		System.out.println(bytesToString(stream.getBytes()));
 		maCommand.send(stream,client);
+		
+
 		
 		//testdaten zu byte[] 
 		type = Type.String_Utf_16;
@@ -93,15 +100,15 @@ public class Main {
 		//testdaten senden
 //		System.out.println(bytesToString(stream.getBytes()));
 		maCommand.send(stream,client);
-		
-		//testdaten zu byte[] 
-		type = new NullableType(Type.Type);
-		System.out.println(type.getTypeName());
-		stream = maCommand.send(new DynamicObj(type, new NullableType(new ArrayType(new NullableType(Type.Integer)))));
-
-		//testdaten senden
-//		System.out.println(bytesToString(stream.getBytes()));
-		maCommand.send(stream,client);
+//		
+//		//testdaten zu byte[] 
+//		type = new NullableType(Type.Type);
+//		System.out.println(type.getTypeName());
+//		stream = maCommand.send(new DynamicObj(type, new NullableType(new ArrayType(new NullableType(Type.Integer)))));
+//
+//		//testdaten senden
+////		System.out.println(bytesToString(stream.getBytes()));
+//		maCommand.send(stream,client);
 		
 
 		
@@ -127,7 +134,33 @@ public class Main {
 		
 		long stamp2ICount = System.currentTimeMillis();
 		
-		for (int i=1;i<=1000;i++) {
+		asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				for (int i=501;i<=1000;i++) {
+					iCount2Command.send(i, client);
+				}
+			}
+		}, "Async Test1");
+		
+
+		asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				for (int i=1001;i<=1500;i++) {
+					iCount2Command.send(i, client);
+				}
+			}
+		}, "Async Test1");
+		
+
+		asyncHelper.runAsync(new Runnable() {
+			public void run() {
+				for (int i=1501;i<=2000;i++) {
+					iCount2Command.send(i, client);
+				}
+			}
+		}, "Async Test3");
+		
+		for (int i=1;i<=500;i++) {
 			iCount2Command.send(i, client);
 		}
 		final long finalTime2ICount = System.currentTimeMillis() - stamp2ICount;
@@ -151,8 +184,8 @@ public class Main {
 				for (Thread thread:threads) {
 					System.out.println(thread.getName() + " {id=" + thread.getId() + "}");
 				}
-				System.out.println("Client: There are " + socketFactoryClient.getRegisteredInputStreams().size() + " inputstreams still registered!");
-				System.out.println("Server: There are " + socketFactoryServer.getRegisteredInputStreams().size() + " inputstreams still registered!");
+//				System.out.println("Client: There are " + socketFactoryClient.getRegisteredInputStreams().size() + " inputstreams still registered!");
+//				System.out.println("Server: There are " + socketFactoryServer.getRegisteredInputStreams().size() + " inputstreams still registered!");
 				
 				long time = System.currentTimeMillis() - startTime;
 				System.out.println("Needed " + time + "ms. Test waited for " + sleepTime + "ms and worked for " + (time-sleepTime) + "ms.");

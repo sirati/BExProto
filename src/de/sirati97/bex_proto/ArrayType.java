@@ -3,7 +3,7 @@ package de.sirati97.bex_proto;
 import java.lang.reflect.Array;
 
 
-public final class ArrayType extends DerivedType {
+public final class ArrayType extends DerivedType{
 	private TypeBase type;
 	private StreamExtractor<? extends Object> extractor;
 	
@@ -45,6 +45,7 @@ public final class ArrayType extends DerivedType {
 	@Override
 	public boolean isPremitive() {return false;}
 	
+	@Override
 	public Object toPremitiveArray(Object obj) {
 		if (type instanceof PremitivType) {
 			return ((PremitivType) type).toPremitiveArray(obj);

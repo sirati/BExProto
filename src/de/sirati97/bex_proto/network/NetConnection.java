@@ -15,6 +15,7 @@ import javax.net.ssl.SSLSocket;
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.ConnectionInfo;
+import de.sirati97.bex_proto.debug.Main;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
@@ -29,23 +30,28 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 	private boolean readingLocked = false;
 	private boolean registered = true;
 	private boolean stoped = false;
-	private Cipher writeCipher;
+	private Cipher sendCipher;
+	private Cipher receiveCipher;
+	
 	private ISocketFactory socketFactory;
 	private int reconnectID=-1;
 	private NetConnection passAlong;
 	private Set<AsyncTask> tasks = new HashSet<>();
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
-			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory, Cipher writeCipher) {
+			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory) {
 		this.asyncHelper = asyncHelper;
 		this.socket = socket;
 		this.netConnectionManager = netConnectionManager;
 		this.streamReader = streamReader;
 		this.creator = creator==null?this:creator;
-		this.writeCipher = writeCipher;
 		this.socketFactory = socketFactory;
 	}
 
+//	InputStream inNew = socketFactory.createSocketInputStream(socket);
+//	socketFactory.switchInputStream(in, inNew);
+//	in = inNew;
+	
 	public void start() {
 		if (enabled)
 			return;
@@ -62,25 +68,31 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 			
 			public void run() {
 				byte[] overflow=null;
-				InputStream in = null;
 				try {
-					in = socketFactory.getSocketInputStream(socket);
+					InputStream in = socketFactory.createSocketInputStream(socket);
 					while (enabled && !Thread.interrupted()) {
-						if (in instanceof SocketDepended && ((SocketDepended) in).getSocket()!=socket) {
-							System.err.println("create new");
-							in.close();
-							in = socketFactory.getSocketInputStream(socket);
-						} else if (in != socketFactory.getSocketInputStream(socket)) {
-							in = socketFactory.getSocketInputStream(socket);
+						if (!socketFactory.isSocketInputStream(socket, in)) {
+							InputStream inNew = socketFactory.createSocketInputStream(socket);
+							socketFactory.switchInputStream(in, inNew);
+							in = inNew;
 						}
+//						if (in instanceof SocketDepended && ((SocketDepended) in).getSocket()!=socket) {
+//							System.err.println("create new");
+//							in.close();
+//							in = socketFactory.createSocketInputStream(socket);
+//						} else if (in != socketFactory.createSocketInputStream(socket)) { //guess what! Memory Leak
+//							in = socketFactory.createSocketInputStream(socket);
+//						}
 						
 						try {
 							overflow = read(overflow, in);
 						} catch(SSLException e) {
 							stop();
 						} catch (IOException e) {
-							if (in != socketFactory.getSocketInputStream(socket)) { //if the old sockets get closed and it didnt already started reading.
-								in = socketFactory.getSocketInputStream(socket);
+							if (!socketFactory.isSocketInputStream(socket, in)) { //if the old sockets get closed and it didnt already started reading.
+								InputStream inNew = socketFactory.createSocketInputStream(socket);
+								socketFactory.switchInputStream(in, inNew);
+								in = inNew;
 								continue;
 							}
 							if (!socket.isClosed())e.printStackTrace();
@@ -92,7 +104,6 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 					e.printStackTrace();
 				} finally {
 					try {
-						if (in!=null)in.close();
 						if (!isPassAlong()) {
 							socket.close();
 						}
@@ -137,31 +148,38 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 		return overflow;
 	}
 	
-	protected byte[] exercuteInput(byte[] received) {
-		return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+	private Object exercuteInputMetux = new Object();
+	protected synchronized byte[] exercuteInput(byte[] received) {
+		synchronized (exercuteInputMetux) {
+			System.out.println("Exercute: " + Main.bytesToString(received));
+			return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+		}
 	}
 	
 	public void exercuteInput(ExtractorDat dat) {
 		streamReader.exercute(dat, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 	
-	public synchronized void send(byte[] stream) {
-		if (socket.isClosed()) {
-			stop();
-			return;
-		}
-		
-		try {
-			socket.getOutputStream().write(stream);
-			socket.getOutputStream().flush();
+	private Object sendMutex = new Object();
+	public void send(byte[] stream) {
+		synchronized (sendMutex) {
+			if (socket.isClosed()) {
+				stop();
+				return;
+			}
 			
-		} catch (SocketException e) {
-			if (!registered);
-			e.printStackTrace();
-			stop();
-			return;
-		}	catch (IOException e) {
-			e.printStackTrace();
+			try {
+				socket.getOutputStream().write(stream);
+				socket.getOutputStream().flush();
+				
+			} catch (SocketException e) {
+				if (!registered);
+				e.printStackTrace();
+				stop();
+				return;
+			}	catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -187,20 +205,23 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 		this.pingTimestamp = System.currentTimeMillis();
 	}
 	
-	public synchronized int getPingMicro() {
-		long currentTimestamp = System.currentTimeMillis();
-		
-		while (currentTimestamp/1000>pingTimestamp/1000) {
-			if (currentTimestamp/100>pingSendTimestamp/100) {
-				_sendPing();
+	private Object getPingMicroMutex = new Object();
+	public int getPingMicro() {
+		synchronized (getPingMicroMutex) {
+			long currentTimestamp = System.currentTimeMillis();
+			
+			while (currentTimestamp/1000>pingTimestamp/1000) {
+				if (currentTimestamp/100>pingSendTimestamp/100) {
+					_sendPing();
+				}
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			return ping;
 		}
-		return ping;
 	}
 	
 
@@ -229,6 +250,12 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 //				socket.shutdownOutput();
 //			} catch (IOException e) {}
 			getCreator().onSocketClosed(this);
+			try {
+				socket.close();
+				//in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -281,8 +308,20 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 		return super.toString() + "{ip=" + socket.getInetAddress().getHostAddress() + ",port=" + socket.getPort() + "}";
 	}
 	
-	public Cipher getWriteCipher() {
-		return writeCipher;
+	public Cipher getSendCipher() {
+		return sendCipher;
+	}
+	
+	public void setSendCipher(Cipher sendCipher) {
+		this.sendCipher = sendCipher;
+	}
+	
+	public Cipher getReceiveCipher() {
+		return receiveCipher;
+	}
+	
+	public void setReceiveCipher(Cipher receiveCipher) {
+		this.receiveCipher = receiveCipher;
 	}
 
 	
@@ -319,13 +358,13 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 		}
 		final TaskWrap task = new TaskWrap();
 
-		final long timpstampShutdown = System.currentTimeMillis()+50;
+		final long timpstampShutdown = System.currentTimeMillis()+10;
 		task.task = asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				byte[] overflow=null;
 				InputStream in = null;
 				try {
-					in = socketFactory.getSocketInputStream(oldSocket);
+					in = socketFactory.createSocketInputStream(oldSocket);
 					while (enabled&& timpstampShutdown>System.currentTimeMillis() && !Thread.interrupted()) {
 						try {
 							overflow = read(overflow, in);
@@ -338,7 +377,7 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 					e.printStackTrace();
 				} finally {
 					try {
-						if(in!=null)in.close();
+						//if(in!=null)in.close();
 						oldSocket.close();
 						System.out.println("Disconnected old socket (" + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort() + ")");
 					} catch (IOException e) {
@@ -349,7 +388,7 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 			}
 		}, "Socket Reader(Reconnect anti packet loss) Thread for " + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort());
 		tasks.add(task.task);
-
+//
 		final TaskWrap task2 = new TaskWrap();
 		task2.task = asyncHelper.runAsync(new Runnable() {
 			public void run() {

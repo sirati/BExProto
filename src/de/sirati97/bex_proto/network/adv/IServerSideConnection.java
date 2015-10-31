@@ -6,4 +6,6 @@ public interface IServerSideConnection {
 	void setId(int id);
 	public boolean isGeneric();
 	public SSCWrapper toWrapper();
+	public void setCryptoHandshakeData(CryptoHandshakeData data);
+	public CryptoHandshakeData getCryptoHandshakeData();
 }

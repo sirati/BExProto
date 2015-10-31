@@ -39,8 +39,11 @@ public class CommandSBase implements CommandBase {
 		return command;
 	}
 	
+	protected void onSend(NetConnection... connections){}
+	
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
+		onSend();
 		getParent().send(stream, connections);
 	}
 

@@ -4,8 +4,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
 
-import javax.crypto.SecretKey;
-
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
@@ -23,23 +21,26 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	private PingCommand pingCommand;
+	private ServerCryptoCommand cryptoCommand;
 	private Random rnd = new Random();
+	private CryptoContainer cryptoContainer;
 	
-	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
-		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory, secretKey);
+	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory) {
+		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory);
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (AdvServerCommandRegister) sender.getCommand();
 		register.setServer(this);
 		register.register(new CommandWrapper(command, (short) 0));
-		register.register(serverRegCommand= new ServerRegCommand(connectionManager));
+		register.register(serverRegCommand= new ServerRegCommand(connectionManager, this));
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
-		register.register(pingCommand=new PingCommand(3));
+		register.register(cryptoCommand=new ServerCryptoCommand());
+		register.register(pingCommand=new PingCommand(4));
 		
 	}
 	
 
-	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
-		this(asyncHelper, port, null, command, socketFactory, secretKey);
+	public AdvServer(AsyncHelper asyncHelper, int port, CommandBase command, ISocketFactory socketFactory) {
+		this(asyncHelper, port, null, command, socketFactory);
 	}
 
 	public ServerRegCommand getServerRegCommand() {
@@ -60,7 +61,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	protected void onConnected(NetConnection connection) {
 		if (connection.getReconnectID()>0)return;
 		connection.setReconnectID(rnd.nextInt(Integer.MAX_VALUE-1)+1);
-		getServerRegCommand().send("H", false, 0, connection.getReconnectID(), connection);
+		sendHandshakeRequest(connection);
 	}
 
 	@Override
@@ -80,6 +81,24 @@ public class AdvServer extends NetServer implements AdvCreator{
 	@Override
 	public void sendPing(NetConnection connection) {
 		pingCommand.ping(connection);
+	}
+	
+	protected void sendHandshakeAccepted(AdvConnection connection) {
+		getServerRegCommand().send("I", connection.isGeneric(), connection.getId(), -1, connection.getNetConnection());
+	}
+	
+
+	protected void sendHandshakeRequest(NetConnection connection) {
+		getServerRegCommand().send("H", false, 0, connection.getReconnectID(), connection);
+	}
+	
+	protected void sendEncyptionRequest(NetConnection connection) {
+		cryptoCommand.send(CryptoCommand.States.Request, connection);
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return super.isEnabled();
 	}
 	
 	
@@ -123,6 +142,20 @@ public class AdvServer extends NetServer implements AdvCreator{
 		NetConnection oldConnection = oldAdvConnection.getNetConnection();
 		newConnection.passAlong(oldConnection);
 		oldConnection.reconnectWith(socket);
+	}
+
+
+	@Override
+	public CryptoContainer getCryptoContainer() {
+		return cryptoContainer;
+	}
+	
+	public void setCryptoContainer(CryptoContainer cryptoContainer) {
+		this.cryptoContainer = cryptoContainer;
+	}
+	
+	public boolean needEncryption() {
+		return cryptoContainer!=null;
 	}
 }
 

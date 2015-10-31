@@ -3,8 +3,6 @@ package de.sirati97.bex_proto.network.adv;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.crypto.SecretKey;
-
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
@@ -24,17 +22,20 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private int id = 0;
 	private PingCommand pingCommand;
 	private ClientRegCommand clientRegCommand;
+	private CryptoContainer cryptoContainer;
+	private CryptoHandshakeData cryptoHandshakeData;
 	
-	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory, SecretKey secretKey) {
-		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory, secretKey);
+	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory) {
+		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory);
 		this.clientName = clientName;
 		this.generic = generic;
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
 		register = (CommandRegisterBase) sender.getCommand();
-		register.register(new CommandWrapper(command, (short) 0));
+		register.register(new ApplicationDataCommandWrapper(command, (short) 0, this));
 		register.register(clientRegCommand=new ClientRegCommand());
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
-		register.register(pingCommand=new PingCommand(3));
+		register.register(new ClientCryptoCommand());
+		register.register(pingCommand=new PingCommand(4));
 		setRegistered(false);
 	}
 	
@@ -98,4 +99,47 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		}
 	}
 
+	@Override
+	public CryptoContainer getCryptoContainer() {
+		return cryptoContainer;
+	}
+	
+	public void setCryptoContainer(CryptoContainer cryptoContainer) {
+		this.cryptoContainer = cryptoContainer;
+	}
+	
+	public boolean offersEncryption() {
+		return cryptoContainer!=null;
+	}
+	
+
+	@Override
+	public void setCryptoHandshakeData(CryptoHandshakeData data) {
+		cryptoHandshakeData = data;
+	}
+
+	@Override
+	public CryptoHandshakeData getCryptoHandshakeData() {
+		return cryptoHandshakeData;
+	}
+	
+	private static class ApplicationDataCommandWrapper extends CommandWrapper {
+		private AdvClient client;
+		
+		public ApplicationDataCommandWrapper(CommandBase command, short id, AdvClient client) {
+			super(command, id);
+			this.client = client;
+		}
+		
+		@Override
+		protected void onSend(NetConnection... connections) {
+			if (client.isRegistered()) return;
+			while (!client.isRegistered()) {
+				try {
+					Thread.sleep(0, 1);
+				} catch (InterruptedException e) {e.printStackTrace();}
+			}
+		}
+		
+	}
 }

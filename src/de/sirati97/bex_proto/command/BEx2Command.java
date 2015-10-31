@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.command;
 
-import de.sirati97.bex_proto.ArrayType;
+import de.sirati97.bex_proto.DerivedTypeBase;
 import de.sirati97.bex_proto.ExtractorDat;
 import de.sirati97.bex_proto.MultiStream;
 import de.sirati97.bex_proto.Stream;
@@ -24,8 +24,8 @@ public class BEx2Command<t1,t2> implements CommandBase{
 		int counter=0;
 		for (TypeBase type:types) {
 			 Object tempObj = type.getExtractor().extract(dat);
-			 if (type instanceof ArrayType) {
-				 tempObj = ((ArrayType) type).toPremitiveArray(tempObj);
+			 if (type.isArray() && type instanceof DerivedTypeBase) {
+				 tempObj = ((DerivedTypeBase) type).toPremitiveArray(tempObj);
 			 }
 			 r[counter++] = tempObj;
 		}

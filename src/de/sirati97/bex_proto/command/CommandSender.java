@@ -6,6 +6,7 @@ import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.network.NetConnection;
 
 public class CommandSender extends CommandSBase {
+	private Object cryptoMutex = new Object();
 	public CommandSender(CommandBase command) {
 		super(command);
 	}
@@ -15,10 +16,14 @@ public class CommandSender extends CommandSBase {
 		SendStream sendStream = new SendStream(stream);
 		byte[] byteStream = sendStream.getBytes();
 		for (NetConnection connection : connections) {
-			if (connection.getWriteCipher() == null) {
+			if (connection.getSendCipher() == null) {
 				connection.send(byteStream);
 			} else {
-				connection.send(new SendStream(new CryptoStream(sendStream.getInnerByteStream(), connection.getWriteCipher())).getBytes());
+				byte[] byteStream2;
+				synchronized (cryptoMutex) {
+					byteStream2 = new SendStream(new CryptoStream(sendStream.getInnerByteStream(), connection.getSendCipher())).getBytes();
+				}
+				connection.send(byteStream2);
 			}
 
 		}
@@ -26,10 +31,10 @@ public class CommandSender extends CommandSBase {
 
 	@Override
 	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
-		if (receiver.getWriteCipher() == null) {
+		if (receiver.getSendCipher() == null) {
 			return new SendStream(stream);
 		} else {
-			return new SendStream(new CryptoStream(stream, receiver.getWriteCipher()));
+			return new SendStream(new CryptoStream(stream, receiver.getSendCipher()));
 		}
 	}
 

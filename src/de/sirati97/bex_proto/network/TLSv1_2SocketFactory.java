@@ -67,25 +67,44 @@ public class TLSv1_2SocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public InputStream getSocketInputStream(Socket socket) throws IOException {
-		SSLSocketInputStream socketInputStream;
-		if ((socketInputStream=inStreams.get(socket))==null) {
-			socketInputStream = new SSLSocketInputStream(socket.getInputStream(), socket, this);
-			inStreams.put(socket, socketInputStream);
-			System.err.println("Created input stream " + socket.getLocalPort() + ":" + socket.getPort());
+	public InputStream createSocketInputStream(Socket socket) throws IOException {
+		synchronized (inStreams) {
+			SSLSocketInputStream socketInputStream;
+			if ((socketInputStream=inStreams.get(socket))==null) {
+				socketInputStream = new SSLSocketInputStream(socket.getInputStream(), socket, this);
+				inStreams.put(socket, socketInputStream);
+				System.err.println("Created input stream " + socket.getLocalPort() + ":" + socket.getPort());
+			}
+			socketInputStream.openIntern();
+			return socketInputStream;
 		}
-		socketInputStream.open();
-		return socketInputStream;
+		
 	}
 
 
 	public void unregister(SSLSocketInputStream sslSocketInputStream) {
-		inStreams.remove(sslSocketInputStream.getSocket());
-		System.err.println("Destroyed input stream " + sslSocketInputStream.getSocket().getLocalPort() + ":" + sslSocketInputStream.getSocket().getPort());
+		synchronized (inStreams) {
+			inStreams.remove(sslSocketInputStream.getSocket());
+			System.err.println("Destroyed input stream " + sslSocketInputStream.getSocket().getLocalPort() + ":" + sslSocketInputStream.getSocket().getPort());
+		}
+		
 	}
 	
 	public Collection<SSLSocketInputStream> getRegisteredInputStreams() {
 		return Collections.unmodifiableCollection(inStreams.values());
+	}
+
+
+	@Override
+	public boolean isSocketInputStream(Socket socket, InputStream in) {
+		SSLSocketInputStream socketInputStream=inStreams.get(socket);
+		return socketInputStream==null?false:socketInputStream.getSocket().equals(socket);
+	}
+
+
+	@Override
+	public void switchInputStream(InputStream inOld, InputStream inNew) throws IOException {
+		inOld.close();
 	}
 
 }

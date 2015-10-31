@@ -25,8 +25,16 @@ public class SocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public InputStream getSocketInputStream(Socket socket) throws IOException {
+	public InputStream createSocketInputStream(Socket socket) throws IOException {
 		return socket.getInputStream();
 	}
+
+	@Override
+	public boolean isSocketInputStream(Socket socket, InputStream in) throws IOException {
+		return socket.getInputStream().equals(in);
+	}
+
+	@Override
+	public void switchInputStream(InputStream inOld, InputStream inNew) {}
 
 }

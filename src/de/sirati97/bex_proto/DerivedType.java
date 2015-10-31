@@ -15,5 +15,13 @@ public abstract class DerivedType implements DerivedTypeBase {
 	public byte getDerivedID() {
 		return getFactory().getDerivedID();
 	}
+	
+	@Override
+	public Object toPremitiveArray(Object obj) {
+		if (isArray()) {
+			return getInnerArray().toPremitiveArray(obj);
+		}
+		return obj;
+	}
 
 }

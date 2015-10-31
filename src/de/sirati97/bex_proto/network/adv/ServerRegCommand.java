@@ -4,9 +4,11 @@ import de.sirati97.bex_proto.network.NetConnection;
 
 public class ServerRegCommand extends RegCommand {
 	private ConnectionManager clientManager;
+	private AdvServer server;
 	
-	public ServerRegCommand(ConnectionManager clientManager) {
+	public ServerRegCommand(ConnectionManager clientManager, AdvServer server) {
 		this.clientManager = clientManager;
+		this.server = server;
 	}
 	
 	@Override
@@ -27,7 +29,11 @@ public class ServerRegCommand extends RegCommand {
 				clientManager.register(connection);
 				sender.setRegistered(true);
 				System.out.println("Registered new connection" + connection.varsToString());
-				send("I", connection.isGeneric(), connection.getId(), -1, sender);
+				if (server.needEncryption()) {
+					server.sendEncyptionRequest(sender);
+				} else {
+					server.sendHandshakeAccepted(connection);
+				}
 			}
 			
 			

@@ -11,5 +11,7 @@ public interface ISocketFactory {
 	Socket createSocket(String host, int port) throws UnknownHostException, IOException;
 	ServerSocket createServerSocket(int port) throws IOException;
 	ServerSocket createServerSocket(int port, InetAddress address) throws IOException;
-	InputStream getSocketInputStream(Socket socket) throws IOException;
+	InputStream createSocketInputStream(Socket socket) throws IOException;
+	boolean isSocketInputStream(Socket socket, InputStream in) throws IOException;
+	void switchInputStream(InputStream inOld, InputStream inNew) throws IOException;
 }

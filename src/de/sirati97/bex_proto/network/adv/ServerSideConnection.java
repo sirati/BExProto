@@ -4,6 +4,7 @@ public class ServerSideConnection implements IServerSideConnection {
 	private String clientName;
 	private boolean generic;
 	private int id;
+	private CryptoHandshakeData cryptoHandshakeData;
 	
 	public ServerSideConnection(String clientName, boolean generic, int id) {
 		this.clientName = clientName;
@@ -39,5 +40,15 @@ public class ServerSideConnection implements IServerSideConnection {
 	
 	public SSCWrapper toWrapper() {
 		return new SSCWrapper(this);
+	}
+
+	@Override
+	public void setCryptoHandshakeData(CryptoHandshakeData data) {
+		cryptoHandshakeData = data;
+	}
+
+	@Override
+	public CryptoHandshakeData getCryptoHandshakeData() {
+		return cryptoHandshakeData;
 	}
 }

@@ -4,14 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.network.AsyncHelper.AsyncTask;
@@ -26,31 +20,18 @@ public class NetServer implements NetCreator{
 	private StreamReader streamReader;
 	private AsyncTask readerTask;
 	private InetAddress address;
-	private Cipher readCipher;
-	private Cipher writeCipher;
 	private ISocketFactory socketFactory;
 	
-	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader, ISocketFactory socketFactory, SecretKey secretKey) {
-		this(asyncHelper, port, null, streamReader, socketFactory, secretKey);
+	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader, ISocketFactory socketFactory) {
+		this(asyncHelper, port, null, streamReader, socketFactory);
 	}
 	
-	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, ISocketFactory socketFactory, SecretKey secretKey) {
+	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, ISocketFactory socketFactory) {
 		this.asyncHelper = asyncHelper;
 		this.port = port;
 		this.streamReader = streamReader;
 		this.address = address;
 		this.socketFactory = socketFactory;
-		if (secretKey != null) {
-			try {
-				this.readCipher = Cipher.getInstance(secretKey.getAlgorithm());
-				this.readCipher.init(Cipher.DECRYPT_MODE, secretKey);
-				this.writeCipher = Cipher.getInstance(secretKey.getAlgorithm());
-				this.writeCipher.init(Cipher.ENCRYPT_MODE, secretKey);
-				streamReader.setCipher(readCipher);
-			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-				throw new IllegalStateException(e);
-			}
-		}
 	}
 	
 	public void sendPing(NetConnection connection) {
@@ -71,7 +52,7 @@ public class NetServer implements NetCreator{
 							if (serverSocket.isClosed()) {
 								System.out.println("The socket was closed!");
 							} else if ((socket = serverSocket.accept()) != null) {
-								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this, socketFactory, writeCipher);
+								NetConnection connection = new NetConnection(asyncHelper, socket, netConnectionManager, streamReader, NetServer.this, socketFactory);
 								System.out.println("Connected at " + connection.getInetAddress().getHostAddress() + ":" +  connection.getPort());
 								onPreConnected(connection);
 								connection.start();
