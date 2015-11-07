@@ -159,6 +159,11 @@ public class AdvServer extends NetServer implements AdvCreator{
 	public boolean needEncryption() {
 		return cryptoContainer!=null;
 	}
+
+
+	public boolean trust(String certificateAlias, NetConnection sender) {
+		return true;
+	}
 }
 
 

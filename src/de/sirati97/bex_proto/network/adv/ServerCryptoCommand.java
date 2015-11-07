@@ -60,7 +60,7 @@ public class ServerCryptoCommand extends CryptoCommand {
 			sender.stop();
 			return;
 		}
-		if (server.getCryptoContainer().trust(publicKey)) {
+		if (server.getCryptoContainer().trust(publicKey) && server.trust(server.getCryptoContainer().getAlias(publicKey), sender)) {
 			CryptoHandshakeData handshakeData = new CryptoHandshakeData();
 			advConnection.setCryptoHandshakeData(handshakeData);
 			handshakeData.setRemotePublicKey(publicKey);

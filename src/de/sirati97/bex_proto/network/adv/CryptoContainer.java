@@ -66,5 +66,15 @@ public class CryptoContainer {
 		return false;
 	}
 	
+	public String getAlias(PublicKey key) {
+		for (Certificate certificate:certificates) {
+			try {
+				certificate.verify(key);
+				return keyStore.getCertificateAlias(certificate);
+			} catch (Exception e) {}
+		}
+		return "";
+	}
+	
 	
 }
