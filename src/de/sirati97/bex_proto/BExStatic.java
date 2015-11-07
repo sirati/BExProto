@@ -263,7 +263,7 @@ public final class BExStatic {
 	}
 	
 	public static String getVersion() {
-		return "1.8.0.12";
+		return "1.8.1.0";
 	}
 
 }

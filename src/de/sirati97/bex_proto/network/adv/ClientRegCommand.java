@@ -4,13 +4,13 @@ import de.sirati97.bex_proto.network.NetConnection;
 
 public class ClientRegCommand extends RegCommand {
 	@Override
-	public void receive(String name, Boolean generic, Integer id, Integer reconnectID, NetConnection sender) {
+	public void receive(String name, String subnet, Boolean generic, Integer id, Integer reconnectID, NetConnection sender) {
 		if (sender.isRegistered())return;
 		
 		if ("H".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			client.setReconnectID(reconnectID);
-			send(client.getClientName(), client.isGeneric(), 0, -1, sender);
+			send(client.getClientName(), client.getSubnet(), client.isGeneric(), 0, -1, sender);
 		} else if ("I".equals(name)) {
 			AdvClient client = (AdvClient) sender;
 			client.setId(id);

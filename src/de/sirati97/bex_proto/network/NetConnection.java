@@ -36,6 +36,7 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 	private int reconnectID=-1;
 	private NetConnection passAlong;
 	private Set<AsyncTask> tasks = new HashSet<>();
+	private String subnet = "";
 	
 	public NetConnection(AsyncHelper asyncHelper, Socket socket,
 			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory) {
@@ -409,6 +410,14 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 			}
 		}, "Socket Destroyer Thread for " + oldSocket.getInetAddress().getHostAddress() + ":" + oldSocket.getPort());
 		tasks.add(task2.task);
+	}
+	
+	public String getSubnet() {
+		return subnet;
+	}
+	
+	public void setSubnet(String subnet) {
+		this.subnet = subnet;
 	}
 }
 

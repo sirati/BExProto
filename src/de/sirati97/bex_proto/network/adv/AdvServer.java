@@ -86,12 +86,12 @@ public class AdvServer extends NetServer implements AdvCreator{
 	protected void sendHandshakeAccepted(AdvConnection connection) {
 		connection.getNetConnection().setRegistered(true);
 		System.out.println("Registered new connection" + connection.varsToString());
-		getServerRegCommand().send("I", connection.isGeneric(), connection.getId(), -1, connection.getNetConnection());
+		getServerRegCommand().send("I", connection.getNetConnection().getSubnet(), connection.isGeneric(), connection.getId(), -1, connection.getNetConnection());
 	}
 	
 
 	protected void sendHandshakeRequest(NetConnection connection) {
-		getServerRegCommand().send("H", false, 0, connection.getReconnectID(), connection);
+		getServerRegCommand().send("H", "", false, 0, connection.getReconnectID(), connection);
 	}
 	
 	protected void sendEncyptionRequest(NetConnection connection) {

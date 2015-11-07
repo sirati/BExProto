@@ -90,7 +90,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	public void reconnect() {
 		try {
 			Socket socket = createSocket();
-			Stream stream = clientRegCommand.generateSendableStream(clientRegCommand.send(getClientName(), generic, id, getReconnectID()), this);
+			Stream stream = clientRegCommand.generateSendableStream(clientRegCommand.send(getClientName(), getSubnet(), generic, id, getReconnectID()), this);
 			socket.getOutputStream().write(stream.getBytes());
 			reconnectWith(socket);
 			
