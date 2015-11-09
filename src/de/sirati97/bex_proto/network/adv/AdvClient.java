@@ -134,7 +134,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		@Override
 		protected void onSend(NetConnection... connections) {
 			if (client.isRegistered()) return;
-			while (!client.isRegistered()) {
+			while (!client.isRegistered() && client.isEnabled()) {
 				try {
 					Thread.sleep(0, 1);
 				} catch (InterruptedException e) {e.printStackTrace();}
