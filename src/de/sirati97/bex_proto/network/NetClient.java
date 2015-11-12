@@ -39,4 +39,9 @@ public class NetClient extends NetConnection {
 		return socketFactory.createSocket(ip, port);
 	}
 	
+	@Override
+	public int getPort() {
+		return getSocket().getLocalPort();
+	}
+	
 }

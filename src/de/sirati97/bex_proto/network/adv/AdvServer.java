@@ -144,6 +144,8 @@ public class AdvServer extends NetServer implements AdvCreator{
 		NetConnection oldConnection = oldAdvConnection.getNetConnection();
 		newConnection.passAlong(oldConnection);
 		oldConnection.reconnectWith(socket);
+		System.out.println(oldConnection.getSendCipher());
+		sendHandshakeAccepted(oldAdvConnection);
 	}
 
 

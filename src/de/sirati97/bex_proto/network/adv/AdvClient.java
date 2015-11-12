@@ -3,12 +3,15 @@ package de.sirati97.bex_proto.network.adv;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.crypto.Cipher;
+
 import de.sirati97.bex_proto.Stream;
 import de.sirati97.bex_proto.StreamReader;
 import de.sirati97.bex_proto.command.CommandBase;
 import de.sirati97.bex_proto.command.CommandRegisterBase;
 import de.sirati97.bex_proto.command.CommandSender;
 import de.sirati97.bex_proto.command.CommandWrapper;
+import de.sirati97.bex_proto.command.ConnectionInfo;
 import de.sirati97.bex_proto.network.AsyncHelper;
 import de.sirati97.bex_proto.network.ISocketFactory;
 import de.sirati97.bex_proto.network.NetClient;
@@ -24,6 +27,12 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private ClientRegCommand clientRegCommand;
 	private CryptoContainer cryptoContainer;
 	private CryptoHandshakeData cryptoHandshakeData;
+	private ConnectionInfo noEncrytptionInfo = new ConnectionInfo() {
+		@Override
+		public Cipher getSendCipher() {
+			return null;
+		}
+	};
 	
 	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory) {
 		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory);
@@ -89,8 +98,9 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	
 	public void reconnect() {
 		try {
+			setRegistered(false);
 			Socket socket = createSocket();
-			Stream stream = clientRegCommand.generateSendableStream(clientRegCommand.send(getClientName(), getSubnet(), generic, id, getReconnectID()), this);
+			Stream stream = clientRegCommand.generateSendableStream(clientRegCommand.send(getClientName(), getSubnet(), generic, id, getReconnectID()), noEncrytptionInfo);
 			socket.getOutputStream().write(stream.getBytes());
 			reconnectWith(socket);
 			

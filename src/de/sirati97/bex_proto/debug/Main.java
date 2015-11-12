@@ -115,7 +115,7 @@ public class Main {
 		long timeICount = 0;
 		long stampICount = System.currentTimeMillis();
 		
-		for (int i=1;i<=0;i++) {
+		for (int i=1;i<=1;i++) {
 			client.reconnect();
 			timeICount += System.currentTimeMillis() - stampICount;
 			sleep(20);
@@ -134,35 +134,35 @@ public class Main {
 		
 		long stamp2ICount = System.currentTimeMillis();
 		
-		asyncHelper.runAsync(new Runnable() {
-			public void run() {
-				for (int i=501;i<=1000;i++) {
-					iCount2Command.send(i, client);
-				}
-			}
-		}, "Async Test1");
-		
-
-		asyncHelper.runAsync(new Runnable() {
-			public void run() {
-				for (int i=1001;i<=1500;i++) {
-					iCount2Command.send(i, client);
-				}
-			}
-		}, "Async Test1");
-		
-
-		asyncHelper.runAsync(new Runnable() {
-			public void run() {
-				for (int i=1501;i<=2000;i++) {
-					iCount2Command.send(i, client);
-				}
-			}
-		}, "Async Test3");
-		
-		for (int i=1;i<=500;i++) {
-			iCount2Command.send(i, client);
-		}
+//		asyncHelper.runAsync(new Runnable() {
+//			public void run() {
+//				for (int i=501;i<=1000;i++) {
+//					iCount2Command.send(i, client);
+//				}
+//			}
+//		}, "Async Test1");
+//		
+//
+//		asyncHelper.runAsync(new Runnable() {
+//			public void run() {
+//				for (int i=1001;i<=1500;i++) {
+//					iCount2Command.send(i, client);
+//				}
+//			}
+//		}, "Async Test1");
+//		
+//
+//		asyncHelper.runAsync(new Runnable() {
+//			public void run() {
+//				for (int i=1501;i<=2000;i++) {
+//					iCount2Command.send(i, client);
+//				}
+//			}
+//		}, "Async Test3");
+//		
+//		for (int i=1;i<=500;i++) {
+//			iCount2Command.send(i, client);
+//		}
 		final long finalTime2ICount = System.currentTimeMillis() - stamp2ICount;
 		sleep(300);
 		//Server & Client stoppen
