@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler_.ObjType;
-import de.sirati97.bex_proto.datahandler_.Stream;
-import de.sirati97.bex_proto.datahandler_.StreamExtractor;
+import de.sirati97.bex_proto.DataHandler.ObjType;
+import de.sirati97.bex_proto.DataHandler.Stream;
+import de.sirati97.bex_proto.DataHandler.StreamExtractor;
 
 public class SSCWrapperType extends ObjType {
 	SSCWrapperExtractor extractor = new SSCWrapperExtractor();

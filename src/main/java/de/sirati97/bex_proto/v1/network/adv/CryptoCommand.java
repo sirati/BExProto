@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler_.ArrayType;
+import de.sirati97.bex_proto.DataHandler.ArrayType;
 import de.sirati97.bex_proto.util.ByteBuffer;
-import de.sirati97.bex_proto.datahandler_.NullableType;
-import de.sirati97.bex_proto.datahandler_.Type;
+import de.sirati97.bex_proto.DataHandler.NullableType;
+import de.sirati97.bex_proto.DataHandler.Type;
 import de.sirati97.bex_proto.v1.command.BEx3Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 

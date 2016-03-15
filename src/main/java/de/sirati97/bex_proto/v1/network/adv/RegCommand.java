@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler_.Type;
+import de.sirati97.bex_proto.DataHandler.Type;
 import de.sirati97.bex_proto.v1.command.BEx5Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 

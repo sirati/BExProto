@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.datahandler;
+package de.sirati97.bex_proto.DataHandler;
 
 import de.sirati97.bex_proto.util.ByteBuffer;
 

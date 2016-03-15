@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v1.command;
 
 import de.sirati97.bex_proto.util.ByteBuffer;
-import de.sirati97.bex_proto.datahandler_.Stream;
-import de.sirati97.bex_proto.datahandler_.Type;
+import de.sirati97.bex_proto.DataHandler.Stream;
+import de.sirati97.bex_proto.DataHandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public abstract class CommandNone implements CommandBase {

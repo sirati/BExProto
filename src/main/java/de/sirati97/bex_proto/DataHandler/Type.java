@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.datahandler;
+package de.sirati97.bex_proto.DataHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -380,7 +380,7 @@ public abstract class Type implements TypeBase{
 		
 		@Override
 		public Stream createStream(Object obj) {
-			return new DynamicObjStream((de.sirati97.bex_proto.datahandler.DynamicObj) obj);
+			return new DynamicObjStream((de.sirati97.bex_proto.DataHandler.DynamicObj) obj);
 		}
 		
 		@Override

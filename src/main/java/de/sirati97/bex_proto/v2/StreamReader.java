@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.datahandler_.BExStatic;
-import de.sirati97.bex_proto.datahandler_.VoidExtractor;
+import de.sirati97.bex_proto.DataHandler.BExStatic;
+import de.sirati97.bex_proto.DataHandler.VoidExtractor;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.ByteBuffer;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;

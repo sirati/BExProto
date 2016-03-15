@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
 import de.sirati97.bex_proto.util.ByteBuffer;
-import de.sirati97.bex_proto.datahandler_.StreamExtractor;
-import de.sirati97.bex_proto.datahandler_.Type;
+import de.sirati97.bex_proto.DataHandler.StreamExtractor;
+import de.sirati97.bex_proto.DataHandler.Type;
 
 public class SSCWrapperExtractor implements StreamExtractor<SSCWrapper> {
 

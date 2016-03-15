@@ -5,7 +5,7 @@ import java.net.Socket;
 
 import javax.crypto.Cipher;
 
-import de.sirati97.bex_proto.datahandler_.Stream;
+import de.sirati97.bex_proto.DataHandler.Stream;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
 import de.sirati97.bex_proto.v1.command.CommandRegisterBase;
