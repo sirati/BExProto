@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.CryptoStream;
-import de.sirati97.bex_proto.datahandler.SendStream;
-import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.datahandler_.CryptoStream;
+import de.sirati97.bex_proto.datahandler_.SendStream;
+import de.sirati97.bex_proto.datahandler_.Stream;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class CommandSender extends CommandSBase {

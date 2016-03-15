@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler_.Stream;
+import de.sirati97.bex_proto.datahandler_.Type;
 import de.sirati97.bex_proto.v1.network.NetCreator;
 
 public class SSCWrapper {
