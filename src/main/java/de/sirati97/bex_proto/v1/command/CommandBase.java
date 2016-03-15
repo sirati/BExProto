@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.DataHandler.Stream;
-import de.sirati97.bex_proto.DataHandler.VoidExtractor;
+import de.sirati97.bex_proto.DataHandler2.Stream;
+import de.sirati97.bex_proto.DataHandler2.VoidExtractor;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public interface CommandBase extends VoidExtractor{

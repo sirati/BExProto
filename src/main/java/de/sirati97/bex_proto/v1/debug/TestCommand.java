@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.debug;
 
-import de.sirati97.bex_proto.DataHandler.ArrayType;
-import de.sirati97.bex_proto.DataHandler.Type;
+import de.sirati97.bex_proto.DataHandler2.ArrayType;
+import de.sirati97.bex_proto.DataHandler2.Type;
 import de.sirati97.bex_proto.v1.command.BEx10Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 

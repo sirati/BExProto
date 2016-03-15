@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.v1.command;
 
 import de.sirati97.bex_proto.util.ByteBuffer;
-import de.sirati97.bex_proto.DataHandler.MultiStream;
-import de.sirati97.bex_proto.DataHandler.NullStream;
-import de.sirati97.bex_proto.DataHandler.Stream;
-import de.sirati97.bex_proto.DataHandler.Type;
+import de.sirati97.bex_proto.DataHandler2.MultiStream;
+import de.sirati97.bex_proto.DataHandler2.NullStream;
+import de.sirati97.bex_proto.DataHandler2.Stream;
+import de.sirati97.bex_proto.DataHandler2.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class BEx0Command implements CommandBase{

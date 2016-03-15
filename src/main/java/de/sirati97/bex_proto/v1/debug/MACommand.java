@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.debug;
 
-import de.sirati97.bex_proto.DataHandler.DynamicObj;
-import de.sirati97.bex_proto.DataHandler.Type;
+import de.sirati97.bex_proto.DataHandler2.DynamicObj;
+import de.sirati97.bex_proto.DataHandler2.Type;
 import de.sirati97.bex_proto.v1.command.BEx1Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
