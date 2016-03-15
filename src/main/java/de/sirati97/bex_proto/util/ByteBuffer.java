@@ -3,11 +3,11 @@ package de.sirati97.bex_proto.util;
 public class ByteBuffer {
 	private byte[] bytes;
 	private int location = 0;
-	private Sender sender;
+	private IConnection IConnection;
 	
-	public ByteBuffer(byte[] bytes, Sender sender) {
+	public ByteBuffer(byte[] bytes, IConnection IConnection) {
 		this.bytes = bytes;
-		this.sender = sender;
+		this.IConnection = IConnection;
 	}
 
 	public byte getOne() {
@@ -30,8 +30,8 @@ public class ByteBuffer {
 		location = pos;
 	}
 	
-	public Sender getSender() {
-		return sender;
+	public IConnection getIConnection() {
+		return IConnection;
 	}
 	
 	public int getLocation() {

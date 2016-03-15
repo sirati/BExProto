@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.DataHandler;
+package de.sirati97.bex_proto.datahandler;
 
 public class FloatStream implements Stream {
 	private float data;

@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.DataHandler;
+package de.sirati97.bex_proto.datahandler;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

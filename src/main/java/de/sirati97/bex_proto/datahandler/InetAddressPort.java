@@ -23,5 +23,12 @@ public class InetAddressPort {
 	public InetSocketAddress toInetSocketAddress() {
 		return new InetSocketAddress(getInetAddress(), getPort());
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof InetAddressPort) {
+			return getInetAddress().equals(((InetAddressPort) obj).getInetAddress()) && getPort()==((InetAddressPort) obj).getPort();
+		}
+		return super.equals(obj);
+	}
 }

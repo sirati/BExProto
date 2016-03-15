@@ -21,7 +21,7 @@ public class CommandSender extends CommandSBase {
 			} else {
 				byte[] byteStream2;
 				synchronized (cryptoMutex) {
-					byteStream2 = new SendStream(new CryptoStream(sendStream.getInnerByteStream(), connection.getSendCipher())).getBytes();
+					byteStream2 = new SendStream(new CryptoStream(sendStream.getHeadlessStream(), connection.getSendCipher())).getBytes();
 				}
 				connection.send(byteStream2);
 			}

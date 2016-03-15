@@ -1,11 +1,13 @@
 package de.sirati97.bex_proto.v1.network;
 
+import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.ConnectionInfo;
-import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
-import de.sirati97.bex_proto.util.ByteBuffer;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.SSLException;
@@ -18,7 +20,7 @@ import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NetConnection implements NetCreator, ConnectionInfo {
+public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 	private AsyncHelper asyncHelper;
 	private Socket socket;
 	private boolean enabled = false;
@@ -418,6 +420,11 @@ public class NetConnection implements NetCreator, ConnectionInfo {
 	
 	public void setSubnet(String subnet) {
 		this.subnet = subnet;
+	}
+
+	@Override
+	public void send(SendStream stream) {
+		send(stream.getBytes());
 	}
 }
 

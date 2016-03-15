@@ -17,7 +17,7 @@ public abstract class CommandNone implements CommandBase {
 
 	@Override
 	public Void extract(ByteBuffer dat) {
-		receive(dat.getSender());
+		receive((NetConnection) dat.getIConnection());
 		return null;
 	}
 	

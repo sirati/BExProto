@@ -40,17 +40,17 @@ public class StreamReader {
 				}
 			}
 //			System.out.println("Stream: " + Main.bytesToString(stream));
-			final ByteBuffer dat = new ByteBuffer(stream, sender);
-			exercute(dat, asyncHelper, name);
+			final ByteBuffer buf = new ByteBuffer(stream, sender);
+			exercute(buf, asyncHelper, name);
 			
 		} while (location < bytes.length);
 		return null;
 	}
 	
-	public void exercute(final ByteBuffer dat, AsyncHelper asyncHelper, String name) {
+	public void exercute(final ByteBuffer buf, AsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
-				extractor.extract(dat);
+				extractor.extract(buf);
 			}
 		}, name);
 	}

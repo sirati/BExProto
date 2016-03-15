@@ -16,7 +16,7 @@ public class BEx0Command implements CommandBase{
 	}
 	
 	public Void extract(ByteBuffer dat) {
-		receive(dat.getSender());
+		receive((NetConnection) dat.getIConnection());
 		return null;
 	}
 	

@@ -6,7 +6,8 @@ import de.sirati97.bex_proto.v1.network.NetConnection;
 public class SendStream implements Stream {
 	Stream[] streams;
 	byte[] innerBytes;
-	HeadlessByteStream innerByteStream;
+	byte[] bytes;
+	IHeadlessByteStream innerByteStream = new HeadlessByteStreamImpl();
 	
 	public SendStream(Stream... streams) {
 		this.streams = streams;
@@ -17,32 +18,29 @@ public class SendStream implements Stream {
 	
 	@Override
 	public byte[] getBytes() {
-		byte[] mergedBytes;
+		if (bytes == null) {
+			byte[] mergedBytes = getInnerBytes();
+			byte[] lengthBytes = BExStatic.setInteger(mergedBytes.length);
+			bytes = new byte[lengthBytes.length + mergedBytes.length];
+			System.arraycopy(lengthBytes, 0, bytes, 0, lengthBytes.length);
+			System.arraycopy(mergedBytes, 0, bytes, lengthBytes.length, mergedBytes.length);
+		}
+		return bytes;
+	}
+	
+	public byte[] getInnerBytes() {
 		if (innerBytes == null) {
 			byte[][] bytess = new byte[streams.length][];
 			for (int i=0;i<streams.length;i++) {
 				bytess[i] = streams[i].getBytes();
 			}
-			mergedBytes = BExStatic.mergeStream(bytess);
-			innerBytes = mergedBytes;
+			innerBytes = BExStatic.mergeStream(bytess);
 			innerByteStream = new HeadlessByteStream(innerBytes);
-		} else {
-			mergedBytes = innerBytes;
 		}
-		
-		
-		byte[] lenghtBytes = BExStatic.setInteger(mergedBytes.length);
-		byte[] result = new byte[lenghtBytes.length + mergedBytes.length];
-		System.arraycopy(lenghtBytes, 0, result, 0, lenghtBytes.length);
-		System.arraycopy(mergedBytes, 0, result, lenghtBytes.length, mergedBytes.length);
-		return result;
-	}
-	
-	public byte[] getInnerBytes() {
 		return innerBytes;
 	}
 	
-	public HeadlessByteStream getInnerByteStream() {
+	public IHeadlessByteStream getHeadlessStream() {
 		return innerByteStream;
 	}
 	
@@ -50,5 +48,10 @@ public class SendStream implements Stream {
 		connection.send(getBytes());
 	}
 
-
+	public class HeadlessByteStreamImpl implements IHeadlessByteStream{
+		@Override
+		public byte[] getBytes() {
+			return getInnerBytes();
+		}
+	}
 }

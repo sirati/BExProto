@@ -29,7 +29,7 @@ public class BEx20Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16
 			 }
 			 r[counter++] = tempObj;
 		}
-		receive((t1)r[0],(t2)r[1],(t3)r[2],(t4)r[3],(t5)r[4],(t6)r[5],(t7)r[6],(t8)r[7],(t9)r[8],(t10)r[9],(t11)r[10],(t12)r[11],(t13)r[12],(t14)r[13],(t15)r[14],(t16)r[15],(t17)r[16],(t18)r[17],(t19)r[18],(t20)r[19], dat.getSender());
+		receive((t1)r[0],(t2)r[1],(t3)r[2],(t4)r[3],(t5)r[4],(t6)r[5],(t7)r[6],(t8)r[7],(t9)r[8],(t10)r[9],(t11)r[10],(t12)r[11],(t13)r[12],(t14)r[13],(t15)r[14],(t16)r[15],(t17)r[16],(t18)r[17],(t19)r[18],(t20)r[19], (NetConnection) dat.getIConnection());
 		return null;
 	}
 	

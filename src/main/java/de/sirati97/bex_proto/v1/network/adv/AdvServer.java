@@ -1,19 +1,19 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Random;
-
+import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.ByteBuffer;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
 import de.sirati97.bex_proto.v1.command.CommandRegisterBase;
 import de.sirati97.bex_proto.v1.command.CommandSender;
 import de.sirati97.bex_proto.v1.command.CommandWrapper;
-import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 import de.sirati97.bex_proto.v1.network.NetServer;
+
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Random;
 
 public class AdvServer extends NetServer implements AdvCreator{
 	private AdvServerCommandRegister register;
@@ -24,7 +24,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ServerCryptoCommand cryptoCommand;
 	private Random rnd = new Random();
 	private CryptoContainer cryptoContainer;
-	
+
 	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory) {
 		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory);
 		CommandSender sender = (CommandSender) getStreamReader().getExtractor();
@@ -117,16 +117,17 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private static class AdvServerCommandRegister extends CommandRegisterBase {
 		private AdvServer server;
 		@Override protected boolean checkID(short commandId, ByteBuffer dat) {
-			if (dat.getSender().isRegistered() || commandId != 0) return true;
-			server.onConnected(dat.getSender());
-			while (!dat.getSender().isRegistered() && !dat.getSender().isPassAlong()) {
+			NetConnection connection = (NetConnection) dat.getIConnection();
+			if (connection.isRegistered() || commandId != 0) return true;
+			server.onConnected(connection);
+			while (!connection.isRegistered() && !connection.isPassAlong()) {
 				try {
 					Thread.sleep(0, 1);
 				} catch (InterruptedException e) {e.printStackTrace();}
 			}
-			if (dat.getSender().isPassAlong()) {
+			if (connection.isPassAlong()) {
 				dat.setCursor(0);
-				dat.getSender().getPassAlong().exercuteInput(dat);
+				connection.getPassAlong().exercuteInput(dat);
 				return false;
 			}
 			return true;

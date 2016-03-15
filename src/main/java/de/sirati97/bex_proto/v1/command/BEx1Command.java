@@ -29,7 +29,7 @@ public class BEx1Command<t1> implements CommandBase{
 			 }
 			 r[counter++] = tempObj;
 		}
-		receive((t1)r[0], dat.getSender());
+		receive((t1)r[0], (NetConnection) dat.getIConnection());
 		return null;
 	}
 	
