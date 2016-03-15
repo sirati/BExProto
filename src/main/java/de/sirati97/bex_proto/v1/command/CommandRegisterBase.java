@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.sirati97.bex_proto.util.ByteBuffer;
-import de.sirati97.bex_proto.DataHandler2.Stream;
-import de.sirati97.bex_proto.DataHandler2.Type;
+import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class CommandRegisterBase implements CommandBase {

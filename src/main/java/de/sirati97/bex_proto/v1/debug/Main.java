@@ -13,12 +13,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.sirati97.bex_proto.DataHandler2.ArrayType;
-import de.sirati97.bex_proto.DataHandler2.DynamicObj;
-import de.sirati97.bex_proto.DataHandler2.NullableType;
-import de.sirati97.bex_proto.DataHandler2.Stream;
-import de.sirati97.bex_proto.DataHandler2.Type;
-import de.sirati97.bex_proto.DataHandler2.TypeBase;
+import de.sirati97.bex_proto.datahandler.ArrayType;
+import de.sirati97.bex_proto.datahandler.DynamicObj;
+import de.sirati97.bex_proto.datahandler.NullableType;
+import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.TypeBase;
 import de.sirati97.bex_proto.v1.command.CommandRegister;
 import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
