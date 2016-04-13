@@ -14,11 +14,13 @@ public class SyncHelper implements AsyncHelper {
         this.updateThreadName = updateThreadName;
     }
 
-    public void yield() {
+    public boolean yield() {
         if (queue.size() > 0) {
             SyncTask task = queue.poll();
             task.start();
+            return true;
         }
+        return false;
     }
 
     @Override

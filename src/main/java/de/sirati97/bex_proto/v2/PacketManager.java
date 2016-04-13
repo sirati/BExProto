@@ -10,7 +10,7 @@ import de.sirati97.bex_proto.util.ByteBuffer;
  * Created by sirati97 on 15.03.2016.
  */
 public class PacketManager {
-    public static Packet extract(PacketDefinition definition, ByteBuffer buf) {
+    public static ReceivedPacket extract(PacketDefinition definition, ByteBuffer buf) {
         Object[] args = new Object[definition.getArgumentLength()];
         int counter=0;
         for (TypeBase type:definition.getTypes()) {
@@ -20,7 +20,7 @@ public class PacketManager {
             }
             args[counter++] = tempObj;
         }
-        return new Packet(definition, args);
+        return new ReceivedPacket(definition, buf.getIConnection(), args);
     }
 
     public static Stream createStream(Packet packet) {

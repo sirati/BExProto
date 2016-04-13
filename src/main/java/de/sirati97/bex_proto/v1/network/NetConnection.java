@@ -6,6 +6,7 @@ import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
 import de.sirati97.bex_proto.util.ByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
+import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.ConnectionInfo;
 
@@ -425,6 +426,11 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 	@Override
 	public void send(SendStream stream) {
 		send(stream.getBytes());
+	}
+
+	@Override
+	public ILogger getLogger() {
+		throw new NotImplementedException("online available in BExProto v2");
 	}
 }
 

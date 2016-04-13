@@ -1,7 +1,6 @@
 package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.datahandler.VoidExtractor;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.ByteBuffer;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
@@ -10,10 +9,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 public class StreamReader {
-	private VoidExtractor extractor;
+	private IPacket packet;
 	
-	public StreamReader(VoidExtractor extractor) {
-		this.extractor = extractor;
+	public StreamReader(IPacket packet) {
+		this.packet = packet;
 	}
 	
 	public byte[] read(byte[] bytes, ArtifConnection sender, AsyncHelper asyncHelper, String name) {
@@ -50,13 +49,13 @@ public class StreamReader {
 	public void exercute(final ByteBuffer buf, AsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
-				extractor.extract(buf);
+				packet.extract(buf);
 			}
 		}, name);
 	}
 	
-	public VoidExtractor getExtractor() {
-		return extractor;
+	public IPacket getPacket() {
+		return packet;
 	}
 	
 }

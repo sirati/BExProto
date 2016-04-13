@@ -1,5 +1,19 @@
 package de.sirati97.bex_proto.v1.debug;
 
+import de.sirati97.bex_proto.datahandler.ArrayType;
+import de.sirati97.bex_proto.datahandler.DynamicObj;
+import de.sirati97.bex_proto.datahandler.NullableType;
+import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.TypeBase;
+import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
+import de.sirati97.bex_proto.v1.command.CommandRegister;
+import de.sirati97.bex_proto.v1.network.ISocketFactory;
+import de.sirati97.bex_proto.v1.network.SocketFactory;
+import de.sirati97.bex_proto.v1.network.adv.AdvClient;
+import de.sirati97.bex_proto.v1.network.adv.AdvServer;
+import de.sirati97.bex_proto.v1.network.adv.CryptoContainer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,26 +27,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
-import de.sirati97.bex_proto.datahandler.DynamicObj;
-import de.sirati97.bex_proto.datahandler.NullableType;
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.datahandler.TypeBase;
-import de.sirati97.bex_proto.v1.command.CommandRegister;
-import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
-import de.sirati97.bex_proto.v1.network.ISocketFactory;
-import de.sirati97.bex_proto.v1.network.SocketFactory;
-import de.sirati97.bex_proto.v1.network.adv.AdvClient;
-import de.sirati97.bex_proto.v1.network.adv.AdvServer;
-import de.sirati97.bex_proto.v1.network.adv.CryptoContainer;
-
 
 public class Main {
 	private static AdvThreadAsyncHelper asyncHelper;
 	private static long sleepTime;
 	public static void main(String[] args) throws InterruptedException {
-		asyncHelper = new AdvThreadAsyncHelper();
+		asyncHelper = new AdvThreadAsyncHelper(5);
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				try {

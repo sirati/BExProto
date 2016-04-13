@@ -11,6 +11,7 @@ import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.PacketManager;
+import de.sirati97.bex_proto.v2.ReceivedPacket;
 import org.junit.Test;
 
 import java.net.InetAddress;
@@ -36,7 +37,7 @@ public class PacketTest implements PacketExecutor{
             Packet packetSend = new Packet(definition1,
                     true, (byte)(Byte.MIN_VALUE/2), (short)(Short.MAX_VALUE/2), Integer.MIN_VALUE/2, Long.MAX_VALUE/2, Float.NaN, Double.POSITIVE_INFINITY,
                     "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World",
-                    new NullableType(new ArrayType(new NullableType(Type.DynamicObj))), UUID.randomUUID(), InetAddress.getByAddress(new byte[]{127,0,0,1}), new InetAddressPort(InetAddress.getByName("google.de"), 20),
+                    new NullableType(new ArrayType(new NullableType(Type.DynamicObj))), UUID.randomUUID(), InetAddress.getByAddress(new byte[]{127,0,0,1}), new InetAddressPort(InetAddress.getByAddress(new byte[]{8,8,8,8}), 20),
                     null, false);
             Stream stream = packetSend.createStream(null);
             ByteBuffer buffer = new ByteBuffer(stream.getBytes(), null);
@@ -53,12 +54,10 @@ public class PacketTest implements PacketExecutor{
             e.printStackTrace();
             throw new AssertionError("Unexpected exception: "+e.toString(), e);
         }
-
-
     }
 
     @Override
-    public void execute(Packet packet) {
+    public void execute(ReceivedPacket packet) {
         fail("Should not be called in this test. Packet is not executed");
     }
 }

@@ -12,9 +12,9 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 //	private ThreadFactory threadFactory;
 	private ExecutorService executorService;
 	
-	public AdvThreadAsyncHelper() {
+	public AdvThreadAsyncHelper(int poolsize) {
 //		threadFactory = (new ThreadFactoryBuilder()).build();
-        executorService = Executors.newFixedThreadPool(1000);
+        executorService = Executors.newFixedThreadPool(poolsize);
 
 		
 	}

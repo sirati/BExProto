@@ -67,7 +67,7 @@ public class PacketDefinition implements IPacket{
 
     @Override
     public void extract(ByteBuffer buf) {
-        Packet packet = PacketManager.extract(this, buf);
+        ReceivedPacket packet = PacketManager.extract(this, buf);
         executor.execute(packet);
     }
 
