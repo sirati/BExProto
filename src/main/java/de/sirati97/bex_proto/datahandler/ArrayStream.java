@@ -7,8 +7,8 @@ public class ArrayStream implements Stream{
 	
 	public ArrayStream(TypeBase baseType, Object data) {
 		this.baseType = baseType;
-		if (baseType instanceof PremitivType) {
-			data = ((PremitivType) baseType).toObjectArray(data);
+		if (baseType instanceof PrimitiveType) {
+			data = ((PrimitiveType) baseType).toObjectArray(data);
 		}
 		this.dataObj = data;
 	}

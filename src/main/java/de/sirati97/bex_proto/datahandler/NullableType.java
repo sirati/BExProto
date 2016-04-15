@@ -22,7 +22,7 @@ public class NullableType extends DerivedType {
 	}
 
 	@Override
-	public boolean isPremitive() {
+	public boolean isPrimitive() {
 		return false;
 	}
 
@@ -37,8 +37,8 @@ public class NullableType extends DerivedType {
 	}
 
 	@Override
-	public Object[] createArray(int lenght) {
-		return getInnerType().createArray(lenght);
+	public Object[] createArray(int length) {
+		return getInnerType().createArray(length);
 	}
 
 	@Override
@@ -80,12 +80,12 @@ public class NullableType extends DerivedType {
 	}
 
 	@Override
-	public boolean isBasePremitive() {
-		if (getInnerType().isPremitive()) {
+	public boolean isBasePrimitive() {
+		if (getInnerType().isPrimitive()) {
 			return false;
 		} else {
 			if (getInnerType() instanceof DerivedTypeBase) {
-				return ((DerivedTypeBase)getInnerType()).isBasePremitive();
+				return ((DerivedTypeBase)getInnerType()).isBasePrimitive();
 			} else {
 				return false;
 			}

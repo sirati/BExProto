@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.datahandler;
 
-public class HeadlessByteStream implements IHeadlessByteStream {
+public class HeadlessByteArrayStream implements IHeadlessByteArrayStream {
 	private byte[] stream;
 	
-	public HeadlessByteStream(byte[] stream) {
+	public HeadlessByteArrayStream(byte[] stream) {
 		this.stream = stream;
 	}
 	

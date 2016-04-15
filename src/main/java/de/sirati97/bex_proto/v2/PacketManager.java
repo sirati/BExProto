@@ -16,7 +16,7 @@ public class PacketManager {
         for (TypeBase type:definition.getTypes()) {
             Object tempObj = type.getExtractor().extract(buf);
             if (type.isArray() && type instanceof DerivedTypeBase) {
-                tempObj = ((DerivedTypeBase) type).toPremitiveArray(tempObj);
+                tempObj = ((DerivedTypeBase) type).toPrimitiveArray(tempObj);
             }
             args[counter++] = tempObj;
         }

@@ -12,7 +12,7 @@ import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.SocketFactory;
 import de.sirati97.bex_proto.v1.network.adv.AdvClient;
 import de.sirati97.bex_proto.v1.network.adv.AdvServer;
-import de.sirati97.bex_proto.v1.network.adv.CryptoContainer;
+import de.sirati97.bex_proto.util.EncryptionContainer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,17 +57,17 @@ public class Main {
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		//Server & Client instanzieren
 		
-		CryptoContainer cryptoContainerServer = new CryptoContainer(new File("server2.jks"), "123456Server", "epicserver", "654321Server");
-		CryptoContainer cryptoContainerClient = new CryptoContainer(new File("client2.jks"), "123456Client", "epicclient", "654321Client");
+		EncryptionContainer encryptionContainerServer = new EncryptionContainer(new File("server2.jks"), "123456Server", "epicserver", "654321Server");
+		EncryptionContainer encryptionContainerClient = new EncryptionContainer(new File("client2.jks"), "123456Client", "epicclient", "654321Client");
 		final ISocketFactory socketFactoryServer = new SocketFactory();//new TLSv1_2SocketFactory(new File("server2.jks"), "123456Server", "654321Server", true);
 		final ISocketFactory socketFactoryClient = new SocketFactory();//new TLSv1_2SocketFactory(new File("client2.jks"), "123456Client", "654321Client");
 		
 		
 		//socketFactory1 = new SocketFactory();
 		AdvServer server = new AdvServer(asyncHelper, 10000, commandRegister, socketFactoryServer);
-		server.setCryptoContainer(cryptoContainerServer);
+		server.setCryptContainer(encryptionContainerServer);
 		final AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, commandRegister, socketFactoryClient);
-		client.setCryptoContainer(cryptoContainerClient);
+		client.setCryptContainer(encryptionContainerClient);
 		//		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)

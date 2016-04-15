@@ -9,7 +9,7 @@ public class TypeExtractor implements StreamExtractor<TypeBase> {
 		if (isDerived) {
 			String baseTypeName = (String) Type.String_US_ASCII.getExtractor().extract(dat);
 			ArrayType arrayType = new ArrayType(Type.Byte);
-			byte[] derivedIds = (byte[]) arrayType.toPremitiveArray(arrayType.getExtractor().extract(dat));
+			byte[] derivedIds = (byte[]) arrayType.toPrimitiveArray(arrayType.getExtractor().extract(dat));
 			
 			TypeBase result = Type.get(baseTypeName);
 			for (byte id:derivedIds) {

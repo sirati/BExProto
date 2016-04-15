@@ -22,6 +22,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
     static class StressData {
         public IHandshakeCallback callback;
+        public boolean done;
     }
 
     public StressModule() {
@@ -32,6 +33,16 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     public void onHandshake(ModularArtifConnection connection, IHandshakeCallback callback) {
         getOrCreateModuleData(connection).callback = callback;
         (new Packet((PacketDefinition) getPacket(),2)).sendTo(connection);
+    }
+
+    @Override
+    public void onHandshakeServerSide(ModularArtifConnection connection, IHandshakeCallback callback) throws Throwable {
+        getOrCreateModuleData(connection).callback = callback;
+    }
+
+    @Override
+    public boolean completeHandshake(ModularArtifConnection connection) throws Throwable {
+        return removeModuleData(connection).done;
     }
 
     @Override
@@ -53,13 +64,16 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     @Override
     public void execute(ReceivedPacket packet) {
         int i = packet.get(0);
+        StressData data = getModuleData(packet.getSender());
+        if (i == Short.MAX_VALUE*2000) {
+            data.done = true;
+        }
         if (i == Short.MAX_VALUE*2000+1) {
-            removeModuleData(packet.getSender()).callback.callback();
+            data.done = true;
+            data.callback.callback();
             return;
         }
-        if (i%2==1) {
-            getModuleData(packet.getSender()).callback.yield();
-        }
+        data.callback.yield();
         (new Packet(packet.getDefinition(),(i+1))).sendTo(packet.getSender());
     }
 

@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 
 public class AdvThreadAsyncHelper implements AsyncHelper {
-	private Set<Thread> activeThreads = new HashSet<>();
+	private final Set<Thread> activeThreads = new HashSet<>();
 //	private ThreadFactory threadFactory;
 	private ExecutorService executorService;
 	
@@ -18,15 +18,15 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 
 		
 	}
+
+	public void stop() {
+		executorService.shutdown();
+	}
 	
 	@Override
 	public AsyncTaskImpl runAsync(Runnable r, String name) {
 		AdvRunnbale advRunnbale = new AdvRunnbale(r, name);
-		//Thread thread = threadFactory.newThread(advRunnbale);//new Thread(advRunnbale, name);
 		executorService.execute(advRunnbale);
-//		thread.setName(name);
-//		advRunnbale.setThread(thread);
-//		thread.start();
 		return new AsyncTaskImpl(advRunnbale);
 	}
 	

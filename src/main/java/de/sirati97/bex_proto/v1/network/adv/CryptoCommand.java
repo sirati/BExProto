@@ -27,12 +27,12 @@ public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
 			onReceivedSecretKey(data, data2, sender);
 		} else if (state==States.Cancel.getId()) {
 			onCancelHandshake(sender);
-		} else if (state==States.Sussess.getId()) {
-			onSussess(sender);
+		} else if (state==States.Success.getId()) {
+			onSuccess(sender);
 		}
 	}
 	
-	protected void onSussess(NetConnection sender) {}
+	protected void onSuccess(NetConnection sender) {}
 	protected void onRequestSecretKey(NetConnection sender) {}
 	protected void onCancelHandshake(NetConnection sender) {}
 	protected void onError(String message, NetConnection sender) {}
@@ -63,7 +63,7 @@ public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
 	}
 	
 	public static enum States{
-		Error(-1),Request(0),PublicKey(1),RequestSecretKey(2),SecretKey(3),Cancel(4),Sussess(5);
+		Error(-1),Request(0),PublicKey(1),RequestSecretKey(2),SecretKey(3),Cancel(4), Success(5);
 		
 		private byte id;
 		

@@ -1,21 +1,21 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import java.io.IOException;
-import java.net.Socket;
-
-import javax.crypto.Cipher;
-
 import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
 import de.sirati97.bex_proto.v1.command.CommandRegisterBase;
 import de.sirati97.bex_proto.v1.command.CommandSender;
 import de.sirati97.bex_proto.v1.command.CommandWrapper;
 import de.sirati97.bex_proto.v1.command.ConnectionInfo;
-import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.NetClient;
 import de.sirati97.bex_proto.v1.network.NetConnection;
+
+import javax.crypto.Cipher;
+import java.io.IOException;
+import java.net.Socket;
 
 public class AdvClient extends NetClient implements AdvCreator, IServerSideConnection{
 	private CommandRegisterBase register;
@@ -25,7 +25,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 	private int id = 0;
 	private PingCommand pingCommand;
 	private ClientRegCommand clientRegCommand;
-	private CryptoContainer cryptoContainer;
+	private EncryptionContainer cryptContainer;
 	private CryptoHandshakeData cryptoHandshakeData;
 	private ConnectionInfo noEncrytptionInfo = new ConnectionInfo() {
 		@Override
@@ -109,17 +109,16 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		}
 	}
 
-	@Override
-	public CryptoContainer getCryptoContainer() {
-		return cryptoContainer;
+	public EncryptionContainer getCryptContainer() {
+		return cryptContainer;
 	}
 	
-	public void setCryptoContainer(CryptoContainer cryptoContainer) {
-		this.cryptoContainer = cryptoContainer;
+	public void setCryptContainer(EncryptionContainer encryptionContainer) {
+		this.cryptContainer = encryptionContainer;
 	}
 	
 	public boolean offersEncryption() {
-		return cryptoContainer!=null;
+		return cryptContainer !=null;
 	}
 	
 

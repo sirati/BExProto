@@ -2,6 +2,7 @@ package de.sirati97.bex_proto.v1.network.adv;
 
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
 import de.sirati97.bex_proto.v1.command.CommandRegisterBase;
@@ -23,7 +24,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private PingCommand pingCommand;
 	private ServerCryptoCommand cryptoCommand;
 	private Random rnd = new Random();
-	private CryptoContainer cryptoContainer;
+	private EncryptionContainer cryptContainer;
 
 	public AdvServer(AsyncHelper asyncHelper, int port, InetAddress address, CommandBase command, ISocketFactory socketFactory) {
 		super(asyncHelper, port, address, new StreamReader(new CommandSender(new AdvServerCommandRegister())), socketFactory);
@@ -150,17 +151,16 @@ public class AdvServer extends NetServer implements AdvCreator{
 	}
 
 
-	@Override
-	public CryptoContainer getCryptoContainer() {
-		return cryptoContainer;
+	public EncryptionContainer getCryptContainer() {
+		return cryptContainer;
 	}
 	
-	public void setCryptoContainer(CryptoContainer cryptoContainer) {
-		this.cryptoContainer = cryptoContainer;
+	public void setCryptContainer(EncryptionContainer encryptionContainer) {
+		this.cryptContainer = encryptionContainer;
 	}
 	
 	public boolean needEncryption() {
-		return cryptoContainer!=null;
+		return cryptContainer !=null;
 	}
 
 

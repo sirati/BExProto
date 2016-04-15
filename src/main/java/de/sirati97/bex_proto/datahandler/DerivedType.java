@@ -17,9 +17,9 @@ public abstract class DerivedType implements DerivedTypeBase {
 	}
 	
 	@Override
-	public Object toPremitiveArray(Object obj) {
+	public Object toPrimitiveArray(Object obj) {
 		if (isArray()) {
-			return getInnerArray().toPremitiveArray(obj);
+			return getInnerArray().toPrimitiveArray(obj);
 		}
 		return obj;
 	}

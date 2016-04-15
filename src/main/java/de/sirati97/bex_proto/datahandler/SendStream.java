@@ -7,7 +7,7 @@ public class SendStream implements Stream {
 	Stream[] streams;
 	byte[] innerBytes;
 	byte[] bytes;
-	IHeadlessByteStream innerByteStream = new HeadlessByteStreamImpl();
+	IHeadlessByteArrayStream innerByteStream = new HeadlessByteArrayStreamImpl();
 	
 	public SendStream(Stream... streams) {
 		this.streams = streams;
@@ -35,12 +35,12 @@ public class SendStream implements Stream {
 				bytess[i] = streams[i].getBytes();
 			}
 			innerBytes = BExStatic.mergeStream(bytess);
-			innerByteStream = new HeadlessByteStream(innerBytes);
+			innerByteStream = new HeadlessByteArrayStream(innerBytes);
 		}
 		return innerBytes;
 	}
 	
-	public IHeadlessByteStream getHeadlessStream() {
+	public IHeadlessByteArrayStream getHeadlessStream() {
 		return innerByteStream;
 	}
 	
@@ -48,7 +48,7 @@ public class SendStream implements Stream {
 		connection.send(getBytes());
 	}
 
-	public class HeadlessByteStreamImpl implements IHeadlessByteStream{
+	public class HeadlessByteArrayStreamImpl implements IHeadlessByteArrayStream {
 		@Override
 		public byte[] getBytes() {
 			return getInnerBytes();

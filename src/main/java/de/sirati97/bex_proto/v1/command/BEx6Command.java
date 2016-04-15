@@ -25,7 +25,7 @@ public class BEx6Command<t1,t2,t3,t4,t5,t6> implements CommandBase{
 		for (TypeBase type:types) {
 			 Object tempObj = type.getExtractor().extract(dat);
 			 if (type.isArray() && type instanceof DerivedTypeBase) {
-				 tempObj = ((DerivedTypeBase) type).toPremitiveArray(tempObj);
+				 tempObj = ((DerivedTypeBase) type).toPrimitiveArray(tempObj);
 			 }
 			 r[counter++] = tempObj;
 		}

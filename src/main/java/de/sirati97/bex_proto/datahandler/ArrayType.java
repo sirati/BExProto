@@ -38,17 +38,17 @@ public final class ArrayType extends DerivedType{
 	}
 
 	@Override
-	public Object[] createArray(int lenght) {
-		return new Object[lenght][];
+	public Object[] createArray(int length) {
+		return new Object[length][];
 	}
 
 	@Override
-	public boolean isPremitive() {return false;}
+	public boolean isPrimitive() {return false;}
 	
 	@Override
-	public Object toPremitiveArray(Object obj) {
-		if (type instanceof PremitivType) {
-			return ((PremitivType) type).toPremitiveArray(obj);
+	public Object toPrimitiveArray(Object obj) {
+		if (type instanceof PrimitiveType) {
+			return ((PrimitiveType) type).toPrimitiveArray(obj);
 		} else if (type instanceof ArrayType) {
 			Object[] obj2 = (Object[]) obj;
 			TypeBase base = getBase();
@@ -57,7 +57,7 @@ public final class ArrayType extends DerivedType{
 			dimArray[0] = obj2.length;
 			Object[] temp = (Object[]) Array.newInstance(base.getType(), dimArray);//new Object[obj2.length];
 			for (int i=0;i<obj2.length;i++) {
-				temp[i] = ((ArrayType) type).toPremitiveArray(obj2[i]);
+				temp[i] = ((ArrayType) type).toPrimitiveArray(obj2[i]);
 			}
 			return temp;
 		}
@@ -105,11 +105,11 @@ public final class ArrayType extends DerivedType{
 	}
 
 	@Override
-	public boolean isBasePremitive() {
+	public boolean isBasePrimitive() {
 		if (getInnerType() instanceof DerivedTypeBase) {
-			return ((DerivedTypeBase)getInnerType()).isBasePremitive();
+			return ((DerivedTypeBase)getInnerType()).isBasePrimitive();
 		} else {
-			return getInnerType().isPremitive();
+			return getInnerType().isPrimitive();
 		}
 	}
 

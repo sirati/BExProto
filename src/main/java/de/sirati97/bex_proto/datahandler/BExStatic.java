@@ -43,11 +43,11 @@ public final class BExStatic {
 	}
 	
 	public static byte[] setStreamArray(byte[][] streams) {
-		int resultLenght = 4;
+		int resultLength = 4;
 		for (byte[] element:streams) {
-			if (element != null && element.length > 0)resultLenght += 4+element.length;
+			if (element != null && element.length > 0)resultLength += 4+element.length;
 		}
-		byte[] result = new byte[resultLenght];
+		byte[] result = new byte[resultLength];
 		byte[] tmp;
 		int loc;
 		tmp = setInteger(streams.length);
@@ -155,7 +155,14 @@ public final class BExStatic {
 	}
 	
 
-	
+	public static byte[] setByteArray(byte[] bytes) {
+		byte[] length = BExStatic.setInteger(bytes.length);
+		byte[] result = new byte[length.length+bytes.length];
+		System.arraycopy(length, 0, result, 0, length.length);
+		System.arraycopy(bytes, 0, result, length.length, bytes.length);
+		return result;
+	}
+
 	public static byte[] setShort(short value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(2);
 		buffer.putShort(value);
@@ -264,7 +271,7 @@ public final class BExStatic {
 	}
 	
 	public static String getVersion() {
-		return "1.8.1.2";
+		return "2.0.9";
 	}
 
 }

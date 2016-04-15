@@ -38,7 +38,7 @@ public class ModuleHandler {
 
     public ModuleHandler(IPacket packetHandler, ILogger logger) {
         this.logger = logger;
-        register((short)0, false, new PacketWrapper(packetHandler)); //-1
+        register(new PacketWrapper(packetHandler)); //-1
         register(handshakeModule); //-2
 
     }
@@ -59,9 +59,16 @@ public class ModuleHandler {
         }
     }
 
+    private void register(short id, IPacket packet) {
+        register(new IdPacketWrapper(id, packet));
+    }
+
     private void register(short id, boolean encapsulate, IPacket packet) {
+        register(encapsulate?new IdPacketWrapper(id, packet):packet);
+    }
+    private void register(IPacket packet) {
         allowRegistration = true;
-        packets.register(encapsulate?new IdPacketWrapper(id, packet):packet);
+        packets.register(packet);
         allowRegistration = false;
     }
 

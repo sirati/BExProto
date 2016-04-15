@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.v1.network.adv;
+package de.sirati97.bex_proto.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,14 +20,14 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CryptoContainer {
+public class EncryptionContainer implements IEncryptionContainer{
 	private KeyStore keyStore;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
 	private Set<Certificate> certificates = new HashSet<>();
 	private KeyFactory keyFactory;
 	
-	public CryptoContainer(File certificateFile, String keyStorePass, String keyAlias, String keyPass) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
+	public EncryptionContainer(File certificateFile, String keyStorePass, String keyAlias, String keyPass) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, UnrecoverableKeyException, KeyManagementException {
 		keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	    keyStore.load(new FileInputStream(certificateFile), keyStorePass.toCharArray());
 		Enumeration<String> aliases = keyStore.aliases();

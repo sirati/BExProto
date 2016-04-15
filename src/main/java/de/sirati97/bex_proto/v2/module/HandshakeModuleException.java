@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.v2.module;
 
 /**
- * Created by sirati97 on 13.04.2016.
+ * Created by sirati97 on 15.04.2016.
  */
-public class HandshakeErroredException extends Exception {
+public class HandshakeModuleException extends HandshakeException {
 
     /**
      * Constructs a new exception with the specified cause and a detail
@@ -19,8 +19,8 @@ public class HandshakeErroredException extends Exception {
      *         unknown.)
      * @since  1.5
      */
-    public HandshakeErroredException(Throwable cause) {
-        super(cause);
+    public HandshakeModuleException(IModule module, Throwable cause) {
+        super("Handshake was not complete. Module " + module.getClass().getName() + " has thrown exception: " + cause.toString(),cause);
     }
 
 }

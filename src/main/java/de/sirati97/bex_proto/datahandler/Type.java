@@ -1,12 +1,12 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.v1.network.adv.SSCWrapperType;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import de.sirati97.bex_proto.v1.network.adv.SSCWrapperType;
 
 public abstract class Type implements TypeBase{
 	private static Map<String, TypeBase> types = new HashMap<>();
@@ -34,7 +34,7 @@ public abstract class Type implements TypeBase{
 	public static final Type String_Utf_16LE = new StringType(StandardCharsets.UTF_16LE);
 	public static final Type String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
 	public static final Type String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
-	public static final PremitivType Integer = new PremitivType() {
+	public static final PrimitiveType Integer = new PrimitiveType() {
 		IntegerExtractor extractor = new IntegerExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -45,11 +45,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Integer[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Integer[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Integer[])obj);
 		}
 
@@ -65,7 +65,7 @@ public abstract class Type implements TypeBase{
 			return "Integer";
 		}
 	};
-	public static final PremitivType Long = new PremitivType() {
+	public static final PrimitiveType Long = new PrimitiveType() {
 		LongExtractor extractor = new LongExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -76,11 +76,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Long[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Long[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Long[])obj);
 		}
 
@@ -96,7 +96,7 @@ public abstract class Type implements TypeBase{
 			return "Long";
 		}
 	};
-	public static final PremitivType Short = new PremitivType() {
+	public static final PrimitiveType Short = new PrimitiveType() {
 		ShortExtractor extractor = new ShortExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -107,11 +107,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Short[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Short[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Short[])obj);
 		}
 
@@ -127,7 +127,7 @@ public abstract class Type implements TypeBase{
 			return "Short";
 		}
 	};
-	public static final PremitivType Byte = new PremitivType() {
+	public static final PrimitiveType Byte = new PrimitiveType() {
 		ByteExtractor extractor = new ByteExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -138,11 +138,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Byte[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Byte[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Byte[])obj);
 		}
 
@@ -158,7 +158,7 @@ public abstract class Type implements TypeBase{
 			return "Byte";
 		}
 	};
-	public static final PremitivType Double = new PremitivType() {
+	public static final PrimitiveType Double = new PrimitiveType() {
 		DoubleExtractor extractor = new DoubleExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -169,11 +169,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Double[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Double[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Double[])obj);
 		}
 
@@ -189,7 +189,7 @@ public abstract class Type implements TypeBase{
 			return "Double";
 		}
 	};
-	public static final PremitivType Float = new PremitivType() {
+	public static final PrimitiveType Float = new PrimitiveType() {
 		FloatExtractor extractor = new FloatExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -200,11 +200,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Float[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Float[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Float[])obj);
 		}
 
@@ -220,7 +220,7 @@ public abstract class Type implements TypeBase{
 			return "Float";
 		}
 	};
-	public static final PremitivType Boolean = new PremitivType() {
+	public static final PrimitiveType Boolean = new PrimitiveType() {
 		BooleanExtractor extractor = new BooleanExtractor();
 		
 		@Override public Stream createStream(Object obj) {
@@ -231,11 +231,11 @@ public abstract class Type implements TypeBase{
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int lenght) {
-			return new Boolean[lenght];
+		@Override public Object[] createArray(int length) {
+			return new Boolean[length];
 		}
 
-		@Override public Object toPremitiveArray(Object obj) {
+		@Override public Object toPrimitiveArray(Object obj) {
 			return ArrayUtils.toPrimitive((Boolean[])obj);
 		}
 
@@ -270,8 +270,8 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Object[] createArray(int lenght) {
-			return new java.util.UUID[lenght];
+		public Object[] createArray(int length) {
+			return new java.util.UUID[length];
 		}
 		
 		public String getTypeName() {
@@ -297,8 +297,8 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Object[] createArray(int lenght) {
-			return new java.net.InetAddress[lenght];
+		public Object[] createArray(int length) {
+			return new java.net.InetAddress[length];
 		}
 		
 		public String getTypeName() {
@@ -324,8 +324,8 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Object[] createArray(int lenght) {
-			return new InetAddressPort[lenght];
+		public Object[] createArray(int length) {
+			return new InetAddressPort[length];
 		}
 		
 		public String getTypeName() {
@@ -356,8 +356,8 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Object[] createArray(int lenght) {
-			return new TypeBase[lenght];
+		public Object[] createArray(int length) {
+			return new TypeBase[length];
 		}
 	};
 	public static final ObjType DynamicObj = new ObjType() {
@@ -384,10 +384,12 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Object[] createArray(int lenght) {
-			return new DynamicObj[lenght];
+		public Object[] createArray(int length) {
+			return new DynamicObj[length];
 		}
 	};
+	public static final JavaSerializableType<Serializable> JavaSerializable = new JavaSerializableType<>(Serializable.class, "JavaSerializable", true);
+	public static final JavaSerializableType<Throwable> JavaThrowable = new JavaSerializableType<>(Throwable.class, "JavaThrowable", true);
 	
 	@Override public boolean isArray() {return false;}
 }

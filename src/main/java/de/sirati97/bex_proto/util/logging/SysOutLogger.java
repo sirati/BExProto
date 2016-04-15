@@ -33,6 +33,12 @@ public class SysOutLogger implements ILogger {
         System.err.println(genText(text));
     }
 
+    @Override
+    public void error(String text, Throwable e) {
+        System.err.println(genText(text));
+        e.printStackTrace(System.err);
+    }
+
     private String genText(String text) {
         return (prefix==null?"":"["+prefix+"] ")+text;
     }

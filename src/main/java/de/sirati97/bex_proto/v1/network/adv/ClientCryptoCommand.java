@@ -1,10 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
+import de.sirati97.bex_proto.v1.network.NetConnection;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -13,8 +9,11 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import de.sirati97.bex_proto.v1.network.NetConnection;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 public class ClientCryptoCommand extends CryptoCommand {
 
@@ -23,7 +22,7 @@ public class ClientCryptoCommand extends CryptoCommand {
 	protected void onRequest(NetConnection sender) {
 		AdvClient client = (AdvClient)sender;
 		if (client.offersEncryption()) {
-			send(States.PublicKey, client.getCryptoContainer().getPublicKey().getEncoded(), sender);
+			send(States.PublicKey, client.getCryptContainer().getPublicKey().getEncoded(), sender);
 		} else {
 			send(States.Cancel, sender);
 			client.stop();
@@ -48,12 +47,12 @@ public class ClientCryptoCommand extends CryptoCommand {
 		AdvClient client = (AdvClient)sender;
 		PublicKey publicKey;
 		try {
-			publicKey = client.getCryptoContainer().recoverFromData(data);
+			publicKey = client.getCryptContainer().recoverFromData(data);
 		} catch (InvalidKeySpecException e) {
 			onLocalError(e.toString(), sender);
 			return;
 		}
-		if (client.getCryptoContainer().trust(publicKey)) {
+		if (client.getCryptContainer().trust(publicKey)) {
 			CryptoHandshakeData handshakeData = new CryptoHandshakeData();
 			client.setCryptoHandshakeData(handshakeData);
 			handshakeData.setRemotePublicKey(publicKey);
@@ -74,7 +73,7 @@ public class ClientCryptoCommand extends CryptoCommand {
 	    
 	    try {
 			Cipher cipherClientPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			cipherClientPrivate.init(Cipher.DECRYPT_MODE, client.getCryptoContainer().getPrivateKey());
+			cipherClientPrivate.init(Cipher.DECRYPT_MODE, client.getCryptContainer().getPrivateKey());
 			byte[] secretKeyRawBytes = cipherClientPrivate.doFinal(dataKey);
 			byte[] ivectorRawBytes = cipherClientPrivate.doFinal(dataVector);
 			SecretKey secretKey = new SecretKeySpec(secretKeyRawBytes, "AES");
@@ -97,7 +96,7 @@ public class ClientCryptoCommand extends CryptoCommand {
 	}
 	
 	@Override
-	protected void onSussess(NetConnection sender) {
+	protected void onSuccess(NetConnection sender) {
 		AdvClient client = (AdvClient)sender;
 		if (client.getCryptoHandshakeData() == null || client.getCryptoHandshakeData().getRemotePublicKey() == null || client.getCryptoHandshakeData().getSecretKey() == null || client.getCryptoHandshakeData().getSecretVector() == null) {
 			onLocalError("Unexpected Error! Handshake data is corrupted.", sender);
@@ -110,7 +109,7 @@ public class ClientCryptoCommand extends CryptoCommand {
 			receiveCipher.init(Cipher.DECRYPT_MODE, client.getCryptoHandshakeData().getSecretKey(), client.getCryptoHandshakeData().getSecretVector());
 			sender.setReceiveCipher(receiveCipher);
 			sender.setSendCipher(sendCipher);
-			send(States.Sussess, sender);
+			send(States.Success, sender);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
 			onLocalError("Unexpected Error! " + e.toString(), sender);
 			return;

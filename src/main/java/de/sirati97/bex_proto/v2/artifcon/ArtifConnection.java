@@ -85,6 +85,14 @@ public class ArtifConnection implements IConnection {
         logger.changePrefix("connection\\"+connectionName);
     }
 
+    public AsyncHelper getAsyncHelper() {
+        return asyncHelper;
+    }
+
+    public IOHandler getIoHandler() {
+        return ioHandler;
+    }
+
     @Override
     public void send(SendStream stream) {
         ioHandler.send((getSendCipher()==null?stream:new SendStream(new CryptoStream(stream.getHeadlessStream(), getSendCipher()))).getBytes());

@@ -24,8 +24,8 @@ public class StringType extends ObjType {
 	}
 
 	@Override
-	public Object[] createArray(int lenght) {
-		return new String[lenght];
+	public Object[] createArray(int length) {
+		return new String[length];
 	}
 
 	@Override

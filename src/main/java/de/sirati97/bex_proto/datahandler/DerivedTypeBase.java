@@ -7,9 +7,9 @@ public interface DerivedTypeBase extends TypeBase {
 	byte getDerivedID();
 	TypeBase getInnerType();
 	ArrayType getInnerArray();
-	boolean isBasePremitive();
+	boolean isBasePrimitive();
 	DerivedFactory getFactory();
-	Object toPremitiveArray(Object obj);
+	Object toPrimitiveArray(Object obj);
 	public static class Register {
 		private static Map<Byte, DerivedFactory> types = new HashMap<Byte, DerivedFactory>();
 		public static final ArrayTypeFactory ARRAY_TYPE_FACTORY;

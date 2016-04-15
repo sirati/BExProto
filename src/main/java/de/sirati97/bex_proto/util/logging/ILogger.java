@@ -8,6 +8,7 @@ public interface ILogger {
     void info(String text);
     void warn(String text);
     void error(String text);
+    void error(String text, Throwable e);
     ILogger getLogger(String prefix);
     String getPrefix();
     void changePrefix(String prefix);

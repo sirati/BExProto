@@ -1,12 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
+import de.sirati97.bex_proto.v1.network.NetConnection;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,8 +8,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
-
-import de.sirati97.bex_proto.v1.network.NetConnection;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 
 public class ServerCryptoCommand extends CryptoCommand {
     private KeyGenerator keyGenerator;
@@ -54,17 +53,17 @@ public class ServerCryptoCommand extends CryptoCommand {
 		}
 		PublicKey publicKey;
 		try {
-			publicKey = server.getCryptoContainer().recoverFromData(data);
+			publicKey = server.getCryptContainer().recoverFromData(data);
 		} catch (InvalidKeySpecException e) {
 			sendError(e.toString(), sender);
 			sender.stop();
 			return;
 		}
-		if (server.getCryptoContainer().trust(publicKey) && server.trust(server.getCryptoContainer().getAlias(publicKey), sender)) {
+		if (server.getCryptContainer().trust(publicKey) && server.trust(server.getCryptContainer().getAlias(publicKey), sender)) {
 			CryptoHandshakeData handshakeData = new CryptoHandshakeData();
 			advConnection.setCryptoHandshakeData(handshakeData);
 			handshakeData.setRemotePublicKey(publicKey);
-			send(States.PublicKey, server.getCryptoContainer().getPublicKey().getEncoded(), sender);
+			send(States.PublicKey, server.getCryptContainer().getPublicKey().getEncoded(), sender);
 		} else {
 			closeWithError("Client is not trusted!", sender);
 			return;
@@ -122,7 +121,7 @@ public class ServerCryptoCommand extends CryptoCommand {
 	    
 	    try {
 			Cipher cipherServerPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			cipherServerPrivate.init(Cipher.DECRYPT_MODE, server.getCryptoContainer().getPrivateKey());
+			cipherServerPrivate.init(Cipher.DECRYPT_MODE, server.getCryptContainer().getPrivateKey());
 			byte[] secretKeyBytesRecieved = cipherServerPrivate.doFinal(dataKey);
 			byte[] ivectorBytesRecieved = cipherServerPrivate.doFinal(dataVector);
 			byte[] secretKeyBytesLocal = advConnection.getCryptoHandshakeData().getSecretKey().getEncoded();
@@ -151,7 +150,7 @@ public class ServerCryptoCommand extends CryptoCommand {
 			sendCipher.init(Cipher.ENCRYPT_MODE, advConnection.getCryptoHandshakeData().getSecretKey(), advConnection.getCryptoHandshakeData().getSecretVector());
 			Cipher receiveCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
 			receiveCipher.init(Cipher.DECRYPT_MODE, advConnection.getCryptoHandshakeData().getSecretKey(), advConnection.getCryptoHandshakeData().getSecretVector());
-			send(States.Sussess, sender);
+			send(States.Success, sender);
 			sender.setReceiveCipher(receiveCipher);
 			sender.setSendCipher(sendCipher);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
@@ -161,7 +160,7 @@ public class ServerCryptoCommand extends CryptoCommand {
 	}
 	
 	@Override
-	protected void onSussess(NetConnection sender) {
+	protected void onSuccess(NetConnection sender) {
 		AdvServer server = (AdvServer)sender.getCreator();
 		AdvConnection advConnection = server.getConnectionManager().getAdvConnection(sender);
 		if (advConnection == null) {

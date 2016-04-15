@@ -8,8 +8,8 @@ public class DynamicObjExtractor implements StreamExtractor<DynamicObj> {
 	public DynamicObj extract(ByteBuffer dat) {
 		TypeBase type = (TypeBase) Type.Type.getExtractor().extract(dat);
 		Object value = type.getExtractor().extract(dat);
-		if (type.isArray() && type instanceof DerivedTypeBase && ((DerivedTypeBase)type).isBasePremitive()) {
-			value = ((DerivedTypeBase)type).getInnerArray().toPremitiveArray((value));
+		if (type.isArray() && type instanceof DerivedTypeBase && ((DerivedTypeBase)type).isBasePrimitive()) {
+			value = ((DerivedTypeBase)type).getInnerArray().toPrimitiveArray((value));
 		}
 		return new DynamicObj(type, value);
 	}
