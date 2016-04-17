@@ -9,13 +9,8 @@ import org.junit.Test;
 public class ByteBufferBenchMark {
     private final byte[] bytes = new byte[] {1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5,1,7,34,7,3,1,7,0,7,-5};
     private final static int runs=100000000;
-    private final static int arrays_root= test(2);
+    private final static int arrays_root=2;
     private final static int arrays=arrays_root*arrays_root;
-
-    public static int test(int arrays_root) {
-        System.out.println("MUHUHUHU");
-        return (int) Math.sqrt(arrays_root*arrays_root);
-    }
 
     @Test
     public void start() throws Throwable {
