@@ -48,7 +48,7 @@ public class SendStream implements Stream {
 		connection.send(getBytes());
 	}
 
-	public class HeadlessByteArrayStreamImpl implements IHeadlessByteArrayStream {
+	protected class HeadlessByteArrayStreamImpl implements IHeadlessByteArrayStream {
 		@Override
 		public byte[] getBytes() {
 			return getInnerBytes();

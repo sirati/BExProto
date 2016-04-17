@@ -1,16 +1,15 @@
 package de.sirati97.bex_proto.v2.module;
 
 import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.ByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacket;
 import de.sirati97.bex_proto.v2.IdPacketWrapper;
 import de.sirati97.bex_proto.v2.PacketCollection;
-import de.sirati97.bex_proto.v2.PacketExecutor;
-import de.sirati97.bex_proto.v2.ReceivedPacket;
-import de.sirati97.bex_proto.v2.module.internal.HandshakeModule;
 import de.sirati97.bex_proto.v2.module.internal.InternalModule;
+import de.sirati97.bex_proto.v2.module.internal.connectionhandler.ConnectionHandlerModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +28,18 @@ public class ModuleHandler {
             super.register(packet);
         }
     };
-    private final ModuleHandlerInternal internal = new ModuleHandlerInternal();
     final List<IModuleHandshake> handshakesInternalPriority = new ArrayList<>(1);
     final List<IModuleHandshake> handshakesHighPriority = new ArrayList<>(1);
     final List<IModuleHandshake> handshakesLowPriority = new ArrayList<>(1);
-    final HandshakeModule handshakeModule = new HandshakeModule();
+    final ConnectionHandlerModule connectionHandlerModule = new ConnectionHandlerModule();
+    private final AsyncHelper asyncHelper;
     private final ILogger logger;
 
-    public ModuleHandler(IPacket packetHandler, ILogger logger) {
+    public ModuleHandler(IPacket packetHandler, AsyncHelper asyncHelper, ILogger logger) {
+        this.asyncHelper = asyncHelper;
         this.logger = logger;
         register(new PacketWrapper(packetHandler)); //-1
-        register(handshakeModule); //-2
+        register(connectionHandlerModule); //-2
 
     }
 
@@ -76,6 +76,10 @@ public class ModuleHandler {
         return packets;
     }
 
+    public AsyncHelper getAsyncHelper() {
+        return asyncHelper;
+    }
+
     public ILogger getLogger() {
         return logger;
     }
@@ -83,14 +87,6 @@ public class ModuleHandler {
     static void assertConnectionModuleSupport(IConnection connection) {
         if (!(connection instanceof ModularArtifConnection)) {
             throw new IllegalStateException("Connection does not support modules");
-        }
-    }
-
-    private class ModuleHandlerInternal implements PacketExecutor { //this is used to hide these methods
-
-        @Override
-        public void execute(ReceivedPacket packet) {
-
         }
     }
     private class PacketWrapper extends IdPacketWrapper {

@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.v2.IPacket;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.module.IModuleHandshake;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
-import de.sirati97.bex_proto.v2.module.internal.IHandshakeCallback;
+import de.sirati97.bex_proto.v2.module.internal.ICallback;
 import de.sirati97.bex_proto.v2.module.internal.InternalModule;
 
 /**
@@ -26,12 +26,12 @@ public class FailModule2 extends InternalModule implements IModuleHandshake{
     }
 
     @Override
-    public void onHandshake(ModularArtifConnection connection, final IHandshakeCallback callback) {
+    public void onHandshake(ModularArtifConnection connection, final ICallback callback) {
 
     }
 
     @Override
-    public void onHandshakeServerSide(ModularArtifConnection connection, IHandshakeCallback callback) throws Throwable {
+    public void onHandshakeServerSide(ModularArtifConnection connection, ICallback callback) throws Throwable {
         throw  new IllegalAccessException("Expected crash for testing");
     }
 

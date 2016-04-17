@@ -9,7 +9,8 @@ import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.module.IModuleHandshake;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.Module;
-import de.sirati97.bex_proto.v2.module.internal.IHandshakeCallback;
+import de.sirati97.bex_proto.v2.module.internal.ICallback;
+import de.sirati97.bex_proto.v2.module.internal.YieldCause;
 
 /**
  * Created by sirati97 on 13.04.2016.
@@ -21,7 +22,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
         }
     }
     static class StressData {
-        public IHandshakeCallback callback;
+        public ICallback callback;
         public boolean done;
     }
 
@@ -30,13 +31,13 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
 
     @Override
-    public void onHandshake(ModularArtifConnection connection, IHandshakeCallback callback) {
+    public void onHandshake(ModularArtifConnection connection, ICallback callback) {
         getOrCreateModuleData(connection).callback = callback;
         (new Packet((PacketDefinition) getPacket(),2)).sendTo(connection);
     }
 
     @Override
-    public void onHandshakeServerSide(ModularArtifConnection connection, IHandshakeCallback callback) throws Throwable {
+    public void onHandshakeServerSide(ModularArtifConnection connection, ICallback callback) throws Throwable {
         getOrCreateModuleData(connection).callback = callback;
     }
 
@@ -65,15 +66,15 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     public void execute(ReceivedPacket packet) {
         int i = packet.get(0);
         StressData data = getModuleData(packet.getSender());
-        if (i == Short.MAX_VALUE*2000) {
+        if (i == Short.MAX_VALUE*20) {
             data.done = true;
         }
-        if (i == Short.MAX_VALUE*2000+1) {
+        if (i == Short.MAX_VALUE*20+1) {
             data.done = true;
             data.callback.callback();
             return;
         }
-        data.callback.yield();
+        data.callback.yield(YieldCause.PacketReceived);
         (new Packet(packet.getDefinition(),(i+1))).sendTo(packet.getSender());
     }
 

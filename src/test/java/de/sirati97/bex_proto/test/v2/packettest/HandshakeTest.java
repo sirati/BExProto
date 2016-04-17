@@ -13,8 +13,11 @@ import de.sirati97.bex_proto.v2.artifcon.TestIOHandler;
 import de.sirati97.bex_proto.v2.module.HandshakeException;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
+import de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper;
 import org.junit.Test;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -23,21 +26,24 @@ import java.util.concurrent.TimeoutException;
 public class HandshakeTest implements PacketExecutor{
 
     @Test
-    public void start() throws TimeoutException, InterruptedException, HandshakeException {
+    public void start() throws TimeoutException, InterruptedException, HandshakeException, NoSuchAlgorithmException {
         ILogger log = new SysOutLogger();
         Long timestamp;
         try {
             log.info("Handshake test preparing");
             PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
-            ModuleHandler moduleHandler = new ModuleHandler(definition, log);
+            AsyncHelper helper = new AdvThreadAsyncHelper(6);
+            ModuleHandler moduleHandler = new ModuleHandler(definition, helper, log);
             //moduleHandler.register(new FailModule()); // - will fail every handshake
             //moduleHandler.register(new FailModule2()); // - will fail every handshake
-            //moduleHandler.register(new StressModule()); will take over 90 seconds
-            AsyncHelper helper = new AdvThreadAsyncHelper(4);
+            //moduleHandler.register(new StressModule()); //will send 2^15 packets
             TestIOHandler pipe1 = new TestIOHandler();
             TestIOHandler pipe2 = new TestIOHandler();
-            ModularArtifConnection connection1 = new ModularArtifConnection("TestCon1", helper, pipe1, moduleHandler);
-            ModularArtifConnection connection2 = new ModularArtifConnection("TestCon2", helper, pipe2, moduleHandler);
+            ModularArtifConnection connection1 = new ModularArtifConnection("TestCon1", pipe1, moduleHandler);
+            ModularArtifConnection connection2 = new ModularArtifConnection("TestCon2", pipe2, moduleHandler);
+            MessageDigest md = MessageDigest.getInstance(BouncyCastleHelper.HASH_ALGORITHM);
+            connection1.setHashAlgorithm(md);
+            connection2.setHashAlgorithm(md);
             pipe1.receiver = connection2;
             pipe2.receiver = connection1;
             log.info("Handshake test start");

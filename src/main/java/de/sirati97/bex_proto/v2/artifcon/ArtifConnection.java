@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto.v2.artifcon;
 
-import de.sirati97.bex_proto.datahandler.CryptoStream;
+import de.sirati97.bex_proto.datahandler.EncryptionStream;
+import de.sirati97.bex_proto.datahandler.HashStream;
 import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.IConnection;
@@ -9,6 +10,7 @@ import de.sirati97.bex_proto.v2.IPacket;
 import de.sirati97.bex_proto.v2.StreamReader;
 
 import javax.crypto.Cipher;
+import java.security.MessageDigest;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -16,6 +18,7 @@ import javax.crypto.Cipher;
 public class ArtifConnection implements IConnection {
     private Cipher sendCipher;
     private Cipher receiveCipher;
+    private MessageDigest hashAlgorithm;
     private String connectionName;
     private StreamReader streamReader;
     private AsyncHelper asyncHelper;
@@ -76,6 +79,14 @@ public class ArtifConnection implements IConnection {
         this.receiveCipher = receiveCipher;
     }
 
+    public MessageDigest getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(MessageDigest hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
+    }
+
     public String getConnectionName() {
         return connectionName;
     }
@@ -95,7 +106,13 @@ public class ArtifConnection implements IConnection {
 
     @Override
     public void send(SendStream stream) {
-        ioHandler.send((getSendCipher()==null?stream:new SendStream(new CryptoStream(stream.getHeadlessStream(), getSendCipher()))).getBytes());
+        if (getHashAlgorithm()!= null) {
+            stream = new SendStream(new HashStream(stream.getHeadlessStream(), getHashAlgorithm()));
+        }
+        if (getSendCipher()!= null) {
+            stream = new SendStream(new EncryptionStream(stream.getHeadlessStream(), getSendCipher()));
+        }
+        ioHandler.send(stream.getBytes());
     }
 
     public ILogger getLogger() {

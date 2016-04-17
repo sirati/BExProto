@@ -25,10 +25,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.*;
 
 /**
  * Created by sirati97 on 13.04.2016.
@@ -41,7 +44,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
     static class EncryptionData {
         public boolean done = false;
-        public IHandshakeCallback callback;
+        public ICallback callback;
         public PublicKey remotePublicKey;
         public Key secretKey;
         public byte[] vectorPartClient;
@@ -52,12 +55,14 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     private final KeyGenerator keyGenerator;
     private final SecureRandom secureRandom;
 
-    public EncryptionModule(IEncryptionContainer encryptionContainer) throws NoSuchAlgorithmException {
+
+    public EncryptionModule(IEncryptionContainer encryptionContainer) throws NoSuchAlgorithmException, NoSuchProviderException {
         super((short) -3);
         this.encryptionContainer = encryptionContainer;
-        keyGenerator = KeyGenerator.getInstance("AES");
+        initBouncyCastle();
+        keyGenerator = KeyGenerator.getInstance(SYMMETRIC_TYPE, PROVIDER);
         secureRandom = SecureRandom.getInstance("SHA1PRNG");
-        keyGenerator.init(128);
+        keyGenerator.init(SYMMETRIC_SIZE);
     }
 
     @Override
@@ -84,7 +89,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     protected void send(State state, byte[] data, byte[] data2, IConnection connection) {
-        Packet packet = new Packet(packetDefinition, state.getId(), data, data2);
+        Packet packet = new Packet(packetDefinition, state.id, data, data2);
         packet.sendTo(connection);
     }
 
@@ -98,35 +103,70 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         byte[] data = packet.get(1);
         byte[] data2 = packet.get(2);
         ModularArtifConnection connection = (ModularArtifConnection) packet.getSender();
-        if (state== State.Error.getId()) {
-            onError((String) Type.String_US_ASCII.getExtractor().extract(new ByteBuffer(data, connection)), connection);
-        } else if (state== State.ClientPublicKey.getId()) {
-            onClientPublicKey(data, connection);
-        } else if (state== State.ServerPublicKey.getId()) {
-            onServerPublicKey(data, connection);
-        } else if (state== State.TrustServer.getId()) {
-            onTrustServer(data, connection);
-        } else if (state== State.TrustServerAnswer.getId()) {
-            onTrustServerAnswer(data, connection);
-        } else if (state== State.RequestSecretKey.getId()) {
-            onRequestSecretKey(connection);
-        } else if (state== State.SecretKey.getId()) {
-            onSecretKey(connection, data, data2);
-        } else if (state== State.SecretKeyConfirm.getId()) {
-            onSecretKeyConfirm(connection, data, data2);
-        } else if (state== State.Success.getId()) {
-            onSuccess(connection);
+        switch (State.getById(state)) {
+            case Error:
+                onError((String) Type.String_US_ASCII.getExtractor().extract(new ByteBuffer(data, connection)), connection);
+                break;
+            case ClientPublicKey:
+                onClientPublicKey(data, connection);
+                break;
+            case ServerPublicKey:
+                onServerPublicKey(data, connection);
+                break;
+            case TrustServer:
+                onTrustServer(data, connection);
+                break;
+            case TrustServerAnswer:
+                onTrustServerAnswer(data, connection);
+                break;
+            case RequestSecretKey:
+                onRequestSecretKey(connection);
+                break;
+            case SecretKey:
+                onSecretKey(connection, data, data2);
+                break;
+            case SecretKeyConfirm:
+                onSecretKeyConfirm(connection, data, data2);
+                break;
+            case Success:
+                onSuccess(connection);
+                break;
+
+        }
+    }
+
+
+    public enum State {
+        Error(-1),ClientPublicKey(0),ServerPublicKey(1),TrustServer(2),TrustServerAnswer(3),RequestSecretKey(4),SecretKey(5),SecretKeyConfirm(6),Cancel(7), Success(8);
+
+        private static int off;
+        public final byte id;
+
+        State(int id) {
+            this.id = (byte)id;
+        }
+
+        static {
+            int off = 0;
+            for (State state:values()) {
+                off=off>state.id?state.id:off;
+            }
+            State.off=off;
+        }
+
+        public static State getById(byte id) {
+            return values()[id-off];
         }
     }
 
     @Override
-    public void onHandshake(ModularArtifConnection connection, IHandshakeCallback callback) throws Throwable {
+    public void onHandshake(ModularArtifConnection connection, ICallback callback) throws Throwable {
         getOrCreateModuleData(connection).callback = callback;
         send(State.ClientPublicKey, encryptionContainer.getPublicKey().getEncoded(), connection);
     }
 
     @Override
-    public void onHandshakeServerSide(ModularArtifConnection connection, IHandshakeCallback callback) throws Throwable {
+    public void onHandshakeServerSide(ModularArtifConnection connection, ICallback callback) throws Throwable {
         getOrCreateModuleData(connection).callback = callback;
     }
 
@@ -136,22 +176,18 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
 
-    public enum State {
-        Error(-1),ClientPublicKey(0),ServerPublicKey(1),TrustServer(2),TrustServerAnswer(3),RequestSecretKey(4),SecretKey(5),SecretKeyConfirm(6),Cancel(7), Success(8);
-
-        private byte id;
-
-        State(int id) {
-            this.id = (byte)id;
-        }
-
-        public byte getId() {
-            return id;
-        }
-
+    private void closeWithError(String text, Throwable t, ModularArtifConnection con) {
+        con.getLogger().error(text+" :", t);
+        _closeWithError(text, con);
     }
 
-    private void closeWithError(String text, IConnection con) {
+    private void closeWithError(String text, ModularArtifConnection con) {
+        con.getLogger().error(text+" :", new Exception("Unknown type"));
+        _closeWithError(text, con);
+    }
+
+
+    private void _closeWithError(String text, ModularArtifConnection con) {
         sendError(text, con);
         //con.stop();
     }
@@ -159,7 +195,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     //Client/PeerConnecting only
     private void onServerPublicKey(byte[] key, ModularArtifConnection connection) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         PublicKey publicKey;
         try {
             publicKey = encryptionContainer.recoverFromData(key);
@@ -169,29 +205,29 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         }
         if (encryptionContainer.trust(publicKey)) {
             encryptionData.remotePublicKey=publicKey;
-            byte[] iv = new byte[8];
+            byte[] iv = new byte[IV_LENGTH/2];
             secureRandom.nextBytes(iv);
             encryptionData.vectorPartClient = iv;
 
             try {
-                Cipher cipherServerPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                Cipher cipherServerPublic = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
                 cipherServerPublic.init(Cipher.ENCRYPT_MODE, encryptionData.remotePublicKey);
                 byte[] iVectorClientBytes = cipherServerPublic.doFinal(iv);
                 send(State.TrustServer, iVectorClientBytes, connection);
-            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e) {
                 onError(e, connection);
             }
         } else {
-            onError("Server does not trust us!", connection);
+            onError("Server is not trusted!", connection);
         }
     }
 
     private void onTrustServerAnswer(byte[] dataVector, ModularArtifConnection connection) {
 
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         try {
-            Cipher cipherClientPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherClientPrivate = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherClientPrivate.init(Cipher.DECRYPT_MODE, encryptionContainer.getPrivateKey());
             byte[] iVectorBytesReceived = cipherClientPrivate.doFinal(dataVector);
             byte[] iVectorBytesLocal = encryptionData.vectorPartClient;
@@ -206,40 +242,40 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
                 }
             }
             send(State.RequestSecretKey, connection);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e) {
             onError(e, connection);
         }
     }
 
     private void onSecretKey(ModularArtifConnection connection, byte[] dataKey, byte[] dataVector) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         if (encryptionData.remotePublicKey == null || encryptionData.vectorPartClient == null) {
             onError("Unexpected Error! Handshake data is corrupted.", connection);
             return;
         }
 
         try {
-            Cipher cipherServerPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherServerPrivate = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherServerPrivate.init(Cipher.DECRYPT_MODE, encryptionContainer.getPrivateKey());
             byte[] secretKeyRawBytes = cipherServerPrivate.doFinal(dataKey);
             byte[] iVectorRawBytes = cipherServerPrivate.doFinal(dataVector);
-            encryptionData.secretKey = new SecretKeySpec(secretKeyRawBytes, "AES");
+            encryptionData.secretKey = new SecretKeySpec(secretKeyRawBytes, SYMMETRIC_TYPE);
             encryptionData.vectorPartServer = iVectorRawBytes;
 
-            Cipher cipherClientPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherClientPublic = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherClientPublic.init(Cipher.ENCRYPT_MODE, encryptionData.remotePublicKey);
             byte[] secretKeyBytes = cipherClientPublic.doFinal(secretKeyRawBytes);
             byte[] iVectorBytes = cipherClientPublic.doFinal(iVectorRawBytes);
             send(State.SecretKeyConfirm, secretKeyBytes, iVectorBytes, connection);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e) {
             onError(e, connection);
         }
     }
 
     private void onSuccess(ModularArtifConnection connection) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         if (encryptionData.remotePublicKey == null || encryptionData.vectorPartClient == null || encryptionData.vectorPartServer == null || encryptionData.secretKey == null) {
             onError("Unexpected Error! Handshake data is corrupted.", connection);
             return;
@@ -251,15 +287,16 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             System.arraycopy(encryptionData.vectorPartServer,0,iv,encryptionData.vectorPartClient.length,encryptionData.vectorPartServer.length);
             IvParameterSpec secretVector = new IvParameterSpec(iv);
 
-            Cipher sendCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher sendCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             sendCipher.init(Cipher.ENCRYPT_MODE, encryptionData.secretKey, secretVector);
-            Cipher receiveCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher receiveCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             receiveCipher.init(Cipher.DECRYPT_MODE, encryptionData.secretKey, secretVector);
             connection.setReceiveCipher(receiveCipher);
             connection.setSendCipher(sendCipher);
+            connection.setHashAlgorithm(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER));
             encryptionData.done = true;
             encryptionData.callback.callback();
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
             onError(e, connection);
         }
     }
@@ -269,7 +306,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     //Server/PeerConnectedTo only
     private void onClientPublicKey(byte[] key, ModularArtifConnection connection) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         PublicKey publicKey;
         try {
             publicKey = encryptionContainer.recoverFromData(key);
@@ -287,85 +324,85 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
 
     private void onTrustServer(byte[] dataVector, ModularArtifConnection connection) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         if (encryptionData.remotePublicKey == null) {
-            closeWithError("Unexpected Error! Remote public key is not set.", connection);
+            closeWithError("Unexpected Error!", connection);
             return;
         }
 
         try {
-            Cipher cipherServerPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherServerPrivate = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherServerPrivate.init(Cipher.DECRYPT_MODE, encryptionContainer.getPrivateKey());
             byte[] iv = cipherServerPrivate.doFinal(dataVector);
             encryptionData.vectorPartClient = iv;
 
-            Cipher cipherClientPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherClientPublic = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherClientPublic.init(Cipher.ENCRYPT_MODE, encryptionData.remotePublicKey);
             byte[] iVectorBytes = cipherClientPublic.doFinal(iv);
             send(State.TrustServerAnswer, iVectorBytes, connection);
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            closeWithError("Unexpected Error! " + e.toString(), connection);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e) {
+            closeWithError("Unexpected Error!", e, connection);
         }
     }
 
     private void onRequestSecretKey(ModularArtifConnection connection) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         if (encryptionData.remotePublicKey == null || encryptionData.vectorPartClient == null) {
-            closeWithError("Unexpected Error! Handshake data is corrupted.", connection);
+            closeWithError("Unexpected Error!", connection);
             return;
         }
         Key secretKey = keyGenerator.generateKey();
-        byte[] iv = new byte[8];
+        byte[] iv = new byte[IV_LENGTH/2];
         secureRandom.nextBytes(iv);
         encryptionData.secretKey = secretKey;
         encryptionData.vectorPartServer = iv;
 
         try {
-            Cipher cipherClientPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherClientPublic = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherClientPublic.init(Cipher.ENCRYPT_MODE, encryptionData.remotePublicKey);
             byte[] secretKeyBytes = cipherClientPublic.doFinal(secretKey.getEncoded());
             byte[] iVectorBytes = cipherClientPublic.doFinal(iv);
             send(State.SecretKey, secretKeyBytes, iVectorBytes, connection);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e) {
             connection.getLogger().error("Unexpected Error while encryption handshake: ", e);
-            closeWithError("Unexpected Error! " + e.toString(), connection);
+            closeWithError("Unexpected Error!", e, connection);
         }
     }
 
     private void onSecretKeyConfirm(ModularArtifConnection connection, byte[] dataKey, byte[] dataVector) {
         EncryptionData encryptionData = getModuleData(connection);
-        encryptionData.callback.yield();
+        encryptionData.callback.yield(YieldCause.PacketReceived);
         if (encryptionData.remotePublicKey == null || encryptionData.vectorPartClient == null || encryptionData.vectorPartServer == null || encryptionData.secretKey == null) {
-            closeWithError("Unexpected Error! Handshake data is corrupted.", connection);
+            closeWithError("Unexpected Error!", connection);
             return;
         }
 
         try {
-            Cipher cipherServerPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipherServerPrivate = Cipher.getInstance(ASYMMETRIC_PATTERN, PROVIDER);
             cipherServerPrivate.init(Cipher.DECRYPT_MODE, encryptionContainer.getPrivateKey());
             byte[] secretKeyBytesReceived = cipherServerPrivate.doFinal(dataKey);
             byte[] iVectorBytesReceived = cipherServerPrivate.doFinal(dataVector);
             byte[] secretKeyBytesLocal = encryptionData.secretKey.getEncoded();
             byte[] iVectorBytesLocal = encryptionData.vectorPartServer;
             if (secretKeyBytesLocal.length != secretKeyBytesReceived.length) {
-                closeWithError("Received invalid secretkey.", connection);
+                closeWithError("Unexpected Error!", connection);
                 return;
             }
             if (iVectorBytesLocal.length != iVectorBytesReceived.length) {
-                closeWithError("Received invalid vector.", connection);
+                closeWithError("Unexpected Error!", connection);
                 return;
             }
             for (int i=0;i<secretKeyBytesLocal.length;i++) {
                 if (secretKeyBytesLocal[i] != secretKeyBytesReceived[i]) {
-                    closeWithError("Received invalid secretkey.", connection);
+                    closeWithError("Unexpected Error!", connection);
                     return;
                 }
             }
             for (int i=0;i<iVectorBytesLocal.length;i++) {
                 if (iVectorBytesLocal[i] != iVectorBytesReceived[i]) {
-                    closeWithError("Received invalid vector.", connection);
+                    closeWithError("Unexpected Error!", connection);
                     return;
                 }
             }
@@ -375,16 +412,17 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             System.arraycopy(encryptionData.vectorPartServer,0,iv,encryptionData.vectorPartClient.length,encryptionData.vectorPartServer.length);
             IvParameterSpec secretVector = new IvParameterSpec(iv);
 
-            Cipher sendCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher sendCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             sendCipher.init(Cipher.ENCRYPT_MODE, encryptionData.secretKey, secretVector);
-            Cipher receiveCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher receiveCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             receiveCipher.init(Cipher.DECRYPT_MODE, encryptionData.secretKey, secretVector);
             send(State.Success, connection);
             connection.setReceiveCipher(receiveCipher);
             connection.setSendCipher(sendCipher);
+            connection.setHashAlgorithm(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER));
             encryptionData.done = true;
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
-            closeWithError("Unexpected Error! " + e.toString(), connection);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
+            closeWithError("Unexpected Error!", e, connection);
         }
     }
 

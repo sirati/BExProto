@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.CryptoStream;
+import de.sirati97.bex_proto.datahandler.EncryptionStream;
 import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.v1.network.NetConnection;
@@ -21,7 +21,7 @@ public class CommandSender extends CommandSBase {
 			} else {
 				byte[] byteStream2;
 				synchronized (cryptoMutex) {
-					byteStream2 = new SendStream(new CryptoStream(sendStream.getHeadlessStream(), connection.getSendCipher())).getBytes();
+					byteStream2 = new SendStream(new EncryptionStream(sendStream.getHeadlessStream(), connection.getSendCipher())).getBytes();
 				}
 				connection.send(byteStream2);
 			}
@@ -34,7 +34,7 @@ public class CommandSender extends CommandSBase {
 		if (receiver.getSendCipher() == null) {
 			return new SendStream(stream);
 		} else {
-			return new SendStream(new CryptoStream(stream, receiver.getSendCipher()));
+			return new SendStream(new EncryptionStream(stream, receiver.getSendCipher()));
 		}
 	}
 

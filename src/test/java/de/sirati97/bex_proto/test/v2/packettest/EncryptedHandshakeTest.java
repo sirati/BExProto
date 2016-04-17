@@ -18,32 +18,32 @@ import de.sirati97.bex_proto.v2.module.internal.EncryptionModule;
 import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sirati97 on 13.04.2016.
  */
 public class EncryptedHandshakeTest implements PacketExecutor{
+    private ILogger log = new SysOutLogger();
+    private AsyncHelper asyncHelper = new AdvThreadAsyncHelper(6);
 
     @Test
-    public void start() throws TimeoutException, InterruptedException, HandshakeException, NoSuchAlgorithmException {
-        ILogger log = new SysOutLogger();
+    public void start() throws TimeoutException, InterruptedException, HandshakeException, NoSuchAlgorithmException, NoSuchProviderException {
         Long timestamp;
         try {
-            log.info("Handshake test preparing");
-            PacketDefinition definition1 = new PacketDefinition((short)0, this, Type.String_Utf_8);
-            PacketDefinition definition2 = new PacketDefinition((short)0, this, Type.String_Utf_8);
-            ModuleHandler moduleHandler1 = new ModuleHandler(definition1, log);
-            ModuleHandler moduleHandler2 = new ModuleHandler(definition2, log);
-            moduleHandler1.register(new EncryptionModule(new RuntimeGeneratedUnsecureEncryptionContainer()));
-            moduleHandler2.register(new EncryptionModule(new RuntimeGeneratedUnsecureEncryptionContainer()));
-            AsyncHelper helper = new AdvThreadAsyncHelper(4);
+            log.info("Encrypted Handshake test preparing");
+            PacketDefinition definition1 = new PacketDefinition((short) 0, this, Type.String_Utf_8);
+            PacketDefinition definition2 = definition1.clone();
             TestIOHandler pipe1 = new TestIOHandler();
             TestIOHandler pipe2 = new TestIOHandler();
-            ModularArtifConnection connection1 = new ModularArtifConnection("TestCon1", helper, pipe1, moduleHandler1);
-            pipe1.receiver = new ModularArtifConnection("TestCon2", helper, pipe2, moduleHandler2);
+            ModularArtifConnection connection1 = createConnection("TestEnCon1", definition1, pipe1);
+            ModularArtifConnection connection2 = createConnection("TestEnCon2", definition2, pipe2);
+
+            pipe1.receiver = connection2;
             pipe2.receiver = connection1;
-            log.info("Handshake test start");
+
+            log.info("Encrypted Handshake test start");
             timestamp = System.nanoTime();
             connection1.connect();
             timestamp = System.nanoTime()-timestamp;
@@ -54,7 +54,14 @@ public class EncryptedHandshakeTest implements PacketExecutor{
             throw e;
 
         }
-        log.info("Handshake test successful. Handshake took " + (timestamp/1000000) + "ms");
+        log.info("Encrypted Handshake test successful. Handshake took " + (timestamp/1000000) + "ms");
+    }
+
+    private ModularArtifConnection createConnection(String name, PacketDefinition definition, TestIOHandler pipe) throws NoSuchAlgorithmException, NoSuchProviderException {
+        ModuleHandler handler = new ModuleHandler(definition, asyncHelper, log);
+        handler.register(new EncryptionModule(new RuntimeGeneratedUnsecureEncryptionContainer()));
+        //handler.register(new StressModule());
+        return new ModularArtifConnection(name, pipe, handler);
     }
 
     @Override

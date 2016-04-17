@@ -8,28 +8,40 @@ import de.sirati97.bex_proto.util.IConnection;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class PacketDefinition implements IPacket{
+public class PacketDefinition implements IPacket, Cloneable{
     private TypeBase[] types;
     private short id;
     private PacketExecutor executor;
     private IPacket parent;
 
 
+    PacketDefinition(short id, TypeBase... types) {
+        this(id, null, null, true, types);
+    }
+
     public PacketDefinition(short id, PacketExecutor executor, TypeBase... types) {
         this(id, null, executor, types);
     }
 
     public PacketDefinition(short id, IPacketCollection parent, TypeBase... types) {
-        this(id, parent, parent.getStandardExecutor(), types);
+        this(id, parent,  false, types);
+    }
+
+    PacketDefinition(short id, IPacketCollection parent, boolean selfExecuting, TypeBase... types) {
+        this(id, parent, parent.getStandardExecutor(), selfExecuting, types);
     }
 
     public PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, TypeBase... types) {
+        this(id, parent, executor, false, types);
+    }
+
+    private PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, boolean selfExecuting, TypeBase... types) {
+        this.id = id;
         if (parent != null) {
             parent.register(this);
         }
-        this.executor = executor;
+        this.executor = selfExecuting? (PacketExecutor) this :executor;
         this.types = types;
-        this.id = id;
     }
 
     @Override
@@ -73,5 +85,17 @@ public class PacketDefinition implements IPacket{
 
     public PacketExecutor getExecutor() {
         return executor;
+    }
+
+    @Override
+    public PacketDefinition clone() {
+        return clone(parent);
+    }
+
+
+    public PacketDefinition clone(IPacket newParent) {
+        PacketDefinition result = new PacketDefinition(id, null, executor, executor==this, types);
+        result.setParent(newParent);
+        return result;
     }
 }

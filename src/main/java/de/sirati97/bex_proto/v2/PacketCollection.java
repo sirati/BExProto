@@ -51,6 +51,9 @@ public class PacketCollection implements IPacketCollection {
 
     @Override
     public void register(IPacket packet) {
+        if (packets.get(packet.getId())!=null) {
+            throw new IllegalStateException("There is already a packet with the id " + packet.getId());
+        }
         packets.put(packet.getId(), packet);
         packet.setParent(this);
     }

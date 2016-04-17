@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
@@ -37,14 +38,14 @@ public class Main {
 			public void run() {
 				try {
 					main();
-				} catch (UnrecoverableKeyException | KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException | InterruptedException | IOException e) {
+				} catch (UnrecoverableKeyException | KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException | InterruptedException | IOException | NoSuchProviderException e) {
 					e.printStackTrace();
 				}
 			}
 		}, "main");
 	}
 	
-	public static void main() throws InterruptedException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, CertificateException, FileNotFoundException, IOException {
+	public static void main() throws InterruptedException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, CertificateException, FileNotFoundException, IOException, NoSuchProviderException {
 		//Auswerter der daten instanzieren
 		
 		CommandRegister commandRegister = new CommandRegister();

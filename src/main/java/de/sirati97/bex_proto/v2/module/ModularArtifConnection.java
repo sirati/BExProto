@@ -1,11 +1,11 @@
 package de.sirati97.bex_proto.v2.module;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
 import de.sirati97.bex_proto.v2.artifcon.IOHandler;
-import de.sirati97.bex_proto.v2.module.internal.HandshakeModule;
-import de.sirati97.bex_proto.v2.module.internal.IHandshakeCallback;
+import de.sirati97.bex_proto.v2.module.internal.ICallback;
+import de.sirati97.bex_proto.v2.module.internal.YieldCause;
+import de.sirati97.bex_proto.v2.module.internal.connectionhandler.ConnectionHandlerModule;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +23,8 @@ public class ModularArtifConnection extends ArtifConnection {
     private final Object connectMutex = new Object();
     private String connectedWith=null;
 
-    public ModularArtifConnection(String connectionName, AsyncHelper asyncHelper, IOHandler ioHandler, ModuleHandler moduleHandler) {
-        super(connectionName, asyncHelper, ioHandler, moduleHandler.getLogger(), moduleHandler.getPacketHandler());
+    public ModularArtifConnection(String connectionName, IOHandler ioHandler, ModuleHandler moduleHandler) {
+        super(connectionName, moduleHandler.getAsyncHelper(), ioHandler, moduleHandler.getLogger(), moduleHandler.getPacketHandler());
         this.moduleHandler = moduleHandler;
     }
 
@@ -83,19 +83,19 @@ public class ModularArtifConnection extends ArtifConnection {
             if (!canConnect) { //test it again to be sure
                 throw new IllegalStateException("Cannot connect twice");
             }
-            HandshakeData data = new HandshakeData();
-            moduleHandler.handshakeModule.sendHandshakeRequest(this, data);
+            CallbackData data = new CallbackData();
+            moduleHandler.connectionHandlerModule.sendHandshakeRequest(this, data);
             connect_wait(data);
 
             onHandshake(data, moduleHandler.handshakesInternalPriority, false);
 
-            moduleHandler.handshakeModule.sendHandshakeExchangeData(this, data);
+            moduleHandler.connectionHandlerModule.sendHandshakeExchangeData(this);
             connect_wait(data);
 
             onHandshake(data, moduleHandler.handshakesHighPriority, false);
             onHandshake(data, moduleHandler.handshakesLowPriority, false);
 
-            moduleHandler.handshakeModule.sendHandshakeFinished(this, data);
+            moduleHandler.connectionHandlerModule.sendHandshakeFinished(this);
             connect_wait(data);
 
             checkHandshakeCompleted(moduleHandler.handshakesInternalPriority);
@@ -112,14 +112,16 @@ public class ModularArtifConnection extends ArtifConnection {
                     throw new HandshakeIncompleteException(moduleHandshake);
                 }
             } catch (Throwable t) {
-                throw new HandshakeModuleException(moduleHandshake, t);
+                throw (t instanceof HandshakeIncompleteException)?(HandshakeIncompleteException)t:new HandshakeModuleException(moduleHandshake, t);
             }
         }
     }
 
-    private void onHandshake(IHandshakeData data, List<IModuleHandshake> handshakes, boolean serverSide) throws HandshakeException, TimeoutException, InterruptedException {
+    private void onHandshake(ICallbackData data, List<IModuleHandshake> handshakes, boolean serverSide) throws HandshakeException, TimeoutException, InterruptedException {
         for (IModuleHandshake moduleHandshake:handshakes) {
-            data.setActiveModule(moduleHandshake);
+            if (!serverSide) {
+                data.setActiveModule(moduleHandshake);
+            }
             try {
                 if (serverSide) {
                     moduleHandshake.onHandshakeServerSide(this, data);
@@ -137,7 +139,7 @@ public class ModularArtifConnection extends ArtifConnection {
 
     /**Internal do not call*/
     public final void internal_OnHandshakeStarted(Class clazz){
-        if (clazz != HandshakeModule.class) {
+        if (clazz != ConnectionHandlerModule.class) {
             throw new IllegalStateException("This method should not be called by user code");
         }
         if (!canConnect) {
@@ -147,8 +149,8 @@ public class ModularArtifConnection extends ArtifConnection {
             if (!canConnect) { //test it again to be sure
                 throw new IllegalStateException("Cannot start handshake twice");
             }
-            final HandshakeData data = new HandshakeData();
-            final HandshakeData initLock = new HandshakeData();
+            final CallbackData data = new CallbackData();
+            final CallbackData initLock = new CallbackData();
 
             getAsyncHelper().runAsync(new Runnable() {
                 @Override
@@ -156,8 +158,8 @@ public class ModularArtifConnection extends ArtifConnection {
                     try {
 
                         data.yieldChild = initLock;
-                        ServerHandshakeDataWrapper serverData = new ServerHandshakeDataWrapper(data);
-                        moduleHandler.handshakeModule.initServerSide(ModularArtifConnection.this, data);
+                        ServerCallbackDataWrapper serverData = new ServerCallbackDataWrapper(data);
+                        moduleHandler.connectionHandlerModule.initServerSide(ModularArtifConnection.this, data);
                         onHandshake(serverData, moduleHandler.handshakesInternalPriority, true);
                         data.yieldChild = null;
                         initLock.callback();
@@ -172,12 +174,12 @@ public class ModularArtifConnection extends ArtifConnection {
                         checkHandshakeCompleted(moduleHandler.handshakesLowPriority);
 
                         connectionEstablished = true;
-                        moduleHandler.handshakeModule.finishServerSide(ModularArtifConnection.this);
+                        moduleHandler.connectionHandlerModule.finishServerSide(ModularArtifConnection.this);
 
                     } catch (Throwable e) {
                         getLogger().error("Handshake failed. Exception occurred:", e);
                         if (e instanceof HandshakeException || e instanceof InterruptedException || e instanceof TimeoutException) {
-                            moduleHandler.handshakeModule.sendError(e, ModularArtifConnection.this);
+                            moduleHandler.connectionHandlerModule.sendHandshakeError(e, ModularArtifConnection.this);
                         }
                     }
 
@@ -199,7 +201,7 @@ public class ModularArtifConnection extends ArtifConnection {
         this.connectedWith = connectedWith;
     }
 
-    private void connect_wait(HandshakeData data) throws InterruptedException, TimeoutException, HandshakeException {
+    private void connect_wait(CallbackData data) throws InterruptedException, TimeoutException, HandshakeException {
         synchronized (connectMutex) {
             data.yield = true;
             while (data.yield && !data.done && data.exception == null) {
@@ -218,20 +220,20 @@ public class ModularArtifConnection extends ArtifConnection {
         }
     }
 
-    interface IHandshakeData extends IHandshakeCallback{
+    interface ICallbackData extends ICallback {
         IModuleHandshake getActiveModule();
         void setActiveModule(IModuleHandshake activeModule);
-        HandshakeData getRoot();
+        CallbackData getRoot();
     }
 
-    class HandshakeData implements IHandshakeData {
+    class CallbackData implements ICallbackData {
         public boolean done = false;
         public boolean yield = false;
         public Throwable exception;
         public boolean timeout = false;
         public IModuleHandshake activeModule;
         public long nextYield;
-        public HandshakeData yieldChild;
+        public CallbackData yieldChild;
 
         @Override
         public synchronized void callback() {
@@ -253,12 +255,15 @@ public class ModularArtifConnection extends ArtifConnection {
         }
 
         @Override
-        public synchronized void yield() {
+        public synchronized void yield(YieldCause cause) {
             if (yieldChild != null) {
-                yieldChild.yield();
+                yieldChild.yield(YieldCause.PacketReceived);
             }
             if (System.currentTimeMillis()<nextYield) {
                 return;
+            }
+            if (cause == YieldCause.KeepAlive) {
+                moduleHandler.connectionHandlerModule.yieldRemote(ModularArtifConnection.this);
             }
             nextYield = System.currentTimeMillis()+500;
             yield = true;
@@ -289,15 +294,15 @@ public class ModularArtifConnection extends ArtifConnection {
         }
 
         @Override
-        public HandshakeData getRoot() {
+        public CallbackData getRoot() {
             return this;
         }
     }
 
-    class ServerHandshakeDataWrapper implements IHandshakeData {
-        private final IHandshakeData parent;
+    class ServerCallbackDataWrapper implements ICallbackData {
+        private final ICallbackData parent;
 
-        ServerHandshakeDataWrapper(IHandshakeData parent) {
+        ServerCallbackDataWrapper(ICallbackData parent) {
             this.parent = parent;
         }
 
@@ -312,8 +317,8 @@ public class ModularArtifConnection extends ArtifConnection {
         }
 
         @Override
-        public void yield() {
-            parent.yield();
+        public void yield(YieldCause cause) {
+            parent.yield(cause);
         }
 
         @Override
@@ -332,7 +337,7 @@ public class ModularArtifConnection extends ArtifConnection {
         }
 
         @Override
-        public HandshakeData getRoot() {
+        public CallbackData getRoot() {
             return parent.getRoot();
         }
     }

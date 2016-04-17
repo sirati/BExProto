@@ -4,11 +4,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
-public class CryptoStream implements Stream {
-	private Stream stream;
-	private Cipher cipher;
+public class EncryptionStream implements Stream {
+	private final Stream stream;
+	private final Cipher cipher;
 	
-	public CryptoStream(Stream stream, Cipher cipher) {
+	public EncryptionStream(Stream stream, Cipher cipher) {
 		this.stream = stream;
 		this.cipher = cipher;
 	}
