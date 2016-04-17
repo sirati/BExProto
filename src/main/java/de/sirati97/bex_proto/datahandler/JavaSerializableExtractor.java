@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class JavaSerializableExtractor<T extends Serializable> implements StreamExtractor<T> {
 
     @Override
-    public T extract(ByteBuffer dat) {
+    public T extract(CursorByteBuffer dat) {
         int length = (Integer) Type.Integer.getExtractor().extract(dat);
         byte[] stream = dat.getMulti(length);
         ObjectInputStream deserializer = null;

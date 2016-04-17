@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -15,9 +17,9 @@ public class EncryptionStream implements Stream {
 	
 	
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		try {
-			return cipher.doFinal(stream.getBytes());
+			return new ByteBuffer(cipher.doFinal(stream.getBytes().getBytes()));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			throw new IllegalStateException(e);
 		}

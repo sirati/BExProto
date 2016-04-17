@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 /**
  * Created by sirati97 on 15.04.2016.
  */
-public class JavaSerializableType<T extends Serializable> extends ObjType {
+public class JavaSerializableType<T extends Serializable> extends ObjType<T> {
     private final JavaSerializableExtractor<T> extractor = new JavaSerializableExtractor<>();
     private final Class<T> clazz;
     private final String name;
@@ -26,8 +26,8 @@ public class JavaSerializableType<T extends Serializable> extends ObjType {
 
 
     @Override
-    public JavaSerializableStream<T> createStream(Object obj) {
-        return new JavaSerializableStream<>((T) obj);
+    public JavaSerializableStream<T> createStreamCasted(T obj) {
+        return new JavaSerializableStream<>(obj);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class JavaSerializableType<T extends Serializable> extends ObjType {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<T> getType() {
         return clazz;
     }
 

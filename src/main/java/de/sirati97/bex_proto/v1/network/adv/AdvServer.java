@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
 import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
@@ -117,7 +117,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	
 	private static class AdvServerCommandRegister extends CommandRegisterBase {
 		private AdvServer server;
-		@Override protected boolean checkID(short commandId, ByteBuffer dat) {
+		@Override protected boolean checkID(short commandId, CursorByteBuffer dat) {
 			NetConnection connection = (NetConnection) dat.getIConnection();
 			if (connection.isRegistered() || commandId != 0) return true;
 			server.onConnected(connection);

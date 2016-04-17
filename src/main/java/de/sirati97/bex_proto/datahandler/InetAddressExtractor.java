@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,9 +8,10 @@ import java.net.UnknownHostException;
 public class InetAddressExtractor implements StreamExtractor<InetAddress> {
 
 	@Override
-	public InetAddress extract(ByteBuffer dat) {
+	public InetAddress extract(CursorByteBuffer dat) {
 		try {
-			return InetAddress.getByAddress(dat.getMulti(4));
+			int length = (Integer) Type.Integer.getExtractor().extract(dat);
+			return InetAddress.getByAddress(dat.getMulti(length));
 		} catch (UnknownHostException e) {
 			throw new IllegalArgumentException(e);
 		}

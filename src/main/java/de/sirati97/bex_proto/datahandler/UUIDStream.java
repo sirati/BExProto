@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import java.util.UUID;
 
 public class UUIDStream implements Stream {
@@ -10,9 +12,8 @@ public class UUIDStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
-		Stream stream = Type.String_US_ASCII.createStream(data.toString());
-		return stream.getBytes();
+	public ByteBuffer getBytes() {
+		return ByteBuffer.combine(true, BExStatic.setLong(data.getLeastSignificantBits()),BExStatic.setLong(data.getMostSignificantBits()));
 	}
 
 }

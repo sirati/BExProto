@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v1.network;
 import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -159,7 +159,7 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 		}
 	}
 	
-	public void exercuteInput(ByteBuffer dat) {
+	public void exercuteInput(CursorByteBuffer dat) {
 		streamReader.exercute(dat, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 	
@@ -425,7 +425,7 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 
 	@Override
 	public void send(SendStream stream) {
-		send(stream.getBytes());
+		send(stream.getBytes().getBytes());
 	}
 
 	@Override

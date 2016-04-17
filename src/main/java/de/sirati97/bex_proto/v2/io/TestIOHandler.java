@@ -44,6 +44,11 @@ public class TestIOHandler implements IOHandler {
 
     }
 
+    @Override
+    public void updateConnectionName(String newName) {
+
+    }
+
 
     public static String bytesToString(byte[] stream) {
         StringBuilder sb = new StringBuilder();

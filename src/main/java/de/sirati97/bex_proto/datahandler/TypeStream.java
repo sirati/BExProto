@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ public class TypeStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		boolean isDerived = (data instanceof DerivedTypeBase);
 		if (isDerived) {
 			List<DerivedTypeBase> derivedTypesList = new ArrayList<>();
@@ -26,12 +28,12 @@ public class TypeStream implements Stream {
 			for (int i=0;i<derivedTypes.length;i++) {
 				derivedTypes[derivedTypes.length-i-1]=derivedTypesList.get(i).getDerivedID();
 			}
-			Stream isDerivedStream = Type.Boolean.createStream(isDerived);
+			Stream isDerivedStream = Type.Boolean.createStream(true);
 			Stream baseTypeStream = Type.String_US_ASCII.createStream(temp.getTypeName());
-			Stream derivedStream = new ArrayType(Type.Byte).createStream(derivedTypes);
+			Stream derivedStream = new ArrayType<>(Type.Byte).createStream(derivedTypes);
 			return new MultiStream(isDerivedStream,baseTypeStream, derivedStream).getBytes();
 		} else {
-			Stream isDerivedStream = Type.Boolean.createStream(isDerived);
+			Stream isDerivedStream = Type.Boolean.createStream(false);
 			Stream baseTypeStream = Type.String_US_ASCII.createStream(data.getTypeName());
 			return new MultiStream(isDerivedStream,baseTypeStream).getBytes();
 			

@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 public class DynamicObjStream implements Stream {
 	private DynamicObj data;
 	
@@ -8,7 +10,7 @@ public class DynamicObjStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		Stream type = Type.Type.createStream(data.getType());
 		Stream value = data.getType().createStream(data.getValue());
 		return new MultiStream(type, value).getBytes();

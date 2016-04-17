@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -16,7 +18,7 @@ public class JavaSerializableStream<T extends Serializable> implements Stream {
     }
 
     @Override
-    public byte[] getBytes() {
+    public ByteBuffer getBytes() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream serializer = null;
         try {

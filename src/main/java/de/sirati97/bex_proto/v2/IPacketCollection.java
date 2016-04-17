@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -8,6 +8,6 @@ import de.sirati97.bex_proto.util.ByteBuffer;
 public interface IPacketCollection extends IPacket {
     PacketExecutor getStandardExecutor();
     IPacket getPacket(short id);
-    IPacket getPacket(ByteBuffer buf);
+    IPacket getPacket(CursorByteBuffer buf);
     void register(IPacket packet);
 }

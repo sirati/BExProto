@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
 
 import javax.crypto.BadPaddingException;
@@ -53,14 +53,14 @@ public class StreamReader {
 				}
 				stream = newStream;
 			}
-			final ByteBuffer buf = new ByteBuffer(stream, sender);
+			final CursorByteBuffer buf = new CursorByteBuffer(stream, sender);
 			execute(buf, asyncHelper, name);
 			
 		} while (location < bytes.length);
 		return null;
 	}
 	
-	public void execute(final ByteBuffer buf, AsyncHelper asyncHelper, String name) {
+	public void execute(final CursorByteBuffer buf, AsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				packet.extract(buf);

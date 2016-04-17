@@ -1,11 +1,11 @@
 package de.sirati97.bex_proto.util;
 
-public class ByteBuffer {
+public class CursorByteBuffer {
 	private byte[] bytes;
 	private int location = 0;
 	private IConnection IConnection;
 	
-	public ByteBuffer(byte[] bytes, IConnection IConnection) {
+	public CursorByteBuffer(byte[] bytes, IConnection IConnection) {
 		this.bytes = bytes;
 		this.IConnection = IConnection;
 	}

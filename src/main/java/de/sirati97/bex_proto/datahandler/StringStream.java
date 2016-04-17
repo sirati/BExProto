@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import java.nio.charset.Charset;
 
 public class StringStream implements Stream {
@@ -14,7 +16,7 @@ public class StringStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		return BExStatic.setString(str, charset);
 	}
 

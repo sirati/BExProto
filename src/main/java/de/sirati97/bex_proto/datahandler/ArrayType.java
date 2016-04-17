@@ -3,19 +3,20 @@ package de.sirati97.bex_proto.datahandler;
 import java.lang.reflect.Array;
 
 
-public final class ArrayType extends DerivedType{
-	private TypeBase type;
-	private StreamExtractor<? extends Object> extractor;
-	
+public final class ArrayType<T> extends DerivedType<T[],T>{
+	private TypeBase<T> type;
+	private ArrayExtractor<T> extractor;
+	private Class<T[]> clazz;
 
-	public ArrayType(TypeBase type) {
+	public ArrayType(TypeBase<T> type) {
 		this(DerivedTypeBase.Register.ARRAY_TYPE_FACTORY, type);
 	}
 	
 	public ArrayType(ArrayTypeFactory factory, TypeBase type) {
 		super(factory);
 		this.type = type;
-		this.extractor = new ArrayExtractor(type);
+		this.extractor = new ArrayExtractor<>(type);
+		this.clazz = (Class<T[]>) Array.newInstance(type.getType(), 0).getClass();
 	}
 	
 	@Override
@@ -23,23 +24,23 @@ public final class ArrayType extends DerivedType{
 		return true;
 	}
 
-	public TypeBase getInnerType() {
+	public TypeBase<T> getInnerType() {
 		return type;
 	}
-	
+
 	@Override
 	public Stream createStream(Object obj) {
 		return new ArrayStream(type, obj);
 	}
 
 	@Override
-	public StreamExtractor<? extends Object> getExtractor() {
+	public ArrayExtractor<T> getExtractor() {
 		return extractor;
 	}
 
 	@Override
-	public Object[] createArray(int length) {
-		return new Object[length][];
+	public T[][] createArray(int length) {
+		return (T[][]) Array.newInstance(clazz, length);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public final class ArrayType extends DerivedType{
 
 	@Override
 	public Class<?> getType() {
-		return null;
+		return clazz;
 	}
 	
 	@Override

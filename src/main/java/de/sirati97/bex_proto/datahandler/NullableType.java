@@ -1,12 +1,12 @@
 package de.sirati97.bex_proto.datahandler;
 
 
-public class NullableType extends DerivedType {
-	private TypeBase type;
-	private StreamExtractor<? extends Object> extractor;
+public class NullableType<T> extends DerivedType<T,T> {
+	private TypeBase<T> type;
+	private StreamExtractor<T> extractor;
 
 
-	public NullableType(TypeBase type) {
+	public NullableType(TypeBase<T> type) {
 		this(DerivedTypeBase.Register.NULLABLE_TYPE_FACTORY, type);
 	}
 	
@@ -32,12 +32,12 @@ public class NullableType extends DerivedType {
 	}
 
 	@Override
-	public StreamExtractor<? extends Object> getExtractor() {
+	public StreamExtractor<T> getExtractor() {
 		return extractor;
 	}
 
 	@Override
-	public Object[] createArray(int length) {
+	public T[] createArray(int length) {
 		return getInnerType().createArray(length);
 	}
 
@@ -46,7 +46,7 @@ public class NullableType extends DerivedType {
 		return getInnerType().getClass();
 	}
 	
-	public TypeBase getInnerType() {
+	public TypeBase<T> getInnerType() {
 		return type;
 	}
 

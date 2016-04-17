@@ -14,14 +14,14 @@ public class CommandSender extends CommandSBase {
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
 		SendStream sendStream = new SendStream(stream);
-		byte[] byteStream = sendStream.getBytes();
+		byte[] byteStream = sendStream.getBytes().getBytes();
 		for (NetConnection connection : connections) {
 			if (connection.getSendCipher() == null) {
 				connection.send(byteStream);
 			} else {
 				byte[] byteStream2;
 				synchronized (cryptoMutex) {
-					byteStream2 = new SendStream(new EncryptionStream(sendStream.getHeadlessStream(), connection.getSendCipher())).getBytes();
+					byteStream2 = new SendStream(new EncryptionStream(sendStream.getHeadlessStream(), connection.getSendCipher())).getBytes().getBytes();
 				}
 				connection.send(byteStream2);
 			}

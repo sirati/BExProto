@@ -125,7 +125,7 @@ public class ArtifConnection implements IConnection {
             stream = new SendStream(new EncryptionStream(stream.getHeadlessStream(), getSendCipher()));
         }
         try {
-            ioHandler.send(stream.getBytes());
+            ioHandler.send(stream.getBytes().getBytes());
         } catch (IOException e) {
             onIOException(e);
         }

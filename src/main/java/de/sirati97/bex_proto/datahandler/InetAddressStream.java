@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 import java.net.InetAddress;
 
 public class InetAddressStream implements Stream {
@@ -10,8 +12,8 @@ public class InetAddressStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
-		return data.getAddress();
+	public ByteBuffer getBytes() {
+		return BExStatic.setByteArray(data.getAddress());
 	}
 
 }

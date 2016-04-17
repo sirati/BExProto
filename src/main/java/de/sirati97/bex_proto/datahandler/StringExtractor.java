@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 import java.nio.charset.Charset;
 
@@ -12,7 +12,7 @@ public class StringExtractor implements StreamExtractor<String> {
 	}
 
 	@Override
-	public String extract(ByteBuffer dat) {
+	public String extract(CursorByteBuffer dat) {
 		return BExStatic.getString(dat, charset);
 	}
 

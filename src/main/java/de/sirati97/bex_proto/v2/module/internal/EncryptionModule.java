@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v2.module.internal;
 import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.IEncryptionContainer;
 import de.sirati97.bex_proto.v2.IPacket;
@@ -94,7 +94,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     protected void sendError(String error, IConnection connection) {
-        send(State.Error, Type.String_US_ASCII.createStream(error).getBytes(), connection);
+        send(State.Error, Type.String_US_ASCII.createStream(error).getBytes().getBytes(), connection);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         ModularArtifConnection connection = (ModularArtifConnection) packet.getSender();
         switch (State.getById(state)) {
             case Error:
-                onError((String) Type.String_US_ASCII.getExtractor().extract(new ByteBuffer(data, connection)), connection);
+                onError((String) Type.String_US_ASCII.getExtractor().extract(new CursorByteBuffer(data, connection)), connection);
                 break;
             case ClientPublicKey:
                 onClientPublicKey(data, connection);

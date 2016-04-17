@@ -3,9 +3,9 @@ package de.sirati97.bex_proto.datahandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface DerivedTypeBase extends TypeBase {
+public interface DerivedTypeBase<Type,InnerType> extends TypeBase<Type> {
 	byte getDerivedID();
-	TypeBase getInnerType();
+	TypeBase<InnerType> getInnerType();
 	ArrayType getInnerArray();
 	boolean isBasePrimitive();
 	DerivedFactory getFactory();

@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v1.command;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
@@ -22,7 +22,7 @@ public class CommandRegisterBase implements CommandBase {
 	}
 	
 	@Override
-	public Void extract(ByteBuffer dat) {
+	public Void extract(CursorByteBuffer dat) {
 		short commandId = (Short) Type.Short.getExtractor().extract(dat);
 		if (!checkID(commandId, dat))return null;
 		CommandBase command = commands.get(commandId);
@@ -32,7 +32,7 @@ public class CommandRegisterBase implements CommandBase {
 		return command.extract(dat);
 	}
 	
-	protected boolean checkID(short commandId, ByteBuffer dat){return true;}
+	protected boolean checkID(short commandId, CursorByteBuffer dat){return true;}
 	
 	public void register(CommandBase command) {
 		commands.put(command.getId(), command);

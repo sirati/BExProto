@@ -4,26 +4,26 @@ import de.sirati97.bex_proto.datahandler.ObjType;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.StreamExtractor;
 
-public class SSCWrapperType extends ObjType {
+public class SSCWrapperType extends ObjType<SSCWrapper> {
 	SSCWrapperExtractor extractor = new SSCWrapperExtractor();
 
 	@Override
-	public Stream createStream(Object obj) {
-		return new SSCWrapperStream((SSCWrapper) obj);
+	public Stream createStreamCasted(SSCWrapper obj) {
+		return new SSCWrapperStream(obj);
 	}
 
 	@Override
-	public StreamExtractor<? extends Object> getExtractor() {
+	public StreamExtractor<SSCWrapper> getExtractor() {
 		return extractor;
 	}
 
 	@Override
-	public Object[] createArray(int length) {
-		return new SSCWrapperType[length];
+	public SSCWrapper[] createArray(int length) {
+		return new SSCWrapper[length];
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<SSCWrapper> getType() {
 		return SSCWrapper.class;
 	}
 

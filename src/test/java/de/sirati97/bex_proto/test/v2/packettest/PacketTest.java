@@ -5,7 +5,7 @@ import de.sirati97.bex_proto.datahandler.InetAddressPort;
 import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
@@ -65,7 +65,7 @@ public class PacketTest implements PacketExecutor{
                     "Hello World",
                     "Hello World",
                     "Hello World",
-                    new NullableType(new ArrayType(new NullableType(Type.DynamicObj))),
+                    new NullableType(new ArrayType<>(new NullableType<>(Type.DynamicObj))),
                     UUID.randomUUID(),
                     InetAddress.getByAddress(new byte[]{127,0,0,1}),
                     new InetAddressPort(InetAddress.getByAddress(new byte[]{8,8,8,8}), 20),
@@ -73,7 +73,7 @@ public class PacketTest implements PacketExecutor{
                     null, false);
 
             Stream stream = packetSend.createStream();
-            ByteBuffer buffer = new ByteBuffer(stream.getBytes(), null);
+            CursorByteBuffer buffer = new CursorByteBuffer(stream.getBytes().getBytes(), null);
             PacketDefinition extracted = (PacketDefinition) collection.getPacket(buffer);
             assertTrue("PacketDefinition have different length!", definition1==extracted);
             Packet packetReceived = PacketManager.extract(extracted, buffer);

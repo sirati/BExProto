@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 public class NullableStream implements Stream {
 	private Object data;
 	private TypeBase base;
@@ -10,7 +12,7 @@ public class NullableStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		if (data == null) {
 			return Type.Boolean.createStream(true).getBytes();
 		} else {

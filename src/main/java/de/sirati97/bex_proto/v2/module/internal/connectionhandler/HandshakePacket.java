@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v2.module.internal.connectionhandler;
 import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.v2.IPacketCollection;
 import de.sirati97.bex_proto.v2.Packet;
@@ -20,17 +20,17 @@ public class HandshakePacket extends SelfExecutingPacketDefinition {
     private final ConnectionHandlerModule parent;
 
     public HandshakePacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {
-        super((short)0, packetCollection, Type.Byte, new NullableType(new ArrayType(Type.Byte)));
+        super((short)0, packetCollection, Type.Byte, new NullableType<>(new ArrayType<>(Type.Byte)));
         this.parent = parent;
     }
 
     protected void send(byte action, String extra, IConnection connection) {
-        Packet packet = new Packet(this, action, Type.String_Utf_8.createStream(extra).getBytes());
+        Packet packet = new Packet(this, action, Type.String_Utf_8.createStream(extra).getBytes().getBytes());
         packet.sendTo(connection);
     }
 
     public void sendError(Throwable t, IConnection connection) {
-        Packet packet = new Packet(this, (byte)-1, Type.JavaThrowable.createStream(t).getBytes());
+        Packet packet = new Packet(this, (byte)-1, Type.JavaThrowable.createStream(t).getBytes().getBytes());
         packet.sendTo(connection);
     }
 
@@ -43,7 +43,7 @@ public class HandshakePacket extends SelfExecutingPacketDefinition {
     public void execute(ReceivedPacket packet) {
         byte action = packet.get(0);
         ModularArtifConnection connection = (ModularArtifConnection) packet.getSender();
-        ByteBuffer extra =new ByteBuffer((byte[]) packet.get(1), connection);
+        CursorByteBuffer extra =new CursorByteBuffer((byte[]) packet.get(1), connection);
         if (action == 0) { //syn
             connection.internal_OnHandshakeStarted(ConnectionHandlerModule.class);
             send((byte)1, connection); //ack

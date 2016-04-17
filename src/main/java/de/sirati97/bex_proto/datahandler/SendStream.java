@@ -1,12 +1,13 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 
 public class SendStream implements Stream {
 	Stream[] streams;
-	byte[] innerBytes;
-	byte[] bytes;
+	ByteBuffer innerBytes;
+	ByteBuffer bytes;
 	IHeadlessByteArrayStream innerByteStream = new HeadlessByteArrayStreamImpl();
 	
 	public SendStream(Stream... streams) {
@@ -17,40 +18,51 @@ public class SendStream implements Stream {
 	
 	
 	@Override
-	public byte[] getBytes() {
+	public synchronized ByteBuffer getBytes() {
 		if (bytes == null) {
-			byte[] mergedBytes = getInnerBytes();
-			byte[] lengthBytes = BExStatic.setInteger(mergedBytes.length);
-			bytes = new byte[lengthBytes.length + mergedBytes.length];
-			System.arraycopy(lengthBytes, 0, bytes, 0, lengthBytes.length);
-			System.arraycopy(mergedBytes, 0, bytes, lengthBytes.length, mergedBytes.length);
+			bytes = getInnerBytes();
+			bytes.seal();
+			bytes = new ByteBuffer(BExStatic.setInteger(bytes.getLength()), bytes);
 		}
 		return bytes;
 	}
 	
-	public byte[] getInnerBytes() {
+	public synchronized ByteBuffer getInnerBytes() {
 		if (innerBytes == null) {
-			byte[][] bytess = new byte[streams.length][];
-			for (int i=0;i<streams.length;i++) {
-				bytess[i] = streams[i].getBytes();
+			if (streams.length == 0) {
+				innerBytes = new ByteBuffer();
+			} else {
+				innerBytes = streams[0].getBytes();
+				innerBytes.unseal();
+				for (int i=1;i<streams.length;i++) {
+					innerBytes.append(streams[i].getBytes());
+				}
 			}
-			innerBytes = BExStatic.mergeStream(bytess);
-			innerByteStream = new HeadlessByteArrayStream(innerBytes);
+			streams = null;
 		}
 		return innerBytes;
 	}
+
+
+//	if (streams.length == 0)return new ByteBuffer();
+//	ByteBuffer result = streams[0].getBytes();
+//	result.unseal();
+//	for (int i=1;i<streams.length;i++) {
+//		result.append(streams[i].getBytes());
+//	}
+//	return result;
 	
 	public IHeadlessByteArrayStream getHeadlessStream() {
 		return innerByteStream;
 	}
 	
 	public void send(NetConnection connection) {
-		connection.send(getBytes());
+		connection.send(getBytes().getBytes());
 	}
 
 	protected class HeadlessByteArrayStreamImpl implements IHeadlessByteArrayStream {
 		@Override
-		public byte[] getBytes() {
+		public ByteBuffer getBytes() {
 			return getInnerBytes();
 		}
 	}

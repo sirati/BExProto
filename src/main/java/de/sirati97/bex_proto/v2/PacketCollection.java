@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.datahandler.MultiStream;
 import de.sirati97.bex_proto.datahandler.ShortStream;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class PacketCollection implements IPacketCollection {
     }
 
     @Override
-    public void extract(ByteBuffer buf) {
+    public void extract(CursorByteBuffer buf) {
         short packetId = getShort(buf);
         if (!isAllowed(packetId, buf))return;
         IPacket packet = getPacket(packetId);
@@ -47,7 +47,7 @@ public class PacketCollection implements IPacketCollection {
         packet.extract(buf);
     }
 
-    protected boolean isAllowed(short packetId, ByteBuffer buf){return true;}
+    protected boolean isAllowed(short packetId, CursorByteBuffer buf){return true;}
 
     @Override
     public void register(IPacket packet) {
@@ -95,11 +95,11 @@ public class PacketCollection implements IPacketCollection {
     }
 
     @Override
-    public IPacket getPacket(ByteBuffer buf) {
+    public IPacket getPacket(CursorByteBuffer buf) {
         return getPacket(getShort(buf));
     }
 
-    private short getShort(ByteBuffer buf) {
+    private short getShort(CursorByteBuffer buf) {
         return (Short) Type.Short.getExtractor().extract(buf);
     }
 

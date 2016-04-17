@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-public abstract class DerivedType implements DerivedTypeBase {
+public abstract class DerivedType<Type,InnerType> implements DerivedTypeBase<Type,InnerType> {
 	private DerivedFactory factory;
 	
 	public DerivedType(DerivedFactory factory) {

@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 
 /**
@@ -18,5 +18,5 @@ public interface IPacket {
 
     IPacket getParent();
 
-    void extract(ByteBuffer buf);
+    void extract(CursorByteBuffer buf);
 }

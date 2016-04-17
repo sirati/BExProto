@@ -2,9 +2,9 @@ package de.sirati97.bex_proto.datahandler;
 
 import java.nio.charset.Charset;
 
-public class StringType extends ObjType {
+public class StringType extends ObjType<String> {
 	private Charset charset;
-	private StreamExtractor<? extends Object> extractor
+	private StreamExtractor<String> extractor
 ;
 	
 	public StringType(Charset charset) {
@@ -14,22 +14,22 @@ public class StringType extends ObjType {
 	}
 
 	@Override
-	public Stream createStream(Object obj) {
-		return new StringStream((String)obj, charset);
+	public Stream createStreamCasted(String obj) {
+		return new StringStream(obj, charset);
 	}
 
 	@Override
-	public StreamExtractor<? extends Object> getExtractor() {
+	public StreamExtractor<String> getExtractor() {
 		return extractor;
 	}
 
 	@Override
-	public Object[] createArray(int length) {
+	public String[] createArray(int length) {
 		return new String[length];
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<String> getType() {
 		return String.class;
 	}
 

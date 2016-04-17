@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.datahandler.VoidExtractor;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.v1.network.NetConnection;
@@ -41,14 +41,14 @@ public class StreamReader {
 				}
 			}
 //			System.out.println("Stream: " + Main.bytesToString(stream));
-			final ByteBuffer dat = new ByteBuffer(stream, sender);
+			final CursorByteBuffer dat = new CursorByteBuffer(stream, sender);
 			exercute(dat, sender, asyncHelper, name);
 			
 		} while (location < bytes.length);
 		return null;
 	}
 	
-	public void exercute(final ByteBuffer dat, NetConnection sender, AsyncHelper asyncHelper, String name) {
+	public void exercute(final CursorByteBuffer dat, NetConnection sender, AsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				extractor.extract(dat);

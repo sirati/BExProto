@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
 
-
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 public class MultiStream implements Stream {
 
@@ -15,14 +15,13 @@ public class MultiStream implements Stream {
 	
 	
 	@Override
-	public byte[] getBytes() {
-		byte[][] bytess = new byte[streams.length][];
-		//Main.changeTrap(1);
-		for (int i=0;i<streams.length;i++) {
-			//System.out.println(Main.getTrap() + "Merging streams " + (i+1) + "/" + streams.length+ ": " + streams[i].toString());
-			bytess[i] = streams[i].getBytes();
+	public ByteBuffer getBytes() {
+		if (streams.length == 0)return new ByteBuffer();
+		ByteBuffer result = streams[0].getBytes();
+		result.unseal();
+		for (int i=1;i<streams.length;i++) {
+			result.append(streams[i].getBytes());
 		}
-		//Main.changeTrap(-1);
-		return BExStatic.mergeStream(bytess);
+		return result;
 	}
 }

@@ -1,6 +1,8 @@
 package de.sirati97.bex_proto.datahandler;
 
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 public class ArrayStream implements Stream{
 	private Object dataObj;
 	private TypeBase baseType;
@@ -15,19 +17,15 @@ public class ArrayStream implements Stream{
 	
 	
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		Object[] data = (Object[]) dataObj;
 		
-		byte[][] bytess = new byte[data.length][];
+		ByteBuffer[] buffers = new ByteBuffer[data.length+1];
+		buffers[0] = BExStatic.setInteger(data.length);
 		for (int i=0;i<data.length;i++) {
-			bytess[i] = baseType.createStream(data[i]).getBytes();
+			buffers[i+1] = baseType.createStream(data[i]).getBytes();
 		}
-		byte[] mergedBytes = BExStatic.mergeStream(bytess);
-		byte[] lenghtBytes = BExStatic.setInteger(data.length);
-		byte[] result = new byte[lenghtBytes.length + mergedBytes.length];
-		System.arraycopy(lenghtBytes, 0, result, 0, lenghtBytes.length);
-		System.arraycopy(mergedBytes, 0, result, lenghtBytes.length, mergedBytes.length);
-		return result;
+		return ByteBuffer.combine(true, buffers);
 	}
 
 }

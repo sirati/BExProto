@@ -1,6 +1,8 @@
 package de.sirati97.bex_proto.datahandler;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBufferSegment;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,30 +44,30 @@ public final class BExStatic {
 		return result;
 	}
 	
-	public static byte[] setStreamArray(byte[][] streams) {
-		int resultLength = 4;
-		for (byte[] element:streams) {
-			if (element != null && element.length > 0)resultLength += 4+element.length;
-		}
-		byte[] result = new byte[resultLength];
-		byte[] tmp;
-		int loc;
-		tmp = setInteger(streams.length);
-		System.arraycopy(tmp, 0, result, 0, tmp.length);
-		loc = tmp.length;
-		for (byte[] element:streams) {
-			if (element != null && element.length > 0) {
-				tmp = setInteger(element.length);
-				System.arraycopy(tmp, 0, result, loc, tmp.length);
-				loc += tmp.length;
-				tmp = element;
-				System.arraycopy(tmp, 0, result, loc, tmp.length);
-				loc += tmp.length;
-			}
-			
-		}
-		return result;
-	}
+//	public static byte[] setStreamArray(byte[][] streams) {
+//		int resultLength = 4;
+//		for (byte[] element:streams) {
+//			if (element != null && element.length > 0)resultLength += 4+element.length;
+//		}
+//		byte[] result = new byte[resultLength];
+//		byte[] tmp;
+//		int loc;
+//		tmp = setInteger(streams.length);
+//		System.arraycopy(tmp, 0, result, 0, tmp.length);
+//		loc = tmp.length;
+//		for (byte[] element:streams) {
+//			if (element != null && element.length > 0) {
+//				tmp = setInteger(element.length);
+//				System.arraycopy(tmp, 0, result, loc, tmp.length);
+//				loc += tmp.length;
+//				tmp = element;
+//				System.arraycopy(tmp, 0, result, loc, tmp.length);
+//				loc += tmp.length;
+//			}
+//
+//		}
+//		return result;
+//	}
 	
 
 	public static byte[] mergeStream(byte[][] streams) {
@@ -103,70 +105,63 @@ public final class BExStatic {
 		return dataArray[startIndex]!=0;
 	}
 	
-	public static byte[] setStringArray(String[] array, Charset charset) {
-		byte[] result = setInteger(array.length);
-		for (String str:array) {
-			byte[] stream = setString(str, charset);
-			byte[] temp = new byte[result.length + stream.length];
-			System.arraycopy(result, 0, temp, 0, result.length);
-			System.arraycopy(stream, 0, temp, result.length, stream.length);
- 			result = temp;
-		}
-		return result;
-	}
+//	public static byte[] setStringArray(String[] array, Charset charset) {
+//		byte[] result = setInteger(array.length);
+//		for (String str:array) {
+//			byte[] stream = setString(str, charset);
+//			byte[] temp = new byte[result.length + stream.length];
+//			System.arraycopy(result, 0, temp, 0, result.length);
+//			System.arraycopy(stream, 0, temp, result.length, stream.length);
+// 			result = temp;
+//		}
+//		return result;
+//	}
 	
 
-	public static String getString(ByteBuffer dat , int startIndex, Charset charset) {
-		int streamLenght = getInteger(dat);
-		byte[] stream = dat.getMulti(streamLenght);//tobyteArray(data, startIndex + 4, streamLenght);
+	public static String getString(CursorByteBuffer dat , int startIndex, Charset charset) {
+		int streamLength = getInteger(dat);
+		byte[] stream = dat.getMulti(streamLength);//toByteArray(data, startIndex + 4, streamLength);
 		return  new String(stream, charset);
 	}
 	
-	public static byte[] setString(String str , Charset charset) {
+	public static ByteBuffer setString(String str , Charset charset) {
 		byte[] strStream = str.getBytes(charset);
-		byte[] dataStream = setInteger(strStream.length);
-		byte[] result = new byte[dataStream.length + strStream.length];
-		System.arraycopy(dataStream, 0, result, 0, dataStream.length);
-		System.arraycopy(strStream, 0, result, dataStream.length,
-				strStream.length);
-		return result;
+		ByteBuffer lengthStream = setInteger(strStream.length);
+		return new ByteBuffer(lengthStream, new ByteBufferSegment(strStream));
 	}
 
 	
-	public static String getString(ByteBuffer dat, Charset charset) {
+	public static String getString(CursorByteBuffer dat, Charset charset) {
 		int streamLenght = getInteger(dat);
 		byte[] stream = dat.getMulti(streamLenght);
 		return new String(stream, charset);
 	}
 	
 
-	public static int getInteger(ByteBuffer dat) {
+	public static int getInteger(CursorByteBuffer dat) {
 		return getInteger(dat.getMulti(4));
 	}
 	
 
 
-	public static long getLong(ByteBuffer dat) {
+	public static long getLong(CursorByteBuffer dat) {
 		return getLong(dat.getMulti(8));
 	}
 	
-	public static short getShort(ByteBuffer dat) {
+	public static short getShort(CursorByteBuffer dat) {
 		return getShort(dat.getMulti(2));
 	}
 	
 
-	public static byte[] setByteArray(byte[] bytes) {
-		byte[] length = BExStatic.setInteger(bytes.length);
-		byte[] result = new byte[length.length+bytes.length];
-		System.arraycopy(length, 0, result, 0, length.length);
-		System.arraycopy(bytes, 0, result, length.length, bytes.length);
-		return result;
+	public static ByteBuffer setByteArray(byte[] bytes) {
+		ByteBuffer length = BExStatic.setInteger(bytes.length);
+		return new ByteBuffer(length, new ByteBufferSegment(bytes));
 	}
 
-	public static byte[] setShort(short value) {
+	public static ByteBuffer setShort(short value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(2);
 		buffer.putShort(value);
-		return buffer.array();
+		return new ByteBuffer(buffer.array());
 	}
 	
 	public static short getShort(byte[] data) {
@@ -174,10 +169,10 @@ public final class BExStatic {
 		return buffer.getShort();
 	}
 	
-	public static byte[] setInteger(int value) {
+	public static ByteBuffer setInteger(int value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(4);
 		buffer.putInt(value);
-		return buffer.array();
+		return new ByteBuffer(buffer.array());
 	}
 	
 	public static int getInteger(byte[] data) {
@@ -185,9 +180,9 @@ public final class BExStatic {
 		return buffer.getInt();
 	}
 	
-	public static int getInteger(byte[] data, int startpos) {
+	public static int getInteger(byte[] data, int startPos) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		buffer.position(startpos);
+		buffer.position(startPos);
 		return buffer.getInt();
 	}
 	
@@ -197,31 +192,31 @@ public final class BExStatic {
 		return buffer.getLong();
 	}
 	
-	public static byte[] setLong(long value) {
+	public static ByteBuffer setLong(long value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
 		buffer.putLong(value);
-		return buffer.array();
+		return new ByteBuffer(buffer.array());
 	}
 	
 
-	public static byte getByte(ByteBuffer dat) {
+	public static byte getByte(CursorByteBuffer dat) {
 		return dat.getOne();
 	}
 
-	public static byte[] setByte(byte b) {
-		return new byte[]{b};
+	public static ByteBuffer setByte(byte b) {
+		return new ByteBuffer(new byte[]{b});
 	}
 	
-	public static boolean getBoolean(ByteBuffer dat) {
+	public static boolean getBoolean(CursorByteBuffer dat) {
 		return dat.getOne()!=0;
 	}
 
-	public static byte[] setBoolean(boolean b) {
-		return new byte[]{b?(byte)1:(byte)0};
+	public static  ByteBuffer setBoolean(boolean b) {
+		return new ByteBuffer(new byte[]{b?(byte)1:(byte)0});
 	}
 	
 
-	public static double getDouble(ByteBuffer dat) {
+	public static double getDouble(CursorByteBuffer dat) {
 		return getDouble(dat.getMulti(8));
 	}
 
@@ -231,14 +226,14 @@ public final class BExStatic {
 	}
 	
 
-	public static byte[] setDouble(double value) {
+	public static ByteBuffer setDouble(double value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
 		buffer.putDouble(value);
-		return buffer.array();
+		return new ByteBuffer(buffer.array());
 	}
 	
 	
-	public static float getFloat(ByteBuffer dat) {
+	public static float getFloat(CursorByteBuffer dat) {
 		return getFloat(dat.getMulti(8));
 	}
 
@@ -248,10 +243,10 @@ public final class BExStatic {
 	}
 	
 
-	public static byte[] setFloat(float value) {
+	public static ByteBuffer setFloat(float value) {
 		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
 		buffer.putFloat(value);
-		return buffer.array();
+		return new ByteBuffer(buffer.array());
 	}
 	
 	

@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.command;
 
 import de.sirati97.bex_proto.datahandler.DerivedTypeBase;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.datahandler.MultiStream;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
@@ -19,7 +19,7 @@ public class BEx20Command<t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Void extract(ByteBuffer dat) {
+	public Void extract(CursorByteBuffer dat) {
 		Object[] r = new Object[20];
 		int counter=0;
 		for (TypeBase type:types) {

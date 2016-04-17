@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v2.module;
 
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacket;
@@ -95,7 +95,7 @@ public class ModuleHandler {
         }
 
         @Override
-        public void extract(ByteBuffer buf) {
+        public void extract(CursorByteBuffer buf) {
             if (buf.getIConnection() instanceof ModularArtifConnection && !((ModularArtifConnection) buf.getIConnection()).isConnectionEstablished()) {
                 error();
             }

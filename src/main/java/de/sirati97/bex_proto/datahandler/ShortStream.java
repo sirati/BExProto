@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+
 public class ShortStream implements Stream {
 	private short data;
 
@@ -8,7 +10,7 @@ public class ShortStream implements Stream {
 	}
 
 	@Override
-	public byte[] getBytes() {
+	public ByteBuffer getBytes() {
 		return BExStatic.setShort(data);
 	}
 

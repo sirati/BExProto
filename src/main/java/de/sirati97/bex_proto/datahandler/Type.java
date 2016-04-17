@@ -7,8 +7,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-public abstract class Type implements TypeBase{
+public abstract class Type<T> implements TypeBase<T>{
 	private static Map<String, TypeBase> types = new HashMap<>();
 	
 	public Type() {
@@ -26,26 +27,33 @@ public abstract class Type implements TypeBase{
 	protected void register() {
 		types.put(getTypeName(), this);
 	}
-	
-	public static final Type SSCWrapper = new SSCWrapperType();
-	public static final Type String_Utf_8 = new StringType(StandardCharsets.UTF_8);
-	public static final Type String_Utf_16 = new StringType(StandardCharsets.UTF_16);
-	public static final Type String_Utf_16BE = new StringType(StandardCharsets.UTF_16BE);
-	public static final Type String_Utf_16LE = new StringType(StandardCharsets.UTF_16LE);
-	public static final Type String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
-	public static final Type String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
-	public static final PrimitiveType Integer = new PrimitiveType() {
+
+	public abstract Stream createStreamCasted(T obj);
+
+	@Override
+	public final Stream createStream(Object obj) {
+		return createStreamCasted((T) obj);
+	}
+
+	public static final SSCWrapperType SSCWrapper = new SSCWrapperType();
+	public static final StringType String_Utf_8 = new StringType(StandardCharsets.UTF_8);
+	public static final StringType String_Utf_16 = new StringType(StandardCharsets.UTF_16);
+	public static final StringType String_Utf_16BE = new StringType(StandardCharsets.UTF_16BE);
+	public static final StringType String_Utf_16LE = new StringType(StandardCharsets.UTF_16LE);
+	public static final StringType String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
+	public static final StringType String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
+	public static final PrimitiveType<Integer> Integer = new PrimitiveType<Integer>() {
 		IntegerExtractor extractor = new IntegerExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new IntegerStream((int)obj);
+		@Override public Stream createStreamCasted(Integer obj) {
+			return new IntegerStream(obj);
 		}
 
 		@Override public IntegerExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Integer[] createArray(int length) {
 			return new Integer[length];
 		}
 
@@ -65,18 +73,18 @@ public abstract class Type implements TypeBase{
 			return "Integer";
 		}
 	};
-	public static final PrimitiveType Long = new PrimitiveType() {
+	public static final PrimitiveType<Long> Long = new PrimitiveType<Long>() {
 		LongExtractor extractor = new LongExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new LongStream((long)obj);
+		@Override public Stream createStreamCasted(Long obj) {
+			return new LongStream(obj);
 		}
 
 		@Override public LongExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Long[] createArray(int length) {
 			return new Long[length];
 		}
 
@@ -96,18 +104,18 @@ public abstract class Type implements TypeBase{
 			return "Long";
 		}
 	};
-	public static final PrimitiveType Short = new PrimitiveType() {
+	public static final PrimitiveType<Short> Short = new PrimitiveType<Short>() {
 		ShortExtractor extractor = new ShortExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new ShortStream((short)obj);
+		@Override public Stream createStreamCasted(Short obj) {
+			return new ShortStream(obj);
 		}
 
 		@Override public ShortExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Short[] createArray(int length) {
 			return new Short[length];
 		}
 
@@ -127,18 +135,18 @@ public abstract class Type implements TypeBase{
 			return "Short";
 		}
 	};
-	public static final PrimitiveType Byte = new PrimitiveType() {
+	public static final PrimitiveType<Byte> Byte = new PrimitiveType<Byte>() {
 		ByteExtractor extractor = new ByteExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new ByteStream((byte)obj);
+		@Override public Stream createStreamCasted(Byte obj) {
+			return new ByteStream(obj);
 		}
 
 		@Override public ByteExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Byte[] createArray(int length) {
 			return new Byte[length];
 		}
 
@@ -158,18 +166,18 @@ public abstract class Type implements TypeBase{
 			return "Byte";
 		}
 	};
-	public static final PrimitiveType Double = new PrimitiveType() {
+	public static final PrimitiveType<Double> Double = new PrimitiveType<Double>() {
 		DoubleExtractor extractor = new DoubleExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new DoubleStream((double)obj);
+		@Override public Stream createStreamCasted(Double obj) {
+			return new DoubleStream(obj);
 		}
 
 		@Override public DoubleExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Double[] createArray(int length) {
 			return new Double[length];
 		}
 
@@ -189,18 +197,18 @@ public abstract class Type implements TypeBase{
 			return "Double";
 		}
 	};
-	public static final PrimitiveType Float = new PrimitiveType() {
+	public static final PrimitiveType<Float> Float = new PrimitiveType<Float>() {
 		FloatExtractor extractor = new FloatExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new FloatStream((float)obj);
+		@Override public Stream createStreamCasted(Float obj) {
+			return new FloatStream(obj);
 		}
 
 		@Override public FloatExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Float[] createArray(int length) {
 			return new Float[length];
 		}
 
@@ -220,18 +228,18 @@ public abstract class Type implements TypeBase{
 			return "Float";
 		}
 	};
-	public static final PrimitiveType Boolean = new PrimitiveType() {
+	public static final PrimitiveType<Boolean> Boolean = new PrimitiveType<Boolean>() {
 		BooleanExtractor extractor = new BooleanExtractor();
 		
-		@Override public Stream createStream(Object obj) {
-			return new BooleanStream((boolean)obj);
+		@Override public Stream createStreamCasted(Boolean obj) {
+			return new BooleanStream(obj);
 		}
 
 		@Override public BooleanExtractor getExtractor() {
 			return extractor;
 		}
 
-		@Override public Object[] createArray(int length) {
+		@Override public Boolean[] createArray(int length) {
 			return new Boolean[length];
 		}
 
@@ -251,26 +259,26 @@ public abstract class Type implements TypeBase{
 			return "Boolean";
 		}
 	};
-	public static final Type UUID = new ObjType() {
+	public static final Type<java.util.UUID> UUID = new ObjType<java.util.UUID>() {
 		UUIDExtractor extractor = new UUIDExtractor();
 		
 		@Override
-		public Class<?> getType() {
+		public Class<UUID> getType() {
 			return java.util.UUID.class;
 		}
 		
 		@Override
-		public StreamExtractor<? extends Object> getExtractor() {
+		public StreamExtractor<UUID> getExtractor() {
 			return extractor;
 		}
 		
 		@Override
-		public Stream createStream(Object obj) {
-			return new UUIDStream((java.util.UUID) obj);
+		public Stream createStreamCasted(UUID obj) {
+			return new UUIDStream(obj);
 		}
 		
 		@Override
-		public Object[] createArray(int length) {
+		public UUID[] createArray(int length) {
 			return new java.util.UUID[length];
 		}
 		
@@ -278,26 +286,26 @@ public abstract class Type implements TypeBase{
 			return "UUID";
 		}
 	};
-	public static final Type InetAddress = new ObjType() {
+	public static final Type<java.net.InetAddress> InetAddress = new ObjType<java.net.InetAddress>() {
 		InetAddressExtractor extractor = new InetAddressExtractor();
 		
 		@Override
-		public Class<?> getType() {
+		public Class<java.net.InetAddress> getType() {
 			return java.net.InetAddress.class;
 		}
 		
 		@Override
-		public StreamExtractor<? extends Object> getExtractor() {
+		public StreamExtractor<java.net.InetAddress> getExtractor() {
 			return extractor;
 		}
 		
 		@Override
-		public Stream createStream(Object obj) {
-			return new InetAddressStream((java.net.InetAddress) obj);
+		public Stream createStreamCasted(java.net.InetAddress obj) {
+			return new InetAddressStream(obj);
 		}
 		
 		@Override
-		public Object[] createArray(int length) {
+		public java.net.InetAddress[] createArray(int length) {
 			return new java.net.InetAddress[length];
 		}
 		
@@ -305,26 +313,26 @@ public abstract class Type implements TypeBase{
 			return "InetAddress";
 		}
 	};
-	public static final Type InetAddressPort = new ObjType() {
+	public static final Type<InetAddressPort> InetAddressPort = new ObjType<InetAddressPort>() {
 		InetAddressPortExtractor extractor = new InetAddressPortExtractor();
 		
 		@Override
-		public Class<?> getType() {
+		public Class<InetAddressPort> getType() {
 			return InetAddressPort.class;
 		}
 		
 		@Override
-		public StreamExtractor<? extends Object> getExtractor() {
+		public StreamExtractor<InetAddressPort> getExtractor() {
 			return extractor;
 		}
 		
 		@Override
-		public Stream createStream(Object obj) {
-			return new InetAddressPortStream((InetAddressPort) obj);
+		public Stream createStreamCasted(InetAddressPort obj) {
+			return new InetAddressPortStream( obj);
 		}
 		
 		@Override
-		public Object[] createArray(int length) {
+		public InetAddressPort[] createArray(int length) {
 			return new InetAddressPort[length];
 		}
 		
@@ -332,7 +340,7 @@ public abstract class Type implements TypeBase{
 			return "InetAddressPort";
 		}
 	};
-	public static final ObjType Type = new ObjType() {
+	public static final ObjType<TypeBase> Type = new ObjType<TypeBase>() {
 		TypeExtractor extractor = new TypeExtractor();
 		
 		@Override
@@ -341,26 +349,26 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Class<?> getType() {
+		public Class<TypeBase> getType() {
 			return TypeBase.class;
 		}
 		
 		@Override
-		public StreamExtractor<? extends Object> getExtractor() {
+		public StreamExtractor<TypeBase> getExtractor() {
 			return extractor;
 		}
 		
 		@Override
-		public Stream createStream(Object obj) {
-			return new TypeStream((TypeBase) obj);
+		public Stream createStreamCasted(TypeBase obj) {
+			return new TypeStream(obj);
 		}
 		
 		@Override
-		public Object[] createArray(int length) {
+		public TypeBase[] createArray(int length) {
 			return new TypeBase[length];
 		}
 	};
-	public static final ObjType DynamicObj = new ObjType() {
+	public static final ObjType<DynamicObj> DynamicObj = new ObjType<DynamicObj>() {
 		DynamicObjExtractor extractor = new DynamicObjExtractor();
 		
 		@Override
@@ -369,22 +377,22 @@ public abstract class Type implements TypeBase{
 		}
 		
 		@Override
-		public Class<?> getType() {
+		public Class<DynamicObj> getType() {
 			return DynamicObj.class;
 		}
 		
 		@Override
-		public StreamExtractor<? extends Object> getExtractor() {
+		public StreamExtractor<DynamicObj> getExtractor() {
 			return extractor;
 		}
 		
 		@Override
-		public Stream createStream(Object obj) {
-			return new DynamicObjStream((de.sirati97.bex_proto.datahandler.DynamicObj) obj);
+		public Stream createStreamCasted(DynamicObj obj) {
+			return new DynamicObjStream(obj);
 		}
 		
 		@Override
-		public Object[] createArray(int length) {
+		public DynamicObj[] createArray(int length) {
 			return new DynamicObj[length];
 		}
 	};

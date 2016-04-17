@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.datahandler;
 
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 public class TypeExtractor implements StreamExtractor<TypeBase> {
 	@Override
-	public TypeBase extract(ByteBuffer dat) {
+	public TypeBase extract(CursorByteBuffer dat) {
 		boolean isDerived = (Boolean) Type.Boolean.getExtractor().extract(dat);
 		if (isDerived) {
 			String baseTypeName = (String) Type.String_US_ASCII.getExtractor().extract(dat);

@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.TypeBase;
-import de.sirati97.bex_proto.util.ByteBuffer;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 
 /**
@@ -78,7 +78,7 @@ public class PacketDefinition implements IPacket, Cloneable{
     }
 
     @Override
-    public void extract(ByteBuffer buf) {
+    public void extract(CursorByteBuffer buf) {
         ReceivedPacket packet = PacketManager.extract(this, buf);
         executor.execute(packet);
     }
