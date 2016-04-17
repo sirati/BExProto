@@ -9,16 +9,13 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
-import de.sirati97.bex_proto.v2.artifcon.TestIOHandler;
-import de.sirati97.bex_proto.v2.module.HandshakeException;
+import de.sirati97.bex_proto.v2.io.TestIOHandler;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
 import de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper;
 import org.junit.Test;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sirati97 on 13.04.2016.
@@ -26,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 public class HandshakeTest implements PacketExecutor{
 
     @Test
-    public void start() throws TimeoutException, InterruptedException, HandshakeException, NoSuchAlgorithmException {
+    public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         Long timestamp;
         try {

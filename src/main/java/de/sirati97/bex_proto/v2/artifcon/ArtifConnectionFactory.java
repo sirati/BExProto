@@ -4,6 +4,7 @@ import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IConnectionFactory;
 import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.io.IOHandler;
 
 /**
  * Created by sirati97 on 16.04.2016.

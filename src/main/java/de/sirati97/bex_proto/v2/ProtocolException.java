@@ -1,12 +1,11 @@
-package de.sirati97.bex_proto.v2.module;
+package de.sirati97.bex_proto.v2;
 
-
-import de.sirati97.bex_proto.v2.ProtocolException;
+import java.io.IOException;
 
 /**
- * Created by sirati97 on 13.04.2016.
+ * Created by sirati97 on 17.04.2016.
  */
-public class HandshakeException extends ProtocolException {
+public class ProtocolException extends IOException {
 
     /**
      * Constructs a new exception with the specified cause and a detail
@@ -22,16 +21,15 @@ public class HandshakeException extends ProtocolException {
      *         unknown.)
      * @since  1.5
      */
-    public HandshakeException(Throwable cause) {
+    public ProtocolException(Throwable cause) {
         super(cause);
     }
 
 
-    public HandshakeException(String message, Throwable cause) {
+    public ProtocolException(String message, Throwable cause) {
         super(message, cause);
     }
-    public HandshakeException(String message) {
+    public ProtocolException(String message) {
         super(message);
     }
-
 }

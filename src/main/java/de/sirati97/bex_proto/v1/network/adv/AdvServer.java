@@ -95,7 +95,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 		getServerRegCommand().send("H", "", false, 0, connection.getReconnectID(), connection);
 	}
 	
-	protected void sendEncyptionRequest(NetConnection connection) {
+	protected void sendEncryptionRequest(NetConnection connection) {
 		cryptoCommand.send(CryptoCommand.States.Request, connection);
 	}
 	

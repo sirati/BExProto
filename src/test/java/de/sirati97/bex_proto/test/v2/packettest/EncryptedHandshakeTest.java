@@ -10,8 +10,7 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
-import de.sirati97.bex_proto.v2.artifcon.TestIOHandler;
-import de.sirati97.bex_proto.v2.module.HandshakeException;
+import de.sirati97.bex_proto.v2.io.TestIOHandler;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
 import de.sirati97.bex_proto.v2.module.internal.EncryptionModule;
@@ -19,7 +18,6 @@ import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sirati97 on 13.04.2016.
@@ -29,7 +27,7 @@ public class EncryptedHandshakeTest implements PacketExecutor{
     private AsyncHelper asyncHelper = new AdvThreadAsyncHelper(6);
 
     @Test
-    public void start() throws TimeoutException, InterruptedException, HandshakeException, NoSuchAlgorithmException, NoSuchProviderException {
+    public void start() throws Throwable {
         Long timestamp;
         try {
             log.info("Encrypted Handshake test preparing");

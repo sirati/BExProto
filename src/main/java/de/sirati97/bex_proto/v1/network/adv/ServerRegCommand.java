@@ -30,7 +30,7 @@ public class ServerRegCommand extends RegCommand {
 				AdvConnection connection = new AdvConnection(sender, name, generic);
 				clientManager.register(connection);
 				if (server.needEncryption()) {
-					server.sendEncyptionRequest(sender);
+					server.sendEncryptionRequest(sender);
 				} else {
 					server.sendHandshakeAccepted(connection);
 				}

@@ -8,9 +8,12 @@ import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacket;
 import de.sirati97.bex_proto.v2.StreamReader;
+import de.sirati97.bex_proto.v2.io.IOHandler;
 
 import javax.crypto.Cipher;
+import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -91,6 +94,15 @@ public class ArtifConnection implements IConnection {
         return connectionName;
     }
 
+    public void connect() throws TimeoutException, InterruptedException, IOException {
+        ioHandler.setConnection(this);
+        ioHandler.open();
+    }
+
+    public void disconnect() {
+        ioHandler.close();
+    }
+
     protected void setConnectionName(String connectionName) {
         this.connectionName = connectionName;
         logger.changePrefix("connection\\"+connectionName);
@@ -112,10 +124,18 @@ public class ArtifConnection implements IConnection {
         if (getSendCipher()!= null) {
             stream = new SendStream(new EncryptionStream(stream.getHeadlessStream(), getSendCipher()));
         }
-        ioHandler.send(stream.getBytes());
+        try {
+            ioHandler.send(stream.getBytes());
+        } catch (IOException e) {
+            onIOException(e);
+        }
     }
 
     public ILogger getLogger() {
         return logger;
+    }
+
+    protected void onIOException(IOException e) {
+        throw new IllegalStateException("IOException occurred: "+e.toString(), e);
     }
 }

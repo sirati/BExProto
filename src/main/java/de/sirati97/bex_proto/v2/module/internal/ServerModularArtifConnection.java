@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2.module.internal;
 
 import de.sirati97.bex_proto.util.IServerConnection;
-import de.sirati97.bex_proto.v2.artifcon.IOHandler;
+import de.sirati97.bex_proto.v2.io.IOHandler;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
 

@@ -2,11 +2,12 @@ package de.sirati97.bex_proto.v2.module;
 
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
-import de.sirati97.bex_proto.v2.artifcon.IOHandler;
+import de.sirati97.bex_proto.v2.io.IOHandler;
 import de.sirati97.bex_proto.v2.module.internal.ICallback;
 import de.sirati97.bex_proto.v2.module.internal.YieldCause;
 import de.sirati97.bex_proto.v2.module.internal.connectionhandler.ConnectionHandlerModule;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,8 @@ public class ModularArtifConnection extends ArtifConnection {
         },"Client Side Handshake Thread");
     }
 
-    public void connect() throws TimeoutException, InterruptedException, HandshakeException {
+    @Override
+    public void connect() throws TimeoutException, InterruptedException, IOException {
         if (!canConnect) {
             throw new IllegalStateException("Cannot connect twice");
         }
@@ -83,6 +85,7 @@ public class ModularArtifConnection extends ArtifConnection {
             if (!canConnect) { //test it again to be sure
                 throw new IllegalStateException("Cannot connect twice");
             }
+            super.connect();
             CallbackData data = new CallbackData();
             moduleHandler.connectionHandlerModule.sendHandshakeRequest(this, data);
             connect_wait(data);
@@ -156,6 +159,7 @@ public class ModularArtifConnection extends ArtifConnection {
                 @Override
                 public void run() {
                     try {
+                        ModularArtifConnection.super.connect();
 
                         data.yieldChild = initLock;
                         ServerCallbackDataWrapper serverData = new ServerCallbackDataWrapper(data);
@@ -178,7 +182,7 @@ public class ModularArtifConnection extends ArtifConnection {
 
                     } catch (Throwable e) {
                         getLogger().error("Handshake failed. Exception occurred:", e);
-                        if (e instanceof HandshakeException || e instanceof InterruptedException || e instanceof TimeoutException) {
+                        if (e instanceof IOException || e instanceof InterruptedException || e instanceof TimeoutException) {
                             moduleHandler.connectionHandlerModule.sendHandshakeError(e, ModularArtifConnection.this);
                         }
                     }
