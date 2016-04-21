@@ -14,11 +14,11 @@ public class SSCWrapperStream implements Stream {
 	
 	
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		Stream clientName = Type.String_US_ASCII.createStream(data.getClientName());
 		Stream generic = Type.Boolean.createStream(data.isGeneric());
 		Stream id = Type.Integer.createStream(data.getId());
-		return new MultiStream(clientName, generic, id).getBytes();
+		return new MultiStream(clientName, generic, id).getByteBuffer();
 	}
 
 }

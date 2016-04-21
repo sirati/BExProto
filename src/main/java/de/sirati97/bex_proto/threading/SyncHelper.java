@@ -29,6 +29,11 @@ public class SyncHelper implements AsyncHelper {
         return task;
     }
 
+    @Override
+    public AsyncHelperExecutorService createExecutorService(String name) {
+        return new AsyncHelperExecutorService(this, name);
+    }
+
     public class SyncTask implements AsyncTask {
         private String name;
         private boolean running=false;

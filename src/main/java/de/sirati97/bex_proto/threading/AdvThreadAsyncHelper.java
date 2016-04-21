@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 public class AdvThreadAsyncHelper implements AsyncHelper {
 	private final Set<Thread> activeThreads = new HashSet<>();
+	private final Set<Thread> activeThreadsRead = Collections.unmodifiableSet(activeThreads);
 //	private ThreadFactory threadFactory;
 	private ExecutorService executorService;
 	
@@ -25,26 +26,31 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 	
 	@Override
 	public AsyncTaskImpl runAsync(Runnable r, String name) {
-		AdvRunnbale advRunnbale = new AdvRunnbale(r, name);
-		executorService.execute(advRunnbale);
-		return new AsyncTaskImpl(advRunnbale);
+		AdvRunnable advRunnable = new AdvRunnable(r, name);
+		executorService.execute(advRunnable);
+		return new AsyncTaskImpl(advRunnable);
 	}
 	
 	public Set<Thread> getActiveThreads() {
 		synchronized (activeThreads) {
-			return Collections.unmodifiableSet(activeThreads);
+			return activeThreadsRead;
 		}
+	}
+
+	@Override
+	public AsyncHelperExecutorService createExecutorService(String name) {
+		return new AsyncHelperExecutorService(this, name);
 	}
 	
 
 	
-	class AdvRunnbale implements Runnable {
+	class AdvRunnable implements Runnable {
 		private Runnable runnable;
 		boolean running = false;
 		private String name;
 		private Thread thread = null;
 		
-		public AdvRunnbale(Runnable runnable, String name) {
+		public AdvRunnable(Runnable runnable, String name) {
 			this.runnable = runnable;
 			this.name = name;
 		}
@@ -66,7 +72,7 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 					activeThreads.remove(thread);
 				}
 				running = false;
-				thread.setName("Thread finished exercution. Waiting on next Task.");
+				thread.setName("Thread finished execution. Waiting on next Task.");
 			}
 		}
 		
@@ -90,31 +96,31 @@ public class AdvThreadAsyncHelper implements AsyncHelper {
 	}
 	
 	static class AsyncTaskImpl implements AsyncTask {
-		private AdvRunnbale advRunnbale;
+		private AdvRunnable advRunnable;
 
-		public AsyncTaskImpl(AdvRunnbale advRunnbale) {
-			this.advRunnbale = advRunnbale;
+		public AsyncTaskImpl(AdvRunnable advRunnable) {
+			this.advRunnable = advRunnable;
 		}
 		
 		@Override
 		public void stop() {
-			advRunnbale.stop();
+			advRunnable.stop();
 		}
 
 
 		@Override
 		public boolean isRunning() {
-			return advRunnbale.isRunning();
+			return advRunnable.isRunning();
 		}
 
 		@Override
 		public String getName() {
-			return advRunnbale.getName();
+			return advRunnable.getName();
 		}
 
 		@Override
 		public void setName(String name) {
-			advRunnbale.setName(name);
+			advRunnable.setName(name);
 		}
 		
 	}

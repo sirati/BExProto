@@ -18,6 +18,7 @@ public class PacketCollection implements IPacketCollection {
     private short id;
     private IPacket parent;
     private PacketExecutor standardExecutor;
+    private Boolean requiresReliableConnection = null;
 
     public PacketCollection(PacketExecutor standardExecutor) {
         this((short) 0, standardExecutor);
@@ -45,6 +46,14 @@ public class PacketCollection implements IPacketCollection {
             throw new IllegalStateException("There is no command handler registered for id " + packetId + " in " + getClass().toString());
         }
         packet.extract(buf);
+    }
+
+    public boolean getRequiresReliableConnection() {
+        return requiresReliableConnection ==null?parent==null||parent.getRequiresReliableConnection(): requiresReliableConnection;
+    }
+
+    public void setRequiresReliableConnection(Boolean requiresReliableConnection) {
+        this.requiresReliableConnection = requiresReliableConnection;
     }
 
     protected boolean isAllowed(short packetId, CursorByteBuffer buf){return true;}

@@ -12,7 +12,7 @@ public class UUIDStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		return ByteBuffer.combine(true, BExStatic.setLong(data.getLeastSignificantBits()),BExStatic.setLong(data.getMostSignificantBits()));
 	}
 

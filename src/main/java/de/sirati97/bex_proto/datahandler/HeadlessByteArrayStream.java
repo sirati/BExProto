@@ -10,7 +10,7 @@ public class HeadlessByteArrayStream implements IHeadlessByteArrayStream {
 	}
 	
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		return stream;
 	}
 

@@ -17,9 +17,9 @@ public class EncryptionStream implements Stream {
 	
 	
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		try {
-			return new ByteBuffer(cipher.doFinal(stream.getBytes().getBytes()));
+			return new ByteBuffer(cipher.doFinal(stream.getByteBuffer().getBytes()));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			throw new IllegalStateException(e);
 		}

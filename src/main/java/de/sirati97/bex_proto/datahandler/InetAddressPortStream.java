@@ -10,10 +10,10 @@ public class InetAddressPortStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		Stream address = Type.InetAddress.createStream(data.getInetAddress());
 		Stream port = Type.Integer.createStream(data.getPort());
-		return new MultiStream(address,port).getBytes();
+		return new MultiStream(address,port).getByteBuffer();
 	}
 
 }

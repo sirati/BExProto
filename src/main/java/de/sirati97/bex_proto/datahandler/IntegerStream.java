@@ -10,7 +10,7 @@ public class IntegerStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		return BExStatic.setInteger(data);
 	}
 

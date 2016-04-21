@@ -18,7 +18,7 @@ public class SendStream implements Stream {
 	
 	
 	@Override
-	public synchronized ByteBuffer getBytes() {
+	public synchronized ByteBuffer getByteBuffer() {
 		if (bytes == null) {
 			bytes = getInnerBytes();
 			bytes.seal();
@@ -32,10 +32,10 @@ public class SendStream implements Stream {
 			if (streams.length == 0) {
 				innerBytes = new ByteBuffer();
 			} else {
-				innerBytes = streams[0].getBytes();
+				innerBytes = streams[0].getByteBuffer();
 				innerBytes.unseal();
 				for (int i=1;i<streams.length;i++) {
-					innerBytes.append(streams[i].getBytes());
+					innerBytes.append(streams[i].getByteBuffer());
 				}
 			}
 			streams = null;
@@ -57,12 +57,12 @@ public class SendStream implements Stream {
 	}
 	
 	public void send(NetConnection connection) {
-		connection.send(getBytes().getBytes());
+		connection.send(getByteBuffer().getBytes());
 	}
 
 	protected class HeadlessByteArrayStreamImpl implements IHeadlessByteArrayStream {
 		@Override
-		public ByteBuffer getBytes() {
+		public ByteBuffer getByteBuffer() {
 			return getInnerBytes();
 		}
 	}

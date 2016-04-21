@@ -11,6 +11,7 @@ public class IdPacketWrapper implements IPacket {
     private final short id;
     private IPacket child;
     private IPacket parent;
+    private Boolean requiresReliableConnection = new Boolean(true);
 
     public IdPacketWrapper(short id, IPacket child) {
         this.id = id;
@@ -43,6 +44,17 @@ public class IdPacketWrapper implements IPacket {
     @Override
     public void extract(CursorByteBuffer buf) {
         getChild().extract(buf);
+    }
+
+
+    @Override
+    public boolean getRequiresReliableConnection() {
+        return requiresReliableConnection ==null?parent==null||parent.getRequiresReliableConnection(): requiresReliableConnection;
+    }
+
+    @Override
+    public void setRequiresReliableConnection(Boolean requiresReliableConnection) {
+        this.requiresReliableConnection = requiresReliableConnection;
     }
 
     public IPacket getChild() {

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by sirati97 on 15.03.2016.
  */
 public interface IOHandler {
-    void send(byte[] stream) throws IOException;
+    void send(byte[] stream, boolean reliable) throws IOException;
     boolean isOpen();
     void close();
     void open() throws IOException;

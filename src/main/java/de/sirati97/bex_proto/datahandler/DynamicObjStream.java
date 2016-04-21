@@ -10,10 +10,10 @@ public class DynamicObjStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		Stream type = Type.Type.createStream(data.getType());
 		Stream value = data.getType().createStream(data.getValue());
-		return new MultiStream(type, value).getBytes();
+		return new MultiStream(type, value).getByteBuffer();
 	}
 
 }

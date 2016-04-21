@@ -19,4 +19,8 @@ public interface IPacket {
     IPacket getParent();
 
     void extract(CursorByteBuffer buf);
+
+    boolean getRequiresReliableConnection();
+
+    void setRequiresReliableConnection(Boolean requiringReliableConnection);
 }

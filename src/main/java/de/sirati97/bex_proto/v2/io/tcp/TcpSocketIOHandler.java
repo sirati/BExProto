@@ -5,6 +5,7 @@ import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 
 /**
@@ -21,7 +22,7 @@ public class TcpSocketIOHandler implements IOHandler {
     }
 
     @Override
-    public synchronized void send(byte[] stream) throws IOException {
+    public synchronized void send(byte[] stream, boolean reliable) throws IOException {
         if (!isOpen()) {
             throw new IOException("Pipe is not open");
         }
@@ -57,7 +58,31 @@ public class TcpSocketIOHandler implements IOHandler {
         listenerTask = connection.getAsyncHelper().runAsync(new Runnable() {
             @Override
             public void run() {
-
+                try {
+                    InputStream in = socket.getInputStream();
+                    while (open && !Thread.interrupted()) {
+                        try {
+                            int available;
+                            if ((available=in.available()) > 0) {
+                                byte[] read = new byte[available];
+                                in.read(read);
+                                connection.read(read);
+                            } else {
+                                Thread.sleep(0, 1);
+                            }
+                        } catch (IOException e) {
+                            connection.onIOException(e);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (open) {
+                        connection.disconnect();
+                    }
+                }
             }
         },connection.getConnectionName() + " Listener Thread");
     }

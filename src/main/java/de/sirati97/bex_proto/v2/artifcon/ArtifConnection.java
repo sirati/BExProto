@@ -95,12 +95,26 @@ public class ArtifConnection implements IConnection {
     }
 
     public void connect() throws TimeoutException, InterruptedException, IOException {
-        ioHandler.setConnection(this);
-        ioHandler.open();
+        openIOHandler();
     }
 
     public void disconnect() {
         ioHandler.close();
+    }
+
+    /**Should be called server side to make the connection ready*/
+    public void expectConnection() throws IOException {
+        openIOHandler();
+    }
+
+    protected void openIOHandler() throws IOException {
+        ioHandler.setConnection(this);
+        ioHandler.open();
+    }
+
+
+    public boolean isConnected() {
+        return ioHandler.isOpen();
     }
 
     protected void setConnectionName(String connectionName) {
@@ -117,7 +131,7 @@ public class ArtifConnection implements IConnection {
     }
 
     @Override
-    public void send(SendStream stream) {
+    public void send(SendStream stream, boolean reliable) {
         if (getHashAlgorithm()!= null) {
             stream = new SendStream(new HashStream(stream.getHeadlessStream(), getHashAlgorithm()));
         }
@@ -125,17 +139,22 @@ public class ArtifConnection implements IConnection {
             stream = new SendStream(new EncryptionStream(stream.getHeadlessStream(), getSendCipher()));
         }
         try {
-            ioHandler.send(stream.getBytes().getBytes());
+            ioHandler.send(stream.getByteBuffer().getBytes(), reliable);
         } catch (IOException e) {
             onIOException(e);
         }
+    }
+
+    @Override
+    public void send(SendStream stream) {
+        send(stream, true);
     }
 
     public ILogger getLogger() {
         return logger;
     }
 
-    protected void onIOException(IOException e) {
+    public void onIOException(IOException e) {
         throw new IllegalStateException("IOException occurred: "+e.toString(), e);
     }
 }

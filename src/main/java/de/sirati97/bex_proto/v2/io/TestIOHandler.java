@@ -9,16 +9,35 @@ import java.io.IOException;
  * Created by sirati97 on 13.04.2016.
  */
 public class TestIOHandler implements IOHandler {
-    public ArtifConnection receiver;
+    private ArtifConnection connection;
+    public TestIOHandler receiver;
     private boolean open = false;
+    private boolean closed = false;
+    private final Object lock = new Object();
 
     @Override
-    public synchronized void send(byte[] stream) throws IOException {
+    public synchronized void send(byte[] stream, boolean reliable) throws IOException {
         if (!open) {
             throw new IOException("Pipe is not open");
         }
         System.out.println(bytesToString(stream));
         receiver.read(stream);
+    }
+
+    public void read(byte[] stream) throws IOException {
+        synchronized (lock) {
+            if (!open && !closed) {
+                try {
+                    lock.wait(); //will wait until it is opened
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (closed) {
+            throw new IOException("Pipe is not open");
+        }
+        connection.read(stream);
     }
 
     @Override
@@ -29,19 +48,23 @@ public class TestIOHandler implements IOHandler {
     @Override
     public synchronized void close() {
         open = false;
+        closed = true;
     }
 
     @Override
     public synchronized void open() throws IOException {
         if (receiver == null) {
-            throw new IOException("Pipe is not open");
+            throw new IOException("Receiver not set");
+        }
+        synchronized (lock) {
+            lock.notifyAll();
         }
         open = true;
     }
 
     @Override
     public synchronized void setConnection(ArtifConnection connection) {
-
+        this.connection = connection;
     }
 
     @Override

@@ -94,7 +94,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     protected void sendError(String error, IConnection connection) {
-        send(State.Error, Type.String_US_ASCII.createStream(error).getBytes().getBytes(), connection);
+        send(State.Error, Type.String_US_ASCII.createStream(error).getByteBuffer().getBytes(), connection);
     }
 
     @Override

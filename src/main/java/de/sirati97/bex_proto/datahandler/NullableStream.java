@@ -12,11 +12,11 @@ public class NullableStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		if (data == null) {
-			return Type.Boolean.createStream(true).getBytes();
+			return Type.Boolean.createStream(true).getByteBuffer();
 		} else {
-			return new MultiStream(Type.Boolean.createStream(false), base.createStream(data)).getBytes();
+			return new MultiStream(Type.Boolean.createStream(false), base.createStream(data)).getByteBuffer();
 		}
 	}
 

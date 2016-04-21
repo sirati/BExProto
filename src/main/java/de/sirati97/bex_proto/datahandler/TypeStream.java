@@ -13,7 +13,7 @@ public class TypeStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		boolean isDerived = (data instanceof DerivedTypeBase);
 		if (isDerived) {
 			List<DerivedTypeBase> derivedTypesList = new ArrayList<>();
@@ -31,11 +31,11 @@ public class TypeStream implements Stream {
 			Stream isDerivedStream = Type.Boolean.createStream(true);
 			Stream baseTypeStream = Type.String_US_ASCII.createStream(temp.getTypeName());
 			Stream derivedStream = new ArrayType<>(Type.Byte).createStream(derivedTypes);
-			return new MultiStream(isDerivedStream,baseTypeStream, derivedStream).getBytes();
+			return new MultiStream(isDerivedStream,baseTypeStream, derivedStream).getByteBuffer();
 		} else {
 			Stream isDerivedStream = Type.Boolean.createStream(false);
 			Stream baseTypeStream = Type.String_US_ASCII.createStream(data.getTypeName());
-			return new MultiStream(isDerivedStream,baseTypeStream).getBytes();
+			return new MultiStream(isDerivedStream,baseTypeStream).getByteBuffer();
 			
 		}
 	}

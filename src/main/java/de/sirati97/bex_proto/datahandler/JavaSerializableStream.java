@@ -18,7 +18,7 @@ public class JavaSerializableStream<T extends Serializable> implements Stream {
     }
 
     @Override
-    public ByteBuffer getBytes() {
+    public ByteBuffer getByteBuffer() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream serializer = null;
         try {

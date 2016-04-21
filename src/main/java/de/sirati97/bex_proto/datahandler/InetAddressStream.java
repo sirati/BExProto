@@ -12,7 +12,7 @@ public class InetAddressStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		return BExStatic.setByteArray(data.getAddress());
 	}
 

@@ -6,6 +6,7 @@ import de.sirati97.bex_proto.v2.IConnectionFactory;
 import de.sirati97.bex_proto.v2.IPacket;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 
+
 /**
  * Created by sirati97 on 16.04.2016.
  */
@@ -28,5 +29,15 @@ public class ArtifConnectionFactory implements IConnectionFactory {
     @Override
     public ArtifConnection createServer(IOHandler ioHandler) {
         return new ArtifConnection("UnnamedServerConnection", asyncHelper, ioHandler, logger, packet);
+    }
+
+    @Override
+    public AsyncHelper getAsyncHelper() {
+        return asyncHelper;
+    }
+
+    @Override
+    public ILogger getLogger() {
+        return logger;
     }
 }

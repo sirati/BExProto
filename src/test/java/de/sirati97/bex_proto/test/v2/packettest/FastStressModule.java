@@ -15,7 +15,7 @@ import de.sirati97.bex_proto.v2.module.internal.YieldCause;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class StressModule extends Module<StressModule.StressData> implements IModuleHandshake, PacketExecutor {
+public class FastStressModule extends Module<FastStressModule.StressData> implements IModuleHandshake, PacketExecutor {
     private static class StressPacketDefinition extends PacketDefinition {
         public StressPacketDefinition(short id, PacketExecutor executor) {
             super(id, executor, Type.Integer);
@@ -26,7 +26,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
         public boolean done;
     }
 
-    public StressModule() {
+    public FastStressModule() {
         super((short) 1);
     }
 
@@ -65,13 +65,16 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     public void execute(ReceivedPacket packet) {
         int i = packet.get(0);
         StressData data = getModuleData(packet.getSender());
-        if (i == Short.MAX_VALUE*20) {
+        if (i == Short.MAX_VALUE-1) {
             data.done = true;
         }
-        if (i == Short.MAX_VALUE*20+1) {
+        if (i == Short.MAX_VALUE) {
             data.done = true;
             data.callback.callback();
             return;
+        }
+        if (i%1000==0) {
+            System.out.println(i);
         }
         data.callback.yield(YieldCause.PacketReceived);
         (new Packet(packet.getDefinition(),(i+1))).sendTo(packet.getSender());

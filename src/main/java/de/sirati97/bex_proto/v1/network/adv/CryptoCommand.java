@@ -59,7 +59,7 @@ public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
 	}
 	
 	public void sendError(String error, NetConnection... connections) {
-		send(States.Error, Type.String_US_ASCII.createStream(error).getBytes().getBytes(), connections);
+		send(States.Error, Type.String_US_ASCII.createStream(error).getByteBuffer().getBytes(), connections);
 	}
 	
 	public static enum States{

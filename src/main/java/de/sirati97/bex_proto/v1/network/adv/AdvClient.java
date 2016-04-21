@@ -101,7 +101,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 			setRegistered(false);
 			Socket socket = createSocket();
 			Stream stream = clientRegCommand.generateSendableStream(clientRegCommand.send(getClientName(), getSubnet(), generic, id, getReconnectID()), noEncrytptionInfo);
-			socket.getOutputStream().write(stream.getBytes().getBytes());
+			socket.getOutputStream().write(stream.getByteBuffer().getBytes());
 			reconnectWith(socket);
 			
 		} catch (IOException e) {

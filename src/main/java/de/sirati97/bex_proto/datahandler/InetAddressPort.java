@@ -6,10 +6,14 @@ import java.net.InetSocketAddress;
 public class InetAddressPort {
 	private InetAddress inetAddress;
 	private int port;
-	
+
 	public InetAddressPort(InetAddress inetAddress, int port) {
 		this.inetAddress = inetAddress;
 		this.port = port;
+	}
+
+	public InetAddressPort(InetSocketAddress socketAddress) {
+		this(socketAddress.getAddress(), socketAddress.getPort());
 	}
 	
 	public InetAddress getInetAddress() {

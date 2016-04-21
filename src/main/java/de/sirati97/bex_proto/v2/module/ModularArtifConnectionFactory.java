@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.v2.module;
 
+import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IConnectionFactory;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 import de.sirati97.bex_proto.v2.module.internal.ServerModularArtifConnection;
@@ -22,5 +24,15 @@ public class ModularArtifConnectionFactory implements IConnectionFactory<Modular
     @Override
     public ModularArtifConnection createServer(IOHandler ioHandler) {
         return new ServerModularArtifConnection(ioHandler, moduleHandler);
+    }
+
+    @Override
+    public AsyncHelper getAsyncHelper() {
+        return moduleHandler.getAsyncHelper();
+    }
+
+    @Override
+    public ILogger getLogger() {
+        return moduleHandler.getLogger();
     }
 }

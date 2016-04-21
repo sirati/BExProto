@@ -52,7 +52,7 @@ public class Packet {
     public void sendTo(IConnection... connections) {
         SendStream stream = new SendStream(createStream(connections));
         for (IConnection connection:connections) {
-            connection.send(stream);
+            connection.send(stream, definition.getRequiresReliableConnection());
         }
     }
 }

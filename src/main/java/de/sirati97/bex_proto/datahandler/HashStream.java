@@ -18,8 +18,8 @@ public class HashStream implements Stream {
 
 
     @Override
-    public ByteBuffer getBytes() {
-        byte[] stream = this.stream.getBytes().getBytes();
+    public ByteBuffer getByteBuffer() {
+        byte[] stream = this.stream.getByteBuffer().getBytes();
         return new ByteBuffer(new ByteBufferSegment(hashAlgorithm.digest(stream)),new ByteBufferSegment(stream));
     }
 }

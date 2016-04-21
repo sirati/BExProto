@@ -10,7 +10,7 @@ public class DoubleStream implements Stream {
 	}
 
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		return BExStatic.setDouble(data);
 	}
 

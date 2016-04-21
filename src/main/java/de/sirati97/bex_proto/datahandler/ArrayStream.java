@@ -17,13 +17,13 @@ public class ArrayStream implements Stream{
 	
 	
 	@Override
-	public ByteBuffer getBytes() {
+	public ByteBuffer getByteBuffer() {
 		Object[] data = (Object[]) dataObj;
 		
 		ByteBuffer[] buffers = new ByteBuffer[data.length+1];
 		buffers[0] = BExStatic.setInteger(data.length);
 		for (int i=0;i<data.length;i++) {
-			buffers[i+1] = baseType.createStream(data[i]).getBytes();
+			buffers[i+1] = baseType.createStream(data[i]).getByteBuffer();
 		}
 		return ByteBuffer.combine(true, buffers);
 	}

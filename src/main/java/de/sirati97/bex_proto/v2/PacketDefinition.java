@@ -13,35 +13,42 @@ public class PacketDefinition implements IPacket, Cloneable{
     private short id;
     private PacketExecutor executor;
     private IPacket parent;
+    private Boolean requiresReliableConnection = null;
 
 
     PacketDefinition(short id, TypeBase... types) {
-        this(id, null, null, true, types);
+        this(id, null, null, true, null, types);
     }
 
     public PacketDefinition(short id, PacketExecutor executor, TypeBase... types) {
-        this(id, null, executor, types);
+        this(id, null, executor, false, null, types);
     }
 
     public PacketDefinition(short id, IPacketCollection parent, TypeBase... types) {
-        this(id, parent,  false, types);
+        this(id, parent, parent.getStandardExecutor(),  false, null, types);
     }
 
-    PacketDefinition(short id, IPacketCollection parent, boolean selfExecuting, TypeBase... types) {
-        this(id, parent, parent.getStandardExecutor(), selfExecuting, types);
+    PacketDefinition(short id, IPacketCollection parent, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
+        this(id, parent, parent.getStandardExecutor(), selfExecuting, requiresReliableConnection, types);
     }
 
     public PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, TypeBase... types) {
-        this(id, parent, executor, false, types);
+        this(id, parent, executor, false, null, types);
     }
 
-    private PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, boolean selfExecuting, TypeBase... types) {
+
+    public PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, Boolean requiresReliableConnection, TypeBase... types) {
+        this(id, parent, executor, false, requiresReliableConnection, types);
+    }
+
+    private PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
         this.id = id;
         if (parent != null) {
             parent.register(this);
         }
         this.executor = selfExecuting? (PacketExecutor) this :executor;
         this.types = types;
+        this.requiresReliableConnection = requiresReliableConnection;
     }
 
     @Override
@@ -94,8 +101,16 @@ public class PacketDefinition implements IPacket, Cloneable{
 
 
     public PacketDefinition clone(IPacket newParent) {
-        PacketDefinition result = new PacketDefinition(id, null, executor, executor==this, types);
+        PacketDefinition result = new PacketDefinition(id, null, executor, executor==this, requiresReliableConnection, types);
         result.setParent(newParent);
         return result;
+    }
+
+    public boolean getRequiresReliableConnection() {
+        return requiresReliableConnection ==null?parent==null||parent.getRequiresReliableConnection(): requiresReliableConnection;
+    }
+
+    public void setRequiresReliableConnection(Boolean requiresReliableConnection) {
+        this.requiresReliableConnection = requiresReliableConnection;
     }
 }

@@ -73,7 +73,7 @@ public class PacketTest implements PacketExecutor{
                     null, false);
 
             Stream stream = packetSend.createStream();
-            CursorByteBuffer buffer = new CursorByteBuffer(stream.getBytes().getBytes(), null);
+            CursorByteBuffer buffer = new CursorByteBuffer(stream.getByteBuffer().getBytes(), null);
             PacketDefinition extracted = (PacketDefinition) collection.getPacket(buffer);
             assertTrue("PacketDefinition have different length!", definition1==extracted);
             Packet packetReceived = PacketManager.extract(extracted, buffer);

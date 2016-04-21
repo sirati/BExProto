@@ -25,12 +25,12 @@ public class HandshakePacket extends SelfExecutingPacketDefinition {
     }
 
     protected void send(byte action, String extra, IConnection connection) {
-        Packet packet = new Packet(this, action, Type.String_Utf_8.createStream(extra).getBytes().getBytes());
+        Packet packet = new Packet(this, action, Type.String_Utf_8.createStream(extra).getByteBuffer().getBytes());
         packet.sendTo(connection);
     }
 
     public void sendError(Throwable t, IConnection connection) {
-        Packet packet = new Packet(this, (byte)-1, Type.JavaThrowable.createStream(t).getBytes().getBytes());
+        Packet packet = new Packet(this, (byte)-1, Type.JavaThrowable.createStream(t).getByteBuffer().getBytes());
         packet.sendTo(connection);
     }
 

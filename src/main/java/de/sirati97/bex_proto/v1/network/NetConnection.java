@@ -424,8 +424,13 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 	}
 
 	@Override
+	public void send(SendStream stream, boolean reliable) {
+		send(stream);
+	}
+
+	@Override
 	public void send(SendStream stream) {
-		send(stream.getBytes().getBytes());
+		send(stream.getByteBuffer().getBytes());
 	}
 
 	@Override
