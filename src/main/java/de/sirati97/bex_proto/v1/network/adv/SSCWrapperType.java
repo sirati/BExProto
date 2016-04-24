@@ -18,11 +18,6 @@ public class SSCWrapperType extends ObjType<SSCWrapper> {
 	}
 
 	@Override
-	public SSCWrapper[] createArray(int length) {
-		return new SSCWrapper[length];
-	}
-
-	@Override
 	public Class<SSCWrapper> getType() {
 		return SSCWrapper.class;
 	}

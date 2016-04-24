@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.datahandler;
 import java.lang.reflect.Array;
 
 
-public final class ArrayType<T> extends DerivedType<T[],T>{
+public final class ArrayType<T> extends DerivedType<T[],T> implements IArrayType<T>{
 	private TypeBase<T> type;
 	private ArrayExtractor<T> extractor;
 	private Class<T[]> clazz;
@@ -12,11 +12,11 @@ public final class ArrayType<T> extends DerivedType<T[],T>{
 		this(DerivedTypeBase.Register.ARRAY_TYPE_FACTORY, type);
 	}
 	
-	public ArrayType(ArrayTypeFactory factory, TypeBase type) {
+	public ArrayType(ArrayTypeFactory factory, TypeBase<T> type) {
 		super(factory);
 		this.type = type;
 		this.extractor = new ArrayExtractor<>(type);
-		this.clazz = (Class<T[]>) Array.newInstance(type.getType(), 0).getClass();
+		this.clazz = (Class<T[]>) type.createArray(0).getClass();
 	}
 	
 	@Override
@@ -24,6 +24,7 @@ public final class ArrayType<T> extends DerivedType<T[],T>{
 		return true;
 	}
 
+	@Override
 	public TypeBase<T> getInnerType() {
 		return type;
 	}
@@ -39,18 +40,13 @@ public final class ArrayType<T> extends DerivedType<T[],T>{
 	}
 
 	@Override
-	public T[][] createArray(int length) {
-		return (T[][]) Array.newInstance(clazz, length);
-	}
-
-	@Override
 	public boolean isPrimitive() {return false;}
 	
 	@Override
 	public Object toPrimitiveArray(Object obj) {
 		if (type instanceof PrimitiveType) {
 			return ((PrimitiveType) type).toPrimitiveArray(obj);
-		} else if (type instanceof ArrayType) {
+		} else if (type instanceof IArrayType) {
 			Object[] obj2 = (Object[]) obj;
 			TypeBase base = getBase();
 			int dimensions = getDimensions();
@@ -58,39 +54,50 @@ public final class ArrayType<T> extends DerivedType<T[],T>{
 			dimArray[0] = obj2.length;
 			Object[] temp = (Object[]) Array.newInstance(base.getType(), dimArray);//new Object[obj2.length];
 			for (int i=0;i<obj2.length;i++) {
-				temp[i] = ((ArrayType) type).toPrimitiveArray(obj2[i]);
+				temp[i] = ((IArrayType) type).toPrimitiveArray(obj2[i]);
 			}
 			return temp;
 		}
 		return obj;
 	}
 
-	public TypeBase getBase() {
-		 if (type instanceof ArrayType) {
-			 return ((ArrayType) type).getBase();
+	@Override
+	protected IArrayType<T[]> createArrayType() {
+		return new ArrayType<>(this);
+	}
+
+	@Override
+	protected INullableType<T[]> createNullableType() {
+		return new NullableType<>(this);
+	}
+
+	@Override
+	public TypeBase<?> getBase() {
+		 if (type instanceof IArrayType) {
+			 return ((IArrayType) type).getBase();
 		 } else {
 			 return type;
 		 }
 	}
 	
-
+	@Override
 	public int getDimensions() {
-		 if (type instanceof ArrayType) {
-			 return ((ArrayType) type).getDimensions()+1;
+		 if (type instanceof IArrayType) {
+			 return ((IArrayType) type).getDimensions()+1;
 		 } else {
 			 return 1;
 		 }
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<T[]> getType() {
 		return clazz;
 	}
 	
 	@Override
 	public boolean equals(Object arg0) {
-		if (arg0 instanceof ArrayType) {
-			return getInnerType().equals(((ArrayType)arg0).getInnerType());
+		if (arg0 instanceof IArrayType) {
+			return getInnerType().equals(((IArrayType)arg0).getInnerType());
 		}
 		return super.equals(arg0);
 	}
@@ -101,7 +108,7 @@ public final class ArrayType<T> extends DerivedType<T[],T>{
 	}
 
 	@Override
-	public ArrayType getInnerArray() {
+	public IArrayType getInnerArray() {
 		return this;
 	}
 

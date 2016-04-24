@@ -266,7 +266,7 @@ public final class BExStatic {
 	}
 	
 	public static String getVersion() {
-		return "2.0.10";
+		return "2.0.11";
 	}
 
 }

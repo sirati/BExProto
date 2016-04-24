@@ -6,11 +6,12 @@ import java.util.Map;
 public interface DerivedTypeBase<Type,InnerType> extends TypeBase<Type> {
 	byte getDerivedID();
 	TypeBase<InnerType> getInnerType();
-	ArrayType getInnerArray();
+	IArrayType getInnerArray();
+	Class<Type> getType();
 	boolean isBasePrimitive();
 	DerivedFactory getFactory();
 	Object toPrimitiveArray(Object obj);
-	public static class Register {
+	class Register {
 		private static Map<Byte, DerivedFactory> types = new HashMap<Byte, DerivedFactory>();
 		public static final ArrayTypeFactory ARRAY_TYPE_FACTORY;
 		public static final NullableTypeFactory NULLABLE_TYPE_FACTORY; 
@@ -30,7 +31,7 @@ public interface DerivedTypeBase<Type,InnerType> extends TypeBase<Type> {
 			return types.get(id);
 		}
 	}
-	public interface DerivedFactory {
+	interface DerivedFactory {
 		byte getDerivedID();
 		DerivedTypeBase create(TypeBase inner);
 	}

@@ -24,11 +24,6 @@ public class StringType extends ObjType<String> {
 	}
 
 	@Override
-	public String[] createArray(int length) {
-		return new String[length];
-	}
-
-	@Override
 	public Class<String> getType() {
 		return String.class;
 	}

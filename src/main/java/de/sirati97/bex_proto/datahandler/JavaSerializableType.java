@@ -1,7 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 
 /**
  * Created by sirati97 on 15.04.2016.
@@ -33,11 +32,6 @@ public class JavaSerializableType<T extends Serializable> extends ObjType<T> {
     @Override
     public StreamExtractor<T> getExtractor() {
         return extractor;
-    }
-
-    @Override
-    public T[] createArray(int length) {
-        return (T[]) Array.newInstance(clazz, length);
     }
 
     @Override

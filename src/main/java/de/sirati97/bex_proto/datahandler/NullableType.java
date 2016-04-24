@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.datahandler;
 
 
-public class NullableType<T> extends DerivedType<T,T> {
+public class NullableType<T> extends DerivedType<T,T> implements INullableType<T> {
 	private TypeBase<T> type;
 	private StreamExtractor<T> extractor;
 
@@ -10,10 +10,10 @@ public class NullableType<T> extends DerivedType<T,T> {
 		this(DerivedTypeBase.Register.NULLABLE_TYPE_FACTORY, type);
 	}
 	
-	public NullableType(NullableTypeFactory factory, TypeBase type) {
+	public NullableType(NullableTypeFactory factory, TypeBase<T> type) {
 		super(factory);
 		this.type = type;
-		this.extractor = new NullableExtractor(type);
+		this.extractor = new NullableExtractor<>(type);
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class NullableType<T> extends DerivedType<T,T> {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return getInnerType().getClass();
+	public Class<T> getType() {
+		return getInnerType().getObjType();
 	}
 	
 	public TypeBase<T> getInnerType() {
@@ -65,10 +65,10 @@ public class NullableType<T> extends DerivedType<T,T> {
 	}
 
 	@Override
-	public ArrayType getInnerArray() {
+	public IArrayType getInnerArray() {
 		if (isArray()) {
-			if (getInnerType() instanceof ArrayType) {
-				return (ArrayType) getInnerType();
+			if (getInnerType() instanceof IArrayType) {
+				return (IArrayType) getInnerType();
 			} else if (getInnerType() instanceof DerivedTypeBase) {
 				return ((DerivedTypeBase)getInnerType()).getInnerArray();
 			} else {
@@ -92,5 +92,14 @@ public class NullableType<T> extends DerivedType<T,T> {
 		}
 	}
 
-	
+
+	@Override
+	protected IArrayType<T> createArrayType() {
+		return new ArrayType<T>(this);
+	}
+
+	@Override
+	protected INullableType<T> createNullableType() {
+		return this;
+	}
 }
