@@ -60,7 +60,7 @@ public abstract class Type<T> implements TypeBase<T>{
 
     @SuppressWarnings("unchecked")
     @Override
-    public final T[] createArray(int length) {
+    public T[] createArray(int length) {
         return (T[]) Array.newInstance(getObjType(), length);
     }
 
