@@ -38,7 +38,7 @@ public class Packet {
     }
 
     public boolean checkPacket(Class<? extends PacketDefinition> clazz) {
-        return clazz == getDefinition().getClass();
+        return clazz.isInstance(definition);
     }
 
     public TypeBase getType(int i) {
