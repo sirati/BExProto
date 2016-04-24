@@ -1,7 +1,5 @@
 package de.sirati97.bex_proto.v2.module.internal;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
-import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
@@ -31,15 +29,16 @@ import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+
 import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.*;
 
 /**
  * Created by sirati97 on 13.04.2016.
  */
 public class EncryptionModule extends InternalModule<EncryptionModule.EncryptionData> implements IModuleHandshake, PacketExecutor {
-    private static class CryptPacketDefinition extends PacketDefinition {
-        public CryptPacketDefinition(short id, PacketExecutor executor) {
-            super(id, executor, Type.Byte, new NullableType(new ArrayType(Type.Byte)), new NullableType(new ArrayType(Type.Byte)));
+    private static class EncryptionPacketDefinition extends PacketDefinition {
+        public EncryptionPacketDefinition(short id, PacketExecutor executor) {
+            super(id, executor, Type.Byte, Type.Byte.asArray().asNullable(), Type.Byte.asArray().asNullable());
         }
     }
     static class EncryptionData {
@@ -50,7 +49,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         public byte[] vectorPartClient;
         public byte[] vectorPartServer;
     }
-    private CryptPacketDefinition packetDefinition;
+    private EncryptionPacketDefinition packetDefinition;
     private final IEncryptionContainer encryptionContainer;
     private final KeyGenerator keyGenerator;
     private final SecureRandom secureRandom;
@@ -67,7 +66,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
 
     @Override
     protected IPacket createPacket() {
-        return packetDefinition==null?(packetDefinition=new CryptPacketDefinition(getId(), this)):packetDefinition;
+        return packetDefinition==null?(packetDefinition=new EncryptionPacketDefinition(getId(), this)):packetDefinition;
     }
 
     @Override

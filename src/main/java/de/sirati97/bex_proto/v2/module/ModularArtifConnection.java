@@ -152,11 +152,23 @@ public class ModularArtifConnection extends ArtifConnection {
         }
     }
 
-    /**Internal do not call*/
-    public final void internal_OnHandshakeStarted(Class clazz){
+    public HandshakeMismatchVersionException internal_CancelMismatchVersion(Class clazz, int remoteVersion) {
+        checkCaller(clazz);
+        HandshakeMismatchVersionException result = new HandshakeMismatchVersionException(remoteVersion);
+        expectConnectionCallback.error(result);
+        expectConnectionCallback = null;
+        return result;
+    }
+
+    private void checkCaller(Class clazz) {
         if (clazz != ConnectionHandlerModule.class) {
             throw new IllegalStateException("This method should not be called by user code");
         }
+    }
+
+    /**Internal do not call*/
+    public final void internal_OnHandshakeStarted(Class clazz){
+        checkCaller(clazz);
         if (!canConnect) {
             throw new IllegalStateException("Cannot start handshake twice");
         }

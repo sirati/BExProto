@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.v2.module.internal.connectionhandler;
 
+import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.IServerConnection;
 import de.sirati97.bex_proto.v2.IPacket;
@@ -15,6 +16,8 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
     public static class ConnectionHandlerData {
         public ICallback callback;
         public HandshakeState handshakeState = HandshakeState.NoHandshake;
+        public int remoteVersion;
+        public ConnectionType connectionType = ConnectionType.Server;
     }
     private PacketCollection packetCollection;
     private HandshakePacket handshakePacket;
@@ -43,17 +46,18 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
         ConnectionHandlerData data = getOrCreateModuleData(connection);
         data.callback = handshakeCallback;
         data.handshakeState = HandshakeState.State1;
-        handshakePacket.send((byte)0, connection);
+        data.connectionType = ConnectionType.Client;
+        handshakePacket.send((byte)0, BExStatic.VERSION_INT_CURRENT, connection);
     }
 
     public void sendHandshakeExchangeData(ModularArtifConnection connection) {
-        ConnectionHandlerData data = getOrCreateModuleData(connection);
+        ConnectionHandlerData data = getModuleData(connection);
         data.handshakeState = HandshakeState.State2;
         handshakePacket.send((byte)2, connection.getConnectionName(), connection);
     }
 
     public void sendHandshakeFinished(ModularArtifConnection connection) {
-        ConnectionHandlerData data = getOrCreateModuleData(connection);
+        ConnectionHandlerData data = getModuleData(connection);
         data.handshakeState = HandshakeState.State3;
         handshakePacket.send((byte)4, connection);
     }
@@ -65,7 +69,7 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
 
 
     public void initServerSide(ModularArtifConnection connection, ICallback handshakeCallback) {
-        getOrCreateModuleData(connection).callback = handshakeCallback;
+        getModuleData(connection).callback = handshakeCallback;
     }
 
     public void finishServerSide(ModularArtifConnection connection) {
@@ -88,5 +92,10 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
     @Override
     protected ConnectionHandlerData getModuleData(IConnection connection) {
         return super.getModuleData(connection);
+    }
+
+    @Override
+    protected ConnectionHandlerData getOrCreateModuleData(IConnection connection) {
+        return super.getOrCreateModuleData(connection);
     }
 }

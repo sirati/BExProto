@@ -1,7 +1,6 @@
 package de.sirati97.bex_proto.v2.module.internal.connectionhandler;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
-import de.sirati97.bex_proto.datahandler.NullableType;
+import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
@@ -9,6 +8,7 @@ import de.sirati97.bex_proto.v2.IPacketCollection;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfExecutingPacketDefinition;
+import de.sirati97.bex_proto.v2.module.HandshakeMismatchVersionException;
 import de.sirati97.bex_proto.v2.module.HandshakeRemoteException;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.internal.connectionhandler.ConnectionHandlerModule.ConnectionHandlerData;
@@ -20,12 +20,17 @@ public class HandshakePacket extends SelfExecutingPacketDefinition {
     private final ConnectionHandlerModule parent;
 
     public HandshakePacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {
-        super((short)0, packetCollection, Type.Byte, new NullableType<>(new ArrayType<>(Type.Byte)));
+        super((short)0, packetCollection, Type.Byte, Type.Byte.asArray().asNullable());
         this.parent = parent;
     }
 
     protected void send(byte action, String extra, IConnection connection) {
         Packet packet = new Packet(this, action, Type.String_Utf_8.createStream(extra).getByteBuffer().getBytes());
+        packet.sendTo(connection);
+    }
+
+    protected void send(byte action, int extra, IConnection connection) {
+        Packet packet = new Packet(this, action, Type.Integer.createStream(extra).getByteBuffer().getBytes());
         packet.sendTo(connection);
     }
 
@@ -44,51 +49,93 @@ public class HandshakePacket extends SelfExecutingPacketDefinition {
         byte action = packet.get(0);
         ModularArtifConnection connection = (ModularArtifConnection) packet.getSender();
         CursorByteBuffer extra =new CursorByteBuffer((byte[]) packet.get(1), connection);
-        if (action == 0) { //syn
-            connection.internal_OnHandshakeStarted(ConnectionHandlerModule.class);
-            send((byte)1, connection); //ack
-        } else if (action == 1) {
-            ConnectionHandlerData data = parent.getModuleData(packet.getSender());
-            if (data.handshakeState!=HandshakeState.State1) {
-                errorWrongOrder(data);
-            }
-            data.callback.callback(); //using callback because other modules will run now
-        } else if (action == 2) {
-            String name = (String) Type.String_Utf_8.getExtractor().extract(extra);
-            connection.setConnectedWith(name);
-            parent.getModuleData(packet.getSender()).callback.callback(); //internal handshakes are all done. do the rest
-            send((byte)3, connection.getConnectionName(), connection);
-        } else if (action == 3) {
-            ConnectionHandlerData data = parent.getModuleData(packet.getSender());
-            if (data.handshakeState!=HandshakeState.State2) {
-                errorWrongOrder(data);
-            }
-            String name = (String) Type.String_Utf_8.getExtractor().extract(extra);
-            connection.setConnectedWith(name);
-            data.callback.callback(); //using callback because other modules will run now
-        } else if (action == 4) {
-            parent.getModuleData(packet.getSender()).callback.callback(); //will check if all handshake modules completed.
-        } else if (action == 5) {
-            ConnectionHandlerData data = parent.getModuleData(packet.getSender());
-            if (data.handshakeState!=HandshakeState.State3) {
-                errorWrongOrder(data);
-            }
-            packet.getSender().getLogger().info("Handshake completed");
-            data.handshakeState = HandshakeState.Done;
-            data.callback.callback(); //using callback and clean up - we are done
-            data.callback = null;
-        } else if (action == -1) {
-            Throwable t = Type.JavaThrowable.getExtractor().extract(extra);
-            ConnectionHandlerData data = parent.getModuleData(packet.getSender());
-            if (data != null && data.callback != null && data.handshakeState.isInHandshake()) {
-                data.callback.error(new HandshakeRemoteException(t));
-            } else {
-                packet.getSender().getLogger().error("Remote peer has thrown error after handshake finished. weird...", t);
-            }
+        ConnectionHandlerData data = action==0?parent.getOrCreateModuleData(connection):parent.getModuleData(connection);
+
+        switch (action) {
+
+
+            //Server side
+            case 0: //syn
+                data.handshakeState = HandshakeState.State1;
+                data.remoteVersion = Type.Integer.getExtractor().extract(extra);
+                if (data.remoteVersion < BExStatic.VERSION_INT_MIN) {
+                    sendError(connection.internal_CancelMismatchVersion(ConnectionHandlerModule.class, data.remoteVersion) ,connection);
+                } else {
+                    connection.internal_OnHandshakeStarted(ConnectionHandlerModule.class);
+                    send((byte)1, BExStatic.VERSION_INT_CURRENT, connection); //ack
+                }
+                break;
+
+            case 2:
+                if (checkOrder(data, HandshakeState.State1)) {
+                    data.handshakeState = HandshakeState.State2;
+                    String name = Type.String_Utf_8.getExtractor().extract(extra);
+                    connection.setConnectedWith(name);
+                    data.callback.callback(); //internal handshakes are all done. do the rest
+                    send((byte)3, connection.getConnectionName(), connection);
+                }
+                break;
+
+            case 4:
+                if (checkOrder(data, HandshakeState.State2)) {
+                    data.handshakeState = HandshakeState.State3;
+                    data.callback.callback(); //will check if all handshake modules completed.
+                }
+                break;
+
+
+
+
+            //Client side
+            case 1:
+                if (checkOrder(data, HandshakeState.State1)) {
+                    data.remoteVersion = Type.Integer.getExtractor().extract(extra);
+                    if (data.remoteVersion < BExStatic.VERSION_INT_MIN) {
+                        data.callback.error(new HandshakeMismatchVersionException(data.remoteVersion));
+                    } else {
+                        data.callback.callback(); //using callback because other modules will run now
+                    }
+                }
+                break;
+
+            case 3:
+                if (checkOrder(data, HandshakeState.State2)) {
+                    String name = Type.String_Utf_8.getExtractor().extract(extra);
+                    connection.setConnectedWith(name);
+                    data.callback.callback(); //using callback because other modules will run now
+                }
+                break;
+
+            case 5:
+                if (checkOrder(data, HandshakeState.State3)) {
+                    packet.getSender().getLogger().info("Handshake completed");
+                    data.handshakeState = HandshakeState.Done;
+                    data.callback.callback(); //using callback and clean up - we are done
+                    data.callback = null;
+                }
+                break;
+
+
+
+
+            //Both
+            case -1:
+                Throwable t = Type.JavaThrowable.getExtractor().extract(extra);
+                if (data != null && data.callback != null && data.handshakeState.isInHandshake()) {
+                    data.callback.error(new HandshakeRemoteException(t));
+                } else {
+                    packet.getSender().getLogger().error("Remote peer has thrown error after handshake finished. weird...", t);
+                }
+                break;
+            default:
         }
     }
 
-    private void errorWrongOrder(ConnectionHandlerData data) {
-        data.callback.error(new IllegalAccessException("Handshake done in wrong order. Probably malicious server"));
+    private boolean checkOrder(ConnectionHandlerData data, HandshakeState state) {
+        boolean result = data.handshakeState == state;
+        if (!result) {
+            data.callback.error(new IllegalAccessException("Handshake done in wrong order. Probably malicious " + data.connectionType.getOtherSide().toString().toLowerCase()));
+        }
+        return result;
     }
 }

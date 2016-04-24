@@ -264,9 +264,9 @@ public final class BExStatic {
 			this.usedLength = usedLength;
 		}
 	}
-	
-	public static String getVersion() {
-		return "2.0.11";
-	}
+	public static final String VERSION_STRING = "2.0.12";
+	public static final int VERSION_INT_MIN = 2;
+	public static final int VERSION_INT_CURRENT = 2;
+
 
 }
