@@ -262,38 +262,7 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Float";
 		}
 	};
-	public static final PrimitiveType<Boolean> Boolean = new PrimitiveType<Boolean>() {
-		BooleanExtractor extractor = new BooleanExtractor();
-		
-		@Override public Stream createStreamCasted(Boolean obj) {
-			return new BooleanStream(obj);
-		}
-
-		@Override public BooleanExtractor getExtractor() {
-			return extractor;
-		}
-
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Boolean[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
-			return ArrayUtils.toObject((boolean[])obj);
-		}
-
-		@Override public Class<?> getType() {
-			return boolean.class;
-		}
-
-        @Override
-        public Class<Boolean> getObjType() {
-            return Boolean.class;
-        }
-
-        public String getTypeName() {
-			return "Boolean";
-		}
-	};
+	public static final BooleanType Boolean = new BooleanType();
 	public static final Type<java.util.UUID> UUID = new ObjType<java.util.UUID>() {
 		UUIDExtractor extractor = new UUIDExtractor();
 		

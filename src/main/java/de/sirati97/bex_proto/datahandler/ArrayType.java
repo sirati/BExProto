@@ -3,9 +3,9 @@ package de.sirati97.bex_proto.datahandler;
 import java.lang.reflect.Array;
 
 
-public final class ArrayType<T> extends DerivedType<T[],T> implements IArrayType<T>{
+public class ArrayType<T> extends DerivedType<T[],T> implements IArrayType<T>{
 	private TypeBase<T> type;
-	private ArrayExtractor<T> extractor;
+	private StreamExtractor<T[]> extractor;
 	private Class<T[]> clazz;
 
 	public ArrayType(TypeBase<T> type) {
@@ -15,9 +15,12 @@ public final class ArrayType<T> extends DerivedType<T[],T> implements IArrayType
 	public ArrayType(ArrayTypeFactory factory, TypeBase<T> type) {
 		super(factory);
 		this.type = type;
-		this.extractor = new ArrayExtractor<>(type);
+		this.extractor = createExtractor();
 		this.clazz = (Class<T[]>) type.createArray(0).getClass();
 	}
+    protected StreamExtractor<T[]> createExtractor() {
+        return new ArrayExtractor<>(type);
+    }
 	
 	@Override
 	public boolean isArray() {
@@ -35,7 +38,7 @@ public final class ArrayType<T> extends DerivedType<T[],T> implements IArrayType
 	}
 
 	@Override
-	public ArrayExtractor<T> getExtractor() {
+	public StreamExtractor<T[]> getExtractor() {
 		return extractor;
 	}
 

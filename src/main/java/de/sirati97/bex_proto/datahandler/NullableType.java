@@ -95,7 +95,7 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 
 	@Override
 	protected IArrayType<T> createArrayType() {
-		return new ArrayType<T>(this);
+		return new ArrayNullableType<>(this);
 	}
 
 	@Override
