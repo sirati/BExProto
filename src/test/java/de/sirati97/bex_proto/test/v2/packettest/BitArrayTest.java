@@ -47,31 +47,6 @@ public class BitArrayTest implements PacketExecutor{
 
         Assert.assertArrayEquals("Bits are not equal", bits, bitsReceived);
     }
-    @Test
-    public void start2() {
-        PacketDefinition definition = new PacketDefinition((short)0, this, Type.Long.asNullable().asArray());
-        Long[] data = new Long[256];
-        Random rnd = new Random();
-        for (int i = 0; i < data.length; i++) {
-            if(rnd.nextBoolean()) {
-                data[i] = rnd.nextLong();
-            }
-        }
-
-        Packet packetSend = new Packet(definition, (Object)data);
-
-        Stream stream = packetSend.createStream();
-        byte[] bytes = stream.getByteBuffer().getBytes();
-
-        System.out.println(TestIOHandler.bytesToString(bytes));
-
-        CursorByteBuffer buffer = new CursorByteBuffer(bytes, null);
-
-        Packet packetReceived = PacketManager.extract(definition, buffer);
-        Long[] dataReceived = packetReceived.get(0);
-
-        Assert.assertArrayEquals(data, dataReceived);
-    }
 
     @Override
     public void execute(ReceivedPacket packet) {
