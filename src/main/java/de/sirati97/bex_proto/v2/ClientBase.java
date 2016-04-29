@@ -1,5 +1,8 @@
 package de.sirati97.bex_proto.v2;
 
+import de.sirati97.bex_proto.events.Event;
+import de.sirati97.bex_proto.events.EventRegister;
+import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
 
@@ -38,5 +41,24 @@ public abstract class ClientBase<Connection extends ArtifConnection> extends CHB
     @Override
     protected ILogger getLogger() {
         return connection==null?getFactory().getLogger():connection.getLogger();
+    }
+
+    @Override
+    public boolean register(Listener listener) {
+        return getEventRegister().register(listener);
+    }
+
+    @Override
+    public boolean unregister(Listener listener) {
+        return getEventRegister().unregister(listener);
+    }
+
+    @Override
+    public void invokeEvent(Event event) {
+        getEventRegister().invokeEvent(event);
+    }
+
+    public EventRegister getEventRegister() {
+        return connection.getEventRegister();
     }
 }

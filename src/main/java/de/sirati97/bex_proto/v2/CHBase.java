@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.v2;
 
+import de.sirati97.bex_proto.events.IEventRegister;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public abstract class CHBase<Connection extends ArtifConnection> {
+public abstract class CHBase<Connection extends ArtifConnection> implements IEventRegister {
     private final IConnectionFactory<Connection> factory;
     private final Set<Connection> connections = new HashSet<>();
     private final Set<Connection> connectionsReadOnly = Collections.unmodifiableSet(connections);

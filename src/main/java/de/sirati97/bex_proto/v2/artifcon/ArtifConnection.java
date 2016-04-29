@@ -3,6 +3,10 @@ package de.sirati97.bex_proto.v2.artifcon;
 import de.sirati97.bex_proto.datahandler.EncryptionStream;
 import de.sirati97.bex_proto.datahandler.HashStream;
 import de.sirati97.bex_proto.datahandler.SendStream;
+import de.sirati97.bex_proto.events.Event;
+import de.sirati97.bex_proto.events.EventRegister;
+import de.sirati97.bex_proto.events.IEventRegister;
+import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -18,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class ArtifConnection implements IConnection {
+public class ArtifConnection implements IConnection, IEventRegister {
     private Cipher sendCipher;
     private Cipher receiveCipher;
     private MessageDigest hashAlgorithm;
@@ -28,6 +32,8 @@ public class ArtifConnection implements IConnection {
     private byte[] overflow;
     private IOHandler ioHandler;
     private ILogger logger;
+    private final EventRegister eventRegister;
+
 
     public ArtifConnection(String connectionName, AsyncHelper asyncHelper, IOHandler ioHandler, ILogger logger, IPacket packet) {
         this.connectionName = connectionName;
@@ -35,6 +41,7 @@ public class ArtifConnection implements IConnection {
         this.ioHandler = ioHandler;
         this.streamReader = new StreamReader(packet);
         this.logger = logger.getLogger("connection\\"+connectionName);
+        this.eventRegister = new EventRegister(logger);
     }
 
 
@@ -119,7 +126,9 @@ public class ArtifConnection implements IConnection {
 
     protected void setConnectionName(String connectionName) {
         this.connectionName = connectionName;
-        logger.changePrefix("connection\\"+connectionName);
+        String newLoggerPrefix = "connection\\"+connectionName;
+        logger.changePrefix(newLoggerPrefix);
+        eventRegister.setLoggerPrefix(newLoggerPrefix);
     }
 
     public AsyncHelper getAsyncHelper() {
@@ -156,5 +165,24 @@ public class ArtifConnection implements IConnection {
 
     public void onIOException(IOException e) {
         throw new IllegalStateException("IOException occurred: "+e.toString(), e);
+    }
+
+    @Override
+    public boolean register(Listener listener) {
+        return eventRegister.register(listener);
+    }
+
+    @Override
+    public boolean unregister(Listener listener) {
+        return eventRegister.unregister(listener);
+    }
+
+    @Override
+    public void invokeEvent(Event event) {
+        eventRegister.invokeEvent(event);
+    }
+
+    public EventRegister getEventRegister() {
+        return eventRegister;
     }
 }
