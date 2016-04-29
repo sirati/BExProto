@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EventHandler {
     EventPriority priority() default EventPriority.Middle;
-    boolean ignoreCancelled() default true;
+    boolean ignoreCancelled() default false;
 }

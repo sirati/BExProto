@@ -5,5 +5,5 @@ package de.sirati97.bex_proto.events;
  */
 public interface Cancelable extends Event {
     boolean isCancelled();
-    void setCancelled();
+    void setCancelled(boolean cancelled);
 }

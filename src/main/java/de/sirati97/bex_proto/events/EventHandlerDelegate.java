@@ -28,6 +28,13 @@ public class EventHandlerDelegate {
            (event instanceof Cancelable && !ignoreCancelled && ((Cancelable) event).isCancelled())) {
             return;
         }
+        boolean not_accessible = !method.isAccessible();
+        if (not_accessible) {
+            method.setAccessible(true);
+        }
         method.invoke(instance.get(), event);
+        if (not_accessible) {
+            method.setAccessible(false);
+        }
     }
 }

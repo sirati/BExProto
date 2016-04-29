@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.test.v2.packettest;
+package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.InetAddressPort;

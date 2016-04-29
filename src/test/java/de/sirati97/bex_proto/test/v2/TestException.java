@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.test.v2.packettest;
+package de.sirati97.bex_proto.test.v2;
 
 /**
  * Created by sirati97 on 16.04.2016.

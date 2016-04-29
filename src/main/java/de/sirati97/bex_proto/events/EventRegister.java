@@ -23,8 +23,14 @@ public class EventRegister implements IEventRegister{
     private final ReferenceQueue<Listener> referenceQueue = new ReferenceQueue<>();
     private final Set<EventRegister> parents = new HashSet<>();
     private final ILogger logger;
+    private final boolean cancelEventOnError;
 
     public EventRegister(ILogger logger) {
+        this(logger, false);
+    }
+
+    public EventRegister(ILogger logger, boolean cancelEventOnError) {
+        this.cancelEventOnError = cancelEventOnError;
         this.logger = logger.getLogger(logger.getPrefix()+"|EventRegister");
     }
 
@@ -154,7 +160,10 @@ public class EventRegister implements IEventRegister{
         for (EventRegister parent:parents) {
             parent.getDelegates(eventClass, result);
         }
-        result.add(delegates.get(eventClass));
+        EventHandlerDelegateSet set = delegates.get(eventClass);
+        if (set != null) {
+            result.add(set);
+        }
     }
 
 
@@ -171,13 +180,20 @@ public class EventRegister implements IEventRegister{
         for (EventHandlerDelegate delegate:delegates) {
             try {
                 delegate.invoke(event);
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                throw new IllegalStateException("Could not invoke event handler");
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Could not invoke event handler", e);
             } catch (Throwable t) {
+                if (t instanceof InvocationTargetException) {
+                    t = t.getCause();
+                }
                 if (exceptionString == null) {
                     exceptionString = "Exception thrown while invoking EventHandler for " + event.getClass().getName();
                 }
-                logger.error(exceptionString, t);
+                if (cancelEventOnError) {
+                    throw new IllegalStateException(exceptionString, t);
+                } else {
+                    logger.error(exceptionString, t);
+                }
             }
         }
     }
