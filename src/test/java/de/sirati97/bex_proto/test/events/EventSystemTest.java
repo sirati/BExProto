@@ -27,18 +27,25 @@ public class EventSystemTest implements Listener {
         EventRegister register2 = new EventRegister(logger, true);
         register2.addParent(register);
 
-        testRegister(register2);
+        boolean caught = false;
+        try {
+            register.addParent(register2);
+        } catch (Throwable t) {
+            caught = true;
+        }
+        Assert.assertTrue("Should not be able to add child as parent", caught);
 
+        testRegister(register2);
     }
 
     private void testRegister(IEventRegister register) {
-        boolean catched = false;
+        boolean caught = false;
         try {
             register.invokeEvent(new FailEvent());
         } catch (Throwable t) {
-            catched = true;
+            caught = true;
         }
-        Assert.assertTrue("Should not be able to invoke event without distributor", catched);
+        Assert.assertTrue("Should not be able to invoke event without distributor", caught);
 
 
         state = 0;

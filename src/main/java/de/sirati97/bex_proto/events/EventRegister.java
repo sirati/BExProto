@@ -211,7 +211,7 @@ public class EventRegister implements IEventRegister{
     }
 
     public void addParent(EventRegister register) {
-        if (isChild(register)) {
+        if (register.isChild(this)) {
             throw new IllegalStateException("You are not allowed to set a child as parent");
         }
         parents.add(register);
