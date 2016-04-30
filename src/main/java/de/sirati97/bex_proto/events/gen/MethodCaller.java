@@ -11,4 +11,5 @@ import java.lang.reflect.Method;
  */
 public interface MethodCaller {
     void invoke(Method method, Listener listener, Event event) throws InvocationTargetException, IllegalAccessException;
+    String CLASS_NAME = MethodCaller.class.getName();
 }

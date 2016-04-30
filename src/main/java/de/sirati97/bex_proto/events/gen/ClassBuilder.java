@@ -26,7 +26,7 @@ import static org.apache.bcel.Constants.*;
 /**
  * Created by sirati97 on 30.04.2016.
  */
-public class ClassBuilder implements Listener {
+public class ClassBuilder {
     public final static ClassBuilder INSTANCE = new ClassBuilder();
     public static boolean generateClasses = true;
     public static boolean allowNonPublic = false;
@@ -39,7 +39,6 @@ public class ClassBuilder implements Listener {
     private Type methodType = Type.getType(Method.class);
     private final BuilderClassLoader classLoader = new BuilderClassLoader();
     private final Map<Method, MethodCaller> callerMap = new THashMap<>();
-
 
     public MethodCaller getEventCaller(Method method) {
         boolean isPublic = Modifier.isPublic(method.getModifiers());
@@ -67,7 +66,7 @@ public class ClassBuilder implements Listener {
         Type eventType = Type.getType(method.getParameterTypes()[0]);
         Type listenerType = Type.getType(method.getDeclaringClass());
 
-        ClassGen classGen = new ClassGen(className,"java.lang.Object","<generated>", ACC_PUBLIC | ACC_SUPER, new String[]{"de.sirati97.bex_proto.events.gen.MethodCaller"});
+        ClassGen classGen = new ClassGen(className,"java.lang.Object","<generated>", ACC_PUBLIC | ACC_SUPER, new String[]{MethodCaller.CLASS_NAME});
         ConstantPoolGen constantPool = classGen.getConstantPool();
         InstructionList instructions = new InstructionList();
         InstructionFactory factory = new InstructionFactory(classGen);
