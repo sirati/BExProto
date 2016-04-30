@@ -20,7 +20,7 @@ public class EventSystemTest implements Listener {
     public void start() {
         ILogger logger = new SysOutLogger();
         EventRegister register = new EventRegister(logger, true);
-        register.register(this);
+        register.registerEventListener(this);
 
         testRegister(register);
 
@@ -61,58 +61,58 @@ public class EventSystemTest implements Listener {
     }
 
     @EventHandler(priority = EventPriority.First)
-    private void onTestEvent_First(TestEvent event) {
+    public void onTestEvent_First(TestEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 1);
         state = 2;
     }
 
 
     @EventHandler(priority = EventPriority.Prepare)
-    private void onTestEvent_Prepare(TestEvent event) {
+    public void onTestEvent_Prepare(TestEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 0);
         state = 1;
     }
 
     @EventHandler(priority = EventPriority.Middle)
-    private void onTestEvent_Middle(TestEvent event) {
+    public void onTestEvent_Middle(TestEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 2);
         state = 3;
     }
 
     @EventHandler(priority = EventPriority.Last)
-    private void onTestEvent_Last(TestEvent event) {
+    public void onTestEvent_Last(TestEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 3);
         state = 4;
     }
 
     @EventHandler(priority = EventPriority.Monitor)
-    private void onTestEvent_Monitor(TestEvent event) {
+    public void onTestEvent_Monitor(TestEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 4);
         state = 5;
     }
 
     @EventHandler(priority = EventPriority.Prepare)
-    private void onTestCancelableEvent_Prepare(TestCancelableEvent event) {
+    public void onTestCancelableEvent_Prepare(TestCancelableEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 0);
         state = 1;
     }
 
     @EventHandler(priority = EventPriority.First)
-    private void onTestCancelableEvent_First(TestCancelableEvent event) {
+    public void onTestCancelableEvent_First(TestCancelableEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 1);
         event.setCancelled(true);
         state = 2;
     }
 
     @EventHandler(priority = EventPriority.Middle, ignoreCancelled = true)
-    private void onTestCancelableEvent_Middle(TestCancelableEvent event) {
+    public void onTestCancelableEvent_Middle(TestCancelableEvent event) {
         Assert.assertTrue("Event called in wrong order! state=" + state, state == 2);
         state = 5;
     }
 
 
     @EventHandler(priority = EventPriority.Monitor)
-    private void onTestCancelableEvent_Monitor(TestCancelableEvent event) {
+    public void onTestCancelableEvent_Monitor(TestCancelableEvent event) {
         Assert.fail("Event is cancelled. should not be called!");
     }
 

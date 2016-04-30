@@ -1,5 +1,8 @@
 package de.sirati97.bex_proto.events;
 
+import de.sirati97.bex_proto.events.gen.ClassBuilder;
+import de.sirati97.bex_proto.events.gen.MethodCaller;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,14 +16,17 @@ public class EventHandlerDelegate {
     public final Class<? extends Event> eventClass;
     public final EventPriority priority;
     public final boolean ignoreCancelled;
+    private final GenericEventHandler genericEventHandler;
+    private final MethodCaller caller;
 
-
-    public EventHandlerDelegate(WeakReference<Listener> instance, Method method, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled) {
+    public EventHandlerDelegate(WeakReference<Listener> instance, Method method, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled, GenericEventHandler genericEventHandler) {
         this.instance = instance;
         this.method = method;
         this.eventClass = eventClass;
         this.priority = priority;
         this.ignoreCancelled = ignoreCancelled;
+        this.genericEventHandler = genericEventHandler;
+        this.caller = ClassBuilder.INSTANCE.getEventCaller(method);
     }
 
     public void invoke(Event event) throws InvocationTargetException, IllegalAccessException {
@@ -28,13 +34,20 @@ public class EventHandlerDelegate {
            (event instanceof Cancelable && !ignoreCancelled && ((Cancelable) event).isCancelled())) {
             return;
         }
-        boolean not_accessible = !method.isAccessible();
-        if (not_accessible) {
-            method.setAccessible(true);
+        if (event instanceof GenericEvent) {
+            Class[] genericsEvent = ((GenericEvent) event).getGenerics();
+            Class[] genericsHandler = genericEventHandler.generics();
+            if (genericsEvent.length != genericsHandler.length) {
+                throw new IllegalStateException("Method " + method.getName() + " should have " + genericsEvent.length + " generics, but has " + genericsHandler.length + " generics instant");
+            }
+
+            for (int i = 0; i < genericsEvent.length; i++) {
+                //noinspection unchecked
+                if (!genericsHandler[i].isAssignableFrom(genericsEvent[i])) {
+                    return;
+                }
+            }
         }
-        method.invoke(instance.get(), event);
-        if (not_accessible) {
-            method.setAccessible(false);
-        }
+        caller.invoke(method, instance.get(), event);
     }
 }

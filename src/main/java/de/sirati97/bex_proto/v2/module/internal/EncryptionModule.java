@@ -9,6 +9,7 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
+import de.sirati97.bex_proto.v2.events.TrustPublicKeyEvent;
 import de.sirati97.bex_proto.v2.module.HandshakeRejectedException;
 import de.sirati97.bex_proto.v2.module.IModuleHandshake;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
@@ -202,7 +203,13 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             onError(e, connection);
             return;
         }
-        if (encryptionContainer.trust(publicKey)) {
+
+        boolean trusted = encryptionContainer.trust(publicKey);
+        TrustPublicKeyEvent trustPublicKeyEvent =new TrustPublicKeyEvent(publicKey, trusted);
+        connection.invokeEvent(trustPublicKeyEvent);
+        trusted = trustPublicKeyEvent.isTrusted();
+
+        if (trusted) {
             encryptionData.remotePublicKey=publicKey;
             byte[] iv = new byte[IV_LENGTH/2];
             secureRandom.nextBytes(iv);
@@ -313,7 +320,13 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             closeWithError(e.toString(), connection);
             return;
         }
-        if (encryptionContainer.trust(publicKey)) {
+
+        boolean trusted = encryptionContainer.trust(publicKey);
+        TrustPublicKeyEvent trustPublicKeyEvent =new TrustPublicKeyEvent(publicKey, trusted);
+        connection.invokeEvent(trustPublicKeyEvent);
+        trusted = trustPublicKeyEvent.isTrusted();
+
+        if (trusted) {
             encryptionData.remotePublicKey=publicKey;
             send(State.ServerPublicKey, encryptionContainer.getPublicKey().getEncoded(), connection);
         } else {

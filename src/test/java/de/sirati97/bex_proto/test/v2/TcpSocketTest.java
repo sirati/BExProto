@@ -1,6 +1,10 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.events.EventHandler;
+import de.sirati97.bex_proto.events.EventPriority;
+import de.sirati97.bex_proto.events.GenericEventHandler;
+import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
@@ -8,8 +12,10 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
+import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 import de.sirati97.bex_proto.v2.io.tcp.TcpClient;
 import de.sirati97.bex_proto.v2.io.tcp.TcpServer;
+import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnectionFactory;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
 import org.junit.Test;
@@ -22,7 +28,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpSocketTest implements PacketExecutor {
+public class TcpSocketTest implements PacketExecutor, Listener {
     private final Object receiveMutex = new Object();
     private boolean received = false;
 
@@ -38,6 +44,7 @@ public class TcpSocketTest implements PacketExecutor {
                 ModularArtifConnectionFactory factory = new ModularArtifConnectionFactory(moduleHandler);
                 InetAddress address = InetAddress.getByName("localhost");
                 TcpServer server = new TcpServer<>(factory, address, 12312);
+                server.registerEventListener(this);
                 TcpClient client = new TcpClient<>(factory, "TestConnection", address, 12312, address, 12313);
                 server.startListening();
                 timestamp = System.nanoTime();
@@ -94,5 +101,11 @@ public class TcpSocketTest implements PacketExecutor {
             receiveMutex.notifyAll();
         }
         System.out.println(packet.get(0));
+    }
+
+    @GenericEventHandler(generics = {ModularArtifConnection.class})
+    @EventHandler(priority = EventPriority.Monitor)
+    public void onNewConnectionEvent(NewConnectionEvent<ModularArtifConnection> event) {
+        System.out.println("Server accepted new connection");
     }
 }

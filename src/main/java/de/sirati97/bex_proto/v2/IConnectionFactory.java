@@ -13,4 +13,5 @@ public interface IConnectionFactory<T extends ArtifConnection> {
     T createServer(IOHandler ioHandler);
     AsyncHelper getAsyncHelper();
     ILogger getLogger();
+    Class<T> getConnectionClass();
 }

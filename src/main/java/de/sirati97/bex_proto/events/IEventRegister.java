@@ -4,7 +4,7 @@ package de.sirati97.bex_proto.events;
  * Created by sirati97 on 29.04.2016.
  */
 public interface IEventRegister {
-    boolean register(Listener listener);
-    boolean unregister(Listener listener);
+    boolean registerEventListener(Listener listener);
+    boolean unregisterEventListener(Listener listener);
     void invokeEvent(Event event);
 }

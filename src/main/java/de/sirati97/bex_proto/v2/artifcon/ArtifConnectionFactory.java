@@ -10,7 +10,7 @@ import de.sirati97.bex_proto.v2.io.IOHandler;
 /**
  * Created by sirati97 on 16.04.2016.
  */
-public class ArtifConnectionFactory implements IConnectionFactory {
+public class ArtifConnectionFactory implements IConnectionFactory<ArtifConnection> {
     private final AsyncHelper asyncHelper;
     private final ILogger logger;
     private final IPacket packet;
@@ -39,5 +39,10 @@ public class ArtifConnectionFactory implements IConnectionFactory {
     @Override
     public ILogger getLogger() {
         return logger;
+    }
+
+    @Override
+    public Class<ArtifConnection> getConnectionClass() {
+        return ArtifConnection.class;
     }
 }

@@ -8,8 +8,10 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,7 +37,7 @@ public class EventRegister implements IEventRegister{
     }
 
 
-    public boolean register(Listener listener) {
+    public boolean registerEventListener(Listener listener) {
         cleanup();
         for (WeakReference reference:listeners) {
             if (listener == reference.get()) {
@@ -45,32 +47,48 @@ public class EventRegister implements IEventRegister{
         Class<? extends Listener> clazz = listener.getClass();
         WeakReference<Listener> instance = new WeakReference<>(listener, referenceQueue);
         Set<EventHandlerDelegate> referencesSet = new HashSet<>();
-        int handlersFound = registerMethods(instance, referencesSet, clazz.getMethods());
-        handlersFound += registerMethods(instance, referencesSet, clazz.getDeclaredMethods());
-        if (handlersFound > 0) {
+
+        Set<Method> methods = new LinkedHashSet<>(Arrays.asList(clazz.getMethods()));
+        methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+
+        boolean result = registerMethods(instance, referencesSet, methods)>0;
+
+        if (result) {
             listeners.add(instance);
             references.put(instance, referencesSet);
         } else {
             instance.clear();
         }
-        return handlersFound > 0;
+        return result;
     }
 
-    private int registerMethods(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, Method[] methods) {
+    private int registerMethods(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, Set<Method> methods) {
         int found = 0;
         method_for: for (Method method:methods) {
+            EventHandler eventHandler = null;
+            GenericEventHandler genericEventHandler = null;
             for (Annotation annotation: method.getAnnotations()) {
                 if (annotation instanceof EventHandler) {
-                    registerMethod(instance, referencesSet, (EventHandler) annotation, method);
-                    found++;
-                    continue method_for;
+                    eventHandler = (EventHandler) annotation;
                 }
+                if (annotation instanceof GenericEventHandler) {
+                    genericEventHandler = (GenericEventHandler) annotation;
+                }
+                if (eventHandler!=null&&genericEventHandler!=null) {
+                    break;
+                }
+            }
+            if (eventHandler != null) {
+                registerMethod(instance, referencesSet, eventHandler, genericEventHandler, method);
+                found++;
+            } else if( genericEventHandler!=null) {
+                throw new IllegalStateException("Method " + method.getName() + " has annotation @GenericEventHandler without having @EventHandler as well.");
             }
         }
         return found;
     }
 
-    private void registerMethod(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, EventHandler eventHandler, Method method) {
+    private void registerMethod(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, EventHandler eventHandler, GenericEventHandler genericEventHandler, Method method) {
         Class[] parameter = method.getParameterTypes();
         if (parameter.length!=1) {
             throw new IllegalStateException("Method " + method.getName() + " has to have only one parameter");
@@ -80,7 +98,39 @@ public class EventRegister implements IEventRegister{
         }
         //noinspection unchecked
         Class<? extends Event> eventClass = parameter[0];
-        EventHandlerDelegate delegate = new EventHandlerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled());
+        if (genericEventHandler != null) {
+            if (!GenericEvent.class.isAssignableFrom(eventClass)) {
+                throw new IllegalStateException("Method " + method.getName() + " has annotation @GenericEventHandler while parameter is not a generic event.");
+            }
+            Method getGenericsSuperclasses;
+            try {
+                getGenericsSuperclasses = eventClass.getDeclaredMethod("getGenericsSuperclasses");
+            } catch (NoSuchMethodException e) {
+                throw createEventDistributorMissingException(eventClass);
+            }
+            int modifiers = getGenericsSuperclasses.getModifiers();
+            if (!Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+                throw createEventDistributorMissingException(eventClass);
+            }
+            Class[] genericsSuperclasses;
+            try {
+                genericsSuperclasses = (Class[]) getGenericsSuperclasses.invoke(null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new IllegalStateException("Could not obtain generic superclasses");
+            }
+            Class[] genericsHandler = genericEventHandler.generics();
+            if (genericsSuperclasses.length != genericsHandler.length) {
+                throw new IllegalStateException("Method " + method.getName() + " should have " + genericsSuperclasses.length + " generics, but has " + genericsHandler.length + " generics instant");
+            }
+
+            for (int i = 0; i < genericsSuperclasses.length; i++) {
+                //noinspection unchecked
+                if (!genericsSuperclasses[i].isAssignableFrom(genericsHandler[i])) {
+                    throw new IllegalStateException("Generic " + (i+1) + " has to be a subclass of" + genericsSuperclasses[i].getName());
+                }
+            }
+        }
+        EventHandlerDelegate delegate = new EventHandlerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled(), genericEventHandler);
 
         EventHandlerDelegateSet set = delegates.get(eventClass);
         if (set == null) {
@@ -112,7 +162,7 @@ public class EventRegister implements IEventRegister{
         }
     }
 
-    public boolean unregister(Listener listener) {
+    public boolean unregisterEventListener(Listener listener) {
         cleanup();
         for (WeakReference<? extends Listener> reference:listeners) {
             if (listener == reference.get()) {
@@ -125,6 +175,10 @@ public class EventRegister implements IEventRegister{
 
     private IllegalStateException createEventDistributorMissingException(Class<? extends Event> clazz) {
         return new IllegalStateException("Event " + clazz.getName() + " need to has 'public static EventDistributor getEventDistributor();'");
+    }
+
+    private IllegalStateException createGenericSuperclassesMissingException(Class<? extends Event> clazz) {
+        return new IllegalStateException("Event " + clazz.getName() + " need to has 'public static Class[] getGenericsSuperclasses();'");
     }
 
     public void invokeEvent(Event event) {
@@ -198,23 +252,27 @@ public class EventRegister implements IEventRegister{
         }
     }
 
-    public boolean isChild(EventRegister register) {
+    public boolean isParent(EventRegister register) {
         if (parents.contains(register)) {
             return true;
         }
         for (EventRegister parent:parents) {
-            if (parent.isChild(register)) {
+            if (parent.isParent(register)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void addParent(EventRegister register) {
-        if (register.isChild(this)) {
+    public boolean addParent(EventRegister register) {
+        if (register.isParent(this)) {
             throw new IllegalStateException("You are not allowed to set a child as parent");
         }
+        if (isParent(register)) {
+            return false;
+        }
         parents.add(register);
+        return true;
     }
 
     public void removeParent(EventRegister register) {

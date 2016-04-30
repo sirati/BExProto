@@ -44,13 +44,13 @@ public abstract class ClientBase<Connection extends ArtifConnection> extends CHB
     }
 
     @Override
-    public boolean register(Listener listener) {
-        return getEventRegister().register(listener);
+    public boolean registerEventListener(Listener listener) {
+        return getEventRegister().registerEventListener(listener);
     }
 
     @Override
-    public boolean unregister(Listener listener) {
-        return getEventRegister().unregister(listener);
+    public boolean unregisterEventListener(Listener listener) {
+        return getEventRegister().unregisterEventListener(listener);
     }
 
     @Override

@@ -35,4 +35,9 @@ public class ModularArtifConnectionFactory implements IConnectionFactory<Modular
     public ILogger getLogger() {
         return moduleHandler.getLogger();
     }
+
+    @Override
+    public Class<ModularArtifConnection> getConnectionClass() {
+        return ModularArtifConnection.class;
+    }
 }

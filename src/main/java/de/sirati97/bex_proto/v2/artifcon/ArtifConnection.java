@@ -168,13 +168,13 @@ public class ArtifConnection implements IConnection, IEventRegister {
     }
 
     @Override
-    public boolean register(Listener listener) {
-        return eventRegister.register(listener);
+    public boolean registerEventListener(Listener listener) {
+        return eventRegister.registerEventListener(listener);
     }
 
     @Override
-    public boolean unregister(Listener listener) {
-        return eventRegister.unregister(listener);
+    public boolean unregisterEventListener(Listener listener) {
+        return eventRegister.unregisterEventListener(listener);
     }
 
     @Override

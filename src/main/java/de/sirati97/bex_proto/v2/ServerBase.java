@@ -5,6 +5,7 @@ import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 
 /**
  * Created by sirati97 on 17.04.2016.
@@ -21,20 +22,20 @@ public abstract class ServerBase<Connection extends ArtifConnection> extends CHB
     public abstract void stopListening();
     public abstract boolean isListening();
 
-    /**equal to isListening*/
+    /**wraps isListening*/
     @Override
     public final boolean isConnected() {
         return isListening();
     }
 
-    /**equal to startListening*/
+    /**wraps startListening*/
     @Override
     public final void connect() {
         stopListening();
     }
 
 
-    /**equal to stopListening*/
+    /**wraps stopListening*/
     @Override
     public final void disconnect() {
         stopListening();
@@ -50,16 +51,17 @@ public abstract class ServerBase<Connection extends ArtifConnection> extends CHB
     protected void registerConnection(Connection connection) {
         super.registerConnection(connection);
         connection.getEventRegister().addParent(getEventRegister());
+        invokeEvent(new NewConnectionEvent<>(connection, getFactory().getConnectionClass()));
     }
 
     @Override
-    public boolean register(Listener listener) {
-        return getEventRegister().register(listener);
+    public boolean registerEventListener(Listener listener) {
+        return getEventRegister().registerEventListener(listener);
     }
 
     @Override
-    public boolean unregister(Listener listener) {
-        return getEventRegister().unregister(listener);
+    public boolean unregisterEventListener(Listener listener) {
+        return getEventRegister().unregisterEventListener(listener);
     }
 
     @Override
