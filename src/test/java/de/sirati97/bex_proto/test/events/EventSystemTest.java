@@ -10,8 +10,6 @@ import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Set;
-
 /**
  * Created by sirati97 on 29.04.2016.
  */
@@ -40,12 +38,6 @@ public class EventSystemTest implements Listener {
 
         testRegister(register2);
 
-
-        logger.info("Threads: ");
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        for (Thread t:threadSet) {
-            logger.info(t.getName() + " state=" + t.getState().toString());
-        }
     }
 
     private void testRegister(IEventRegister register) {
