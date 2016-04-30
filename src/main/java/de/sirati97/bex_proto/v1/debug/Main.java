@@ -33,7 +33,7 @@ public class Main {
 	private static AdvThreadAsyncHelper asyncHelper;
 	private static long sleepTime;
 	public static void main(String[] args) throws InterruptedException {
-		asyncHelper = new AdvThreadAsyncHelper(5);
+		asyncHelper = new AdvThreadAsyncHelper();
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				try {

@@ -10,12 +10,10 @@ import java.util.concurrent.Executors;
 public class AdvThreadAsyncHelper implements AsyncHelper {
 	private final Set<Thread> activeThreads = new HashSet<>();
 	private final Set<Thread> activeThreadsRead = Collections.unmodifiableSet(activeThreads);
-//	private ThreadFactory threadFactory;
 	private ExecutorService executorService;
 	
-	public AdvThreadAsyncHelper(int poolsize) {
-//		threadFactory = (new ThreadFactoryBuilder()).build();
-        executorService = Executors.newFixedThreadPool(poolsize);
+	public AdvThreadAsyncHelper() {
+        executorService = Executors.newCachedThreadPool();
 
 		
 	}

@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
  */
 public class EncryptedHandshakeTest implements PacketExecutor{
     private ILogger log = new SysOutLogger();
-    private AdvThreadAsyncHelper asyncHelper = new AdvThreadAsyncHelper(6);
+    private AdvThreadAsyncHelper asyncHelper = new AdvThreadAsyncHelper();
     private final Object receiveMutex = new Object();
     private boolean received = false;
 

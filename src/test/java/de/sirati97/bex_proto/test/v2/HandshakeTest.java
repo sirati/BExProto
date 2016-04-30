@@ -30,7 +30,7 @@ public class HandshakeTest implements PacketExecutor{
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         Long timestamp;
-        AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper(6);
+        AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper();
         try {
             try {
                 log.info("Handshake test preparing");

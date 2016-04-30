@@ -36,7 +36,7 @@ public class TcpSocketTest implements PacketExecutor, Listener {
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         Long timestamp;
-        AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper(10);
+        AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper();
         try {
             try {
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
