@@ -21,7 +21,7 @@ public class MethodCallerBenchmark implements Listener {
         long timestampBuild = System.nanoTime();
         //compiles caller
         java.lang.reflect.Method method = MethodCallerBenchmark.class.getDeclaredMethod("onTestEvent", TestEvent.class);
-        MethodCaller caller = builder.getEventCaller(method);
+        MethodCaller caller = builder.getEventCallerBlocking(method);
         timestampBuild = (System.nanoTime()-timestampBuild)/1000000;
 
         long timestamp = System.nanoTime();
@@ -42,7 +42,7 @@ public class MethodCallerBenchmark implements Listener {
         ClassBuilder.generateClasses = false;
 
         timestamp = System.nanoTime();
-        caller = builder.getEventCaller(method);
+        caller = builder.getEventCallerBlocking(method);
         //tests
         for (long i=0;i<10_000_000_000L;i++) {
             caller.invoke(method, this, null);

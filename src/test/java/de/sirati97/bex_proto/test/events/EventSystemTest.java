@@ -10,11 +10,14 @@ import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Set;
+
 /**
  * Created by sirati97 on 29.04.2016.
  */
 public class EventSystemTest implements Listener {
     private int state = -1;
+
 
     @Test
     public void start() {
@@ -36,6 +39,13 @@ public class EventSystemTest implements Listener {
         Assert.assertTrue("Should not be able to add child as parent", caught);
 
         testRegister(register2);
+
+
+        logger.info("Threads: ");
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        for (Thread t:threadSet) {
+            logger.info(t.getName() + " state=" + t.getState().toString());
+        }
     }
 
     private void testRegister(IEventRegister register) {

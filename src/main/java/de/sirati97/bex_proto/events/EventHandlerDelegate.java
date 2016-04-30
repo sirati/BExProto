@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto.events;
 
 import de.sirati97.bex_proto.events.gen.ClassBuilder;
+import de.sirati97.bex_proto.events.gen.GenerateTaskCallback;
 import de.sirati97.bex_proto.events.gen.MethodCaller;
 
 import java.lang.ref.WeakReference;
@@ -17,16 +18,27 @@ public class EventHandlerDelegate {
     public final EventPriority priority;
     public final boolean ignoreCancelled;
     private final GenericEventHandler genericEventHandler;
-    private final MethodCaller caller;
+    private MethodCaller caller;
 
-    public EventHandlerDelegate(WeakReference<Listener> instance, Method method, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled, GenericEventHandler genericEventHandler) {
+    public EventHandlerDelegate(WeakReference<Listener> instance, final Method method, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled, GenericEventHandler genericEventHandler) {
         this.instance = instance;
         this.method = method;
         this.eventClass = eventClass;
         this.priority = priority;
         this.ignoreCancelled = ignoreCancelled;
         this.genericEventHandler = genericEventHandler;
-        this.caller = ClassBuilder.INSTANCE.getEventCaller(method);
+        this.caller = ClassBuilder.INSTANCE.getEventCallerNonBlocking(method, new GenerateTaskCallback() {
+            @Override
+            public void done(MethodCaller methodCaller) {
+                System.out.println("Finished building method caller. name="+methodCaller.getClass().getSimpleName());
+                caller = methodCaller;
+            }
+
+            @Override
+            public void error(Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     public void invoke(Event event) throws InvocationTargetException, IllegalAccessException {

@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.apache.bcel.Constants.*;
 
@@ -30,8 +32,12 @@ public class ClassBuilder {
     public final static ClassBuilder INSTANCE = new ClassBuilder();
     public static boolean generateClasses = true;
     public static boolean allowNonPublic = false;
+    private static final String builderThreadName = "Class Builder Compile Thread";
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
     private ClassBuilder(){}
+
 
     private int id = 0;
     private Type listenerInterfaceType = Type.getType(Listener.class);
@@ -40,7 +46,36 @@ public class ClassBuilder {
     private final BuilderClassLoader classLoader = new BuilderClassLoader();
     private final Map<Method, MethodCaller> callerMap = new THashMap<>();
 
-    public MethodCaller getEventCaller(Method method) {
+
+    public MethodCaller getEventCallerNonBlocking(final Method method, final GenerateTaskCallback callback) {
+        boolean isPublic = Modifier.isPublic(method.getModifiers());
+        if (isPublic && generateClasses) {
+            MethodCaller caller = callerMap.get(method);
+            if (caller == null) {
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        Thread.currentThread().setName(builderThreadName);
+                        try {
+                            callback.done(getEventCallerBlocking(method));
+                        } catch (Throwable t) {
+                            callback.error(t);
+                        }
+                    }
+                });
+                return ReflectionMethodCaller.INSTANCE;
+            }
+            return caller;
+        } else {
+            if (!allowNonPublic && !isPublic) {
+                throw new IllegalStateException("Method " + method.getName() + " has to be public. You can allow non public event handlers by setting ClassBuilder.allowNonPublic to true");
+            }
+            return ReflectionMethodCaller.INSTANCE;
+        }
+    }
+
+
+    public MethodCaller getEventCallerBlocking(Method method) {
         boolean isPublic = Modifier.isPublic(method.getModifiers());
         if (isPublic && generateClasses) {
             MethodCaller caller = callerMap.get(method);
