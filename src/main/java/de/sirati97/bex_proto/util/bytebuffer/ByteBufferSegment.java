@@ -12,9 +12,6 @@ public class ByteBufferSegment implements IByteBufferSegment {
     }
 
     public ByteBufferSegment getNext() {
-        if (next == this) {
-            System.out.println("OHnononononoo");
-        }
         return next;
     }
 

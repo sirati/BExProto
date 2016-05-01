@@ -7,6 +7,8 @@ import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 
+import java.io.IOException;
+
 /**
  * Created by sirati97 on 17.04.2016.
  */
@@ -18,7 +20,7 @@ public abstract class ServerBase<Connection extends ArtifConnection> extends CHB
         super(factory);
     }
 
-    public abstract void startListening();
+    public abstract void startListening() throws IOException;
     public abstract void stopListening();
     public abstract boolean isListening();
 

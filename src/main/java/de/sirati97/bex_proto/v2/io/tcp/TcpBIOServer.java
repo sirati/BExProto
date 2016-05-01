@@ -17,31 +17,31 @@ import java.util.HashSet;
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public class TcpServer<Connection extends ArtifConnection> extends ServerBase<Connection> {
+public class TcpBIOServer<Connection extends ArtifConnection> extends ServerBase<Connection> {
     private final ServerSocket serverSocket;
     private AsyncTask task;
     private boolean listening = false;
     private final int port;
 
-    protected TcpServer(IConnectionFactory<Connection> factory, ServerSocket serverSocket, int port) {
+    protected TcpBIOServer(IConnectionFactory<Connection> factory, ServerSocket serverSocket, int port) {
         super(factory);
         this.serverSocket = serverSocket;
         this.port = port;
     }
 
-    public TcpServer(IConnectionFactory<Connection> factory, int port) throws IOException {
+    public TcpBIOServer(IConnectionFactory<Connection> factory, int port) throws IOException {
         this(factory, new ServerSocket(port), port);
     }
 
-    public TcpServer(IConnectionFactory<Connection> factory, InetAddress address, int port) throws IOException {
+    public TcpBIOServer(IConnectionFactory<Connection> factory, InetAddress address, int port) throws IOException {
         this(factory, new ServerSocket(port, 0, address), port);
     }
 
-    public TcpServer(IConnectionFactory<Connection> factory, InetAddressPort inetAddressPort) throws IOException {
+    public TcpBIOServer(IConnectionFactory<Connection> factory, InetAddressPort inetAddressPort) throws IOException {
         this(factory, inetAddressPort.getInetAddress(), inetAddressPort.getPort());
     }
 
-    public TcpServer(IConnectionFactory<Connection> factory, InetSocketAddress socketAddress) throws IOException {
+    public TcpBIOServer(IConnectionFactory<Connection> factory, InetSocketAddress socketAddress) throws IOException {
         this(factory, socketAddress.getAddress(), socketAddress.getPort());
     }
 
@@ -63,7 +63,7 @@ public class TcpServer<Connection extends ArtifConnection> extends ServerBase<Co
                                 getLogger().warn("The socket was closed!");
                             } else if ((socket = serverSocket.accept()) != null) {
                                 try {
-                                    Connection connection = getFactory().createServer(new TcpSocketIOHandler(socket));
+                                    Connection connection = getFactory().createServer(new TcpSocketBIOHandler(socket));
                                     registerConnection(connection);
                                     connection.expectConnection();
                                 } catch (Throwable e) {
@@ -110,6 +110,6 @@ public class TcpServer<Connection extends ArtifConnection> extends ServerBase<Co
 
     @Override
     protected ILogger createLogger() {
-        return getFactory().getLogger().getLogger("TcpServer{ip"+serverSocket.getInetAddress().getHostAddress()+", port="+serverSocket.getLocalPort()+"}");
+        return getFactory().getLogger().getLogger("TcpBIOServer{ip"+serverSocket.getInetAddress().getHostAddress()+", port="+serverSocket.getLocalPort()+"}");
     }
 }

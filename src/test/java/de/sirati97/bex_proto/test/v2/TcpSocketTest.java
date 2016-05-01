@@ -8,13 +8,15 @@ import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
+import de.sirati97.bex_proto.v2.ClientBase;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketExecutor;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
+import de.sirati97.bex_proto.v2.ServerBase;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.io.tcp.TcpClient;
-import de.sirati97.bex_proto.v2.io.tcp.TcpServer;
+import de.sirati97.bex_proto.v2.io.tcp.TcpAIOClient;
+import de.sirati97.bex_proto.v2.io.tcp.TcpAIOServer;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnectionFactory;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
@@ -35,17 +37,17 @@ public class TcpSocketTest implements PacketExecutor, Listener {
     @Test
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
-        Long timestamp;
+        long timestamp;
         AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper();
         try {
             try {
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
                 ModuleHandler moduleHandler = new ModuleHandler(definition, helper, log);
                 ModularArtifConnectionFactory factory = new ModularArtifConnectionFactory(moduleHandler);
-                InetAddress address = InetAddress.getByName("localhost");
-                TcpServer server = new TcpServer<>(factory, address, 12312);
+                InetAddress address = InetAddress.getLocalHost();
+                ServerBase server = new TcpAIOServer<>(factory, address, 12312);
                 server.registerEventListener(this);
-                TcpClient client = new TcpClient<>(factory, "TestConnection", address, 12312, address, 12313);
+                ClientBase client = new TcpAIOClient<>(factory, "TestConnection", address, 12312);//, address, 12313);
                 server.startListening();
                 timestamp = System.nanoTime();
                 client.connect();
@@ -65,7 +67,6 @@ public class TcpSocketTest implements PacketExecutor, Listener {
 
                 server.stop();
                 client.stop();
-                Thread.sleep(100);
             } catch (Throwable e) {
                 e.printStackTrace();
                 throw e;

@@ -127,6 +127,7 @@ public class ArtifConnection implements IConnection, IEventRegister {
     protected void setConnectionName(String connectionName) {
         this.connectionName = connectionName;
         String newLoggerPrefix = "connection\\"+connectionName;
+        ioHandler.updateConnectionName(connectionName);
         logger.changePrefix(newLoggerPrefix);
         eventRegister.setLoggerPrefix(newLoggerPrefix);
     }
@@ -164,7 +165,10 @@ public class ArtifConnection implements IConnection, IEventRegister {
     }
 
     public void onIOException(IOException e) {
-        throw new IllegalStateException("IOException occurred: "+e.toString(), e);
+        if (isConnected()) {
+            e.printStackTrace(System.out);
+            throw new IllegalStateException("IOException occurred: "+e.toString(), e);
+        }
     }
 
     @Override
