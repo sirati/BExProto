@@ -47,7 +47,7 @@ public class TcpSocketTest implements PacketExecutor, Listener {
                 InetAddress address = InetAddress.getLocalHost();
                 ServerBase server = new TcpAIOServer<>(factory, address, 12312);
                 server.registerEventListener(this);
-                ClientBase client = new TcpAIOClient<>(factory, "TestConnection", address, 12312);//, address, 12313);
+                ClientBase client = new TcpAIOClient<>(factory, "TestConnection", address, 12312);
                 server.startListening();
                 timestamp = System.nanoTime();
                 client.connect();

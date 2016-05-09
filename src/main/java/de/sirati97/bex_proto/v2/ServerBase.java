@@ -77,4 +77,9 @@ public abstract class ServerBase<Connection extends ArtifConnection> extends CHB
         }
         return eventRegister;
     }
+
+    @Override
+    public EventRegister getEventRegisterImplementation() {
+        return eventRegister;
+    }
 }

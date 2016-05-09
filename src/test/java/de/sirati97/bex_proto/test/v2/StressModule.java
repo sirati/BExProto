@@ -24,6 +24,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     static class StressData {
         public ICallback callback;
         public boolean done;
+        public int last = 0;
     }
 
     public StressModule() {
@@ -32,7 +33,9 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
 
     @Override
     public void onHandshake(ModularArtifConnection connection, ICallback callback) {
-        getOrCreateModuleData(connection).callback = callback;
+        StressData data = getOrCreateModuleData(connection);
+        data.callback = callback;
+        data.last = 1;
         (new Packet((PacketDefinition) getPacket(),2)).sendTo(connection);
     }
 
@@ -65,10 +68,14 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     public void execute(ReceivedPacket packet) {
         int i = packet.get(0);
         StressData data = getModuleData(packet.getSender());
-        if (i == Short.MAX_VALUE*20) {
+        if (data.last+2!=i) {
+            data.callback.error(new IllegalAccessException("wrong number received. stress test failed " + data.last + "=/=" + i));
+        }
+        data.last = i;
+        if (i == Short.MAX_VALUE-1) {
             data.done = true;
         }
-        if (i == Short.MAX_VALUE*20+1) {
+        if (i == Short.MAX_VALUE) {
             data.done = true;
             data.callback.callback();
             return;

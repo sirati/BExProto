@@ -32,6 +32,7 @@ public class ClassBuilder {
     public final static ClassBuilder INSTANCE = new ClassBuilder();
     public static boolean generateClasses = true;
     public static boolean allowNonPublic = false;
+    public static Runnable threadPreparer = null;
     private static final String builderThreadName = "Class Builder Compile Thread";
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -56,6 +57,9 @@ public class ClassBuilder {
                     @Override
                     public void run() {
                         Thread.currentThread().setName(builderThreadName);
+                        if (threadPreparer != null) {
+                            threadPreparer.run();
+                        }
                         try {
                             callback.done(getEventCallerBlocking(method));
                         } catch (Throwable t) {

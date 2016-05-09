@@ -64,6 +64,10 @@ public abstract class ClientBase<Connection extends ArtifConnection> extends CHB
         return connection.getEventRegister();
     }
 
+    @Override
+    public EventRegister getEventRegisterImplementation() {
+        return connection.getEventRegisterImplementation();
+    }
 
     @Override
     public synchronized void disconnect() {

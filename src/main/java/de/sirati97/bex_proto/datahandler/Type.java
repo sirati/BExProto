@@ -263,7 +263,7 @@ public abstract class Type<T> implements TypeBase<T>{
 		}
 	};
 	public static final BooleanType Boolean = new BooleanType();
-	public static final Type<java.util.UUID> UUID = new ObjType<java.util.UUID>() {
+	public static final ObjType<java.util.UUID> UUID = new ObjType<java.util.UUID>() {
 		UUIDExtractor extractor = new UUIDExtractor();
 		
 		@Override
@@ -285,7 +285,7 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "UUID";
 		}
 	};
-	public static final Type<java.net.InetAddress> InetAddress = new ObjType<java.net.InetAddress>() {
+	public static final ObjType<java.net.InetAddress> InetAddress = new ObjType<java.net.InetAddress>() {
 		InetAddressExtractor extractor = new InetAddressExtractor();
 		
 		@Override
@@ -307,7 +307,7 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "InetAddress";
 		}
 	};
-	public static final Type<InetAddressPort> InetAddressPort = new ObjType<InetAddressPort>() {
+	public static final ObjType<InetAddressPort> InetAddressPort = new ObjType<InetAddressPort>() {
 		InetAddressPortExtractor extractor = new InetAddressPortExtractor();
 		
 		@Override

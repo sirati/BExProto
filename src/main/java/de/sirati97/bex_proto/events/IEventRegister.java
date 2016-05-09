@@ -7,4 +7,5 @@ public interface IEventRegister {
     boolean registerEventListener(Listener listener);
     boolean unregisterEventListener(Listener listener);
     void invokeEvent(Event event);
+    EventRegister getEventRegisterImplementation();
 }

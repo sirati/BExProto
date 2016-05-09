@@ -10,12 +10,12 @@ import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
  */
 public class NewConnectionEvent<Connection extends ArtifConnection> implements GenericEvent {
     private static final EventDistributor DISTRIBUTOR = new EventDistributorImpl();
-    private static final Class[] GENERICS_SUPERCLASSES = {ArtifConnection.class};
+    private static final Class[] GENERIC_SUPERCLASSES = {ArtifConnection.class};
     public static EventDistributor getEventDistributor() {
         return DISTRIBUTOR;
     }
-    public static Class[] getGenericsSuperclasses() {
-        return GENERICS_SUPERCLASSES;
+    public static Class[] getGenericSuperclasses() {
+        return GENERIC_SUPERCLASSES;
     }
 
     public NewConnectionEvent(Connection connection, Class<Connection> connectionClass) {

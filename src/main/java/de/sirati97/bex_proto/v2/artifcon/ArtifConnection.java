@@ -186,6 +186,11 @@ public class ArtifConnection implements IConnection, IEventRegister {
         eventRegister.invokeEvent(event);
     }
 
+    @Override
+    public EventRegister getEventRegisterImplementation() {
+        return eventRegister;
+    }
+
     public EventRegister getEventRegister() {
         return eventRegister;
     }

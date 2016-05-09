@@ -7,7 +7,6 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,12 +19,13 @@ import java.util.Set;
  */
 public class EventRegister implements IEventRegister{
     private final Map<Class<? extends Event>, EventHandlerDelegateSet> delegates = new HashMap<>();
-    private final Map<WeakReference<? extends Listener>, Set<EventHandlerDelegate>> references = new HashMap<>();
+    private final Map<WeakReference<? extends Listener>, Set<IEventHandlerDelegate>> references = new HashMap<>();
     private final Set<WeakReference<? extends Listener>> listeners = new HashSet<>();
     private final ReferenceQueue<Listener> referenceQueue = new ReferenceQueue<>();
     private final Set<EventRegister> parents = new HashSet<>();
     private final ILogger logger;
     private final boolean cancelEventOnError;
+
 
     public EventRegister(ILogger logger) {
         this(logger, false);
@@ -45,8 +45,9 @@ public class EventRegister implements IEventRegister{
             }
         }
         Class<? extends Listener> clazz = listener.getClass();
+        EventHelperUtil.checkListenerClass(clazz);
         WeakReference<Listener> instance = new WeakReference<>(listener, referenceQueue);
-        Set<EventHandlerDelegate> referencesSet = new HashSet<>();
+        Set<IEventHandlerDelegate> referencesSet = new HashSet<>();
 
         Set<Method> methods = new LinkedHashSet<>(Arrays.asList(clazz.getMethods()));
         methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
@@ -62,9 +63,9 @@ public class EventRegister implements IEventRegister{
         return result;
     }
 
-    private int registerMethods(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, Set<Method> methods) {
+    private int registerMethods(WeakReference<Listener> instance, Set<IEventHandlerDelegate> referencesSet, Set<Method> methods) {
         int found = 0;
-        method_for: for (Method method:methods) {
+        for (Method method:methods) {
             EventHandler eventHandler = null;
             GenericEventHandler genericEventHandler = null;
             for (Annotation annotation: method.getAnnotations()) {
@@ -88,7 +89,7 @@ public class EventRegister implements IEventRegister{
         return found;
     }
 
-    private void registerMethod(WeakReference<Listener> instance, Set<EventHandlerDelegate> referencesSet, EventHandler eventHandler, GenericEventHandler genericEventHandler, Method method) {
+    private void registerMethod(WeakReference<Listener> instance, Set<IEventHandlerDelegate> referencesSet, EventHandler eventHandler, GenericEventHandler genericEventHandler, Method method) {
         Class[] parameter = method.getParameterTypes();
         if (parameter.length!=1) {
             throw new IllegalStateException("Method " + method.getName() + " has to have only one parameter");
@@ -98,26 +99,15 @@ public class EventRegister implements IEventRegister{
         }
         //noinspection unchecked
         Class<? extends Event> eventClass = parameter[0];
+        if (!GenericEvent.class.isAssignableFrom(eventClass) && genericEventHandler == null) {
+            genericEventHandler = EventHelperUtil.getGenericEventHandlerByMethod(eventClass, method);
+        }
+
         if (genericEventHandler != null) {
             if (!GenericEvent.class.isAssignableFrom(eventClass)) {
                 throw new IllegalStateException("Method " + method.getName() + " has annotation @GenericEventHandler while parameter is not a generic event.");
             }
-            Method getGenericsSuperclasses;
-            try {
-                getGenericsSuperclasses = eventClass.getDeclaredMethod("getGenericsSuperclasses");
-            } catch (NoSuchMethodException e) {
-                throw createEventDistributorMissingException(eventClass);
-            }
-            int modifiers = getGenericsSuperclasses.getModifiers();
-            if (!Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
-                throw createEventDistributorMissingException(eventClass);
-            }
-            Class[] genericsSuperclasses;
-            try {
-                genericsSuperclasses = (Class[]) getGenericsSuperclasses.invoke(null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new IllegalStateException("Could not obtain generic superclasses");
-            }
+            Class[] genericsSuperclasses = EventHelperUtil.getEventGenericsSuperclasses(eventClass);
             Class[] genericsHandler = genericEventHandler.generics();
             if (genericsSuperclasses.length != genericsHandler.length) {
                 throw new IllegalStateException("Method " + method.getName() + " should have " + genericsSuperclasses.length + " generics, but has " + genericsHandler.length + " generics instant");
@@ -130,7 +120,7 @@ public class EventRegister implements IEventRegister{
                 }
             }
         }
-        EventHandlerDelegate delegate = new EventHandlerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled(), genericEventHandler);
+        IEventHandlerDelegate delegate = new EventHandlerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled(), genericEventHandler);
 
         EventHandlerDelegateSet set = delegates.get(eventClass);
         if (set == null) {
@@ -152,12 +142,12 @@ public class EventRegister implements IEventRegister{
 
     private void unregister(WeakReference<? extends Listener> reference) {
         listeners.remove(reference);
-        Set<EventHandlerDelegate> delegatesSet = references.remove(reference);
-        for (EventHandlerDelegate delegate:delegatesSet) {
-            EventHandlerDelegateSet classDelegates = delegates.get(delegate.eventClass);
+        Set<IEventHandlerDelegate> delegatesSet = references.remove(reference);
+        for (IEventHandlerDelegate delegate:delegatesSet) {
+            EventHandlerDelegateSet classDelegates = delegates.get(delegate.getEventClass());
             classDelegates.remove(delegate);
             if (classDelegates.size() == 0) {
-                delegates.remove(delegate.eventClass);
+                delegates.remove(delegate.getEventClass());
             }
         }
     }
@@ -173,34 +163,15 @@ public class EventRegister implements IEventRegister{
         return false;
     }
 
-    private IllegalStateException createEventDistributorMissingException(Class<? extends Event> clazz) {
-        return new IllegalStateException("Event " + clazz.getName() + " need to has 'public static EventDistributor getEventDistributor();'");
-    }
-
-    private IllegalStateException createGenericSuperclassesMissingException(Class<? extends Event> clazz) {
-        return new IllegalStateException("Event " + clazz.getName() + " need to has 'public static Class[] getGenericsSuperclasses();'");
-    }
-
     public void invokeEvent(Event event) {
         cleanup();
         Class<? extends Event> eventClass= event.getClass();
-        Method getDistributor;
-        try {
-            getDistributor = eventClass.getDeclaredMethod("getEventDistributor");
-        } catch (NoSuchMethodException e) {
-            throw createEventDistributorMissingException(eventClass);
-        }
-        int modifiers = getDistributor.getModifiers();
-        if (!Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
-            throw createEventDistributorMissingException(eventClass);
-        }
-        EventDistributor distributor;
-        try {
-            distributor = (EventDistributor) getDistributor.invoke(null);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Could not obtain EventDistributor");
-        }
-        distributor.distribute(event, this);
+        EventHelperUtil.getEventDistributor(eventClass).distribute(event, this);
+    }
+
+    @Override
+    public EventRegister getEventRegisterImplementation() {
+        return this;
     }
 
     public Set<EventHandlerDelegateSet> getDelegates(Class<? extends Event> eventClass) {
@@ -229,9 +200,9 @@ public class EventRegister implements IEventRegister{
         }
     }
 
-    void _invokeDelegates(Event event, Set<EventHandlerDelegate> delegates) {
+    void _invokeDelegates(Event event, Set<IEventHandlerDelegate> delegates) {
         String exceptionString=null;
-        for (EventHandlerDelegate delegate:delegates) {
+        for (IEventHandlerDelegate delegate:delegates) {
             try {
                 delegate.invoke(event);
             } catch (IllegalAccessException e) {
@@ -282,4 +253,6 @@ public class EventRegister implements IEventRegister{
     public void setLoggerPrefix(String prefix) {
         logger.changePrefix(prefix+"|EventRegister");
     }
+
+
 }

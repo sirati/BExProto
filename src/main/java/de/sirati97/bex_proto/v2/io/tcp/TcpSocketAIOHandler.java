@@ -58,7 +58,7 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
         socket.read(nioByteBuffer, nioByteBuffer, new CompletionHandler<Integer, ByteBuffer>() {
             @Override
             public void completed(Integer result, ByteBuffer buffer) {
-                if (result < 0){ //remote peer has closen channel
+                if (result < 0){ //remote peer has closed channel
                     getConnection().disconnect();
                     return;
                 }
@@ -72,6 +72,7 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
             @Override
             public void failed(Throwable exc, ByteBuffer attachment) {
                 if (!isOpen() || exc instanceof InterruptedException || exc instanceof ClosedChannelException || exc instanceof IOException) {
+                    getConnection().disconnect();
                     return;
                 }
                 getConnection().onIOException(new IOException(exc));

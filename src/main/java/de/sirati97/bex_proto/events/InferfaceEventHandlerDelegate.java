@@ -1,48 +1,28 @@
 package de.sirati97.bex_proto.events;
 
-import de.sirati97.bex_proto.events.gen.ClassBuilder;
-import de.sirati97.bex_proto.events.gen.GenerateTaskCallback;
-import de.sirati97.bex_proto.events.gen.MethodCaller;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Created by sirati97 on 29.04.2016.
  */
-public class EventHandlerDelegate implements IEventHandlerDelegate{
+public class InferfaceEventHandlerDelegate {
     private final WeakReference<Listener> instance;
-    private final Method method;
     private final Class<? extends Event> eventClass;
     private final EventPriority priority;
     private final boolean ignoreCancelled;
     private final GenericEventHandler genericEventHandler;
-    private MethodCaller caller;
 
-    public EventHandlerDelegate(WeakReference<Listener> instance, final Method method, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled, GenericEventHandler genericEventHandler) {
+    public InferfaceEventHandlerDelegate(WeakReference<Listener> instance, Class<? extends Event> eventClass, EventPriority priority, boolean ignoreCancelled, GenericEventHandler genericEventHandler) {
         this.instance = instance;
-        this.method = method;
         this.eventClass = eventClass;
         this.priority = priority;
         this.ignoreCancelled = ignoreCancelled;
         this.genericEventHandler = genericEventHandler;
-        this.caller = ClassBuilder.INSTANCE.getEventCallerNonBlocking(method, new GenerateTaskCallback() {
-            @Override
-            public void done(MethodCaller methodCaller) {
-                System.out.println("Finished building method caller. name="+methodCaller.getClass().getSimpleName());
-                caller = methodCaller;
-            }
-
-            @Override
-            public void error(Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 
     public void invoke(Event event) throws InvocationTargetException, IllegalAccessException {
-        Listener listener = instance.get();
+        EventListener listener = (EventListener) instance.get();
         if (listener == null ||
            (event instanceof Cancelable && !ignoreCancelled && ((Cancelable) event).isCancelled())) {
             return;
@@ -51,7 +31,7 @@ public class EventHandlerDelegate implements IEventHandlerDelegate{
             Class[] genericsEvent = ((GenericEvent) event).getGenerics();
             Class[] genericsHandler = genericEventHandler.generics();
             if (genericsEvent.length != genericsHandler.length) {
-                throw new IllegalStateException("Method " + method.getName() + " should have " + genericsEvent.length + " generics, but has " + genericsHandler.length + " generics instant");
+                return;
             }
 
             for (int i = 0; i < genericsEvent.length; i++) {
@@ -61,7 +41,7 @@ public class EventHandlerDelegate implements IEventHandlerDelegate{
                 }
             }
         }
-        caller.invoke(method, listener, event);
+        listener.onEvent(event, eventClass);
     }
 
     public Class<? extends Event> getEventClass() {
