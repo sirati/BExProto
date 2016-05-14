@@ -8,4 +8,11 @@ public abstract class ObjType<T> extends Type<T> {
 	public final Class<T> getObjType() {
 		return getType();
 	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final Stream createStream(Object obj) {
+		return createStreamCasted((T) obj);
+	}
 }

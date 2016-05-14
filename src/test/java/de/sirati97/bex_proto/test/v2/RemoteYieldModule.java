@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.module.IModuleHandshake;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
@@ -17,7 +17,7 @@ public class RemoteYieldModule extends Module implements IModuleHandshake{
     }
 
     @Override
-    protected IPacket createPacket() {
+    protected IPacketDefinition createPacket() {
         return new PacketCollection();
     }
 

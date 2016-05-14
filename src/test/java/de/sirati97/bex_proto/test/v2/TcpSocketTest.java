@@ -5,13 +5,14 @@ import de.sirati97.bex_proto.events.EventHandler;
 import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.GenericEventHandler;
 import de.sirati97.bex_proto.events.Listener;
-import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
+import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.ClientBase;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketExecutor;
+import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.ServerBase;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
@@ -30,7 +31,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpSocketTest implements PacketExecutor, Listener {
+public class TcpSocketTest implements PacketHandler, Listener {
     private final Object receiveMutex = new Object();
     private boolean received = false;
 
@@ -38,7 +39,7 @@ public class TcpSocketTest implements PacketExecutor, Listener {
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         long timestamp;
-        AdvThreadAsyncHelper helper = new AdvThreadAsyncHelper();
+        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper();
         try {
             try {
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
@@ -74,20 +75,21 @@ public class TcpSocketTest implements PacketExecutor, Listener {
             log.info("Handshake over tcp took " + (timestamp/1000000) + "ms");
 
 
-            Set<Thread> threadSet = helper.getActiveThreads();
+            Set<? extends AsyncTask> taskSet = helper.getActiveTasks();
             for (int i=0;i<100;i++) {
-                if (threadSet.size() > 0) {
+                if (taskSet.size() > 0) {
                     Thread.sleep(1);
                 } else {
                     break;
                 }
             }
-            if (threadSet.size() > 0) {
+            if (taskSet.size() > 0) {
                 log.info("Still active threads: ");
-                for (Thread t:threadSet) {
+                for (AsyncTask task:taskSet) {
+                    Thread t = task.getThread();
                     log.info(t.getName() + " state=" + t.getState().toString());
                 }
-                fail("There are still thread(s) active: " + threadSet.size());
+                fail("There are still thread(s) active: " + taskSet.size());
             }
             log.info("Tcp socket test successful.");
         } finally {

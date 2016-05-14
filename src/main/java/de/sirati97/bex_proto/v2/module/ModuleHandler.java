@@ -5,7 +5,7 @@ import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.IdPacketWrapper;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.module.internal.InternalModule;
@@ -21,7 +21,7 @@ public class ModuleHandler {
     private boolean allowRegistration = false;
     private final PacketCollection packets = new PacketCollection() {
         @Override
-        public void register(IPacket packet) {
+        public void register(IPacketDefinition packet) {
             if (!allowRegistration) {
                 throw new IllegalStateException(new IllegalAccessException("You are not allowed to register packets manually"));
             }
@@ -35,10 +35,10 @@ public class ModuleHandler {
     private final AsyncHelper asyncHelper;
     private final ILogger logger;
 
-    public ModuleHandler(IPacket packetHandler, AsyncHelper asyncHelper, ILogger logger) {
+    public ModuleHandler(IPacketDefinition packetHandler, AsyncHelper asyncHelper, ILogger logger) {
         this.asyncHelper = asyncHelper;
         this.logger = logger;
-        register(new PacketWrapper(packetHandler)); //-1
+        register(new PacketDefinitionWrapper(packetHandler)); //-1
         register(connectionHandlerModule); //-2
 
     }
@@ -59,14 +59,14 @@ public class ModuleHandler {
         }
     }
 
-    private void register(short id, IPacket packet) {
+    private void register(short id, IPacketDefinition packet) {
         register(new IdPacketWrapper(id, packet));
     }
 
-    private void register(short id, boolean encapsulate, IPacket packet) {
+    private void register(short id, boolean encapsulate, IPacketDefinition packet) {
         register(encapsulate?new IdPacketWrapper(id, packet):packet);
     }
-    private void register(IPacket packet) {
+    private void register(IPacketDefinition packet) {
         allowRegistration = true;
         packets.register(packet);
         allowRegistration = false;
@@ -89,8 +89,8 @@ public class ModuleHandler {
             throw new IllegalStateException("Connection does not support modules");
         }
     }
-    private class PacketWrapper extends IdPacketWrapper {
-        public PacketWrapper(IPacket child) {
+    private class PacketDefinitionWrapper extends IdPacketWrapper {
+        public PacketDefinitionWrapper(IPacketDefinition child) {
             super((short) -1, child);
         }
 
@@ -103,7 +103,7 @@ public class ModuleHandler {
         }
 
         @Override
-        public Stream createSteam(Stream streamChild, IPacket child, IConnection... iConnections) {
+        public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
             for (IConnection connection:iConnections) {
                 if (connection instanceof ModularArtifConnection && !((ModularArtifConnection) connection).isConnectionEstablished()) {
                     error();

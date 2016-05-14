@@ -14,13 +14,13 @@ import java.util.Map;
  * Created by sirati97 on 15.03.2016.
  */
 public class PacketCollection implements IPacketCollection {
-    private Map<Short, IPacket> packets = new HashMap<>();
+    private Map<Short, IPacketDefinition> packets = new HashMap<>();
     private short id;
-    private IPacket parent;
-    private PacketExecutor standardExecutor;
+    private IPacketDefinition parent;
+    private PacketHandler standardExecutor;
     private Boolean requiresReliableConnection = null;
 
-    public PacketCollection(PacketExecutor standardExecutor) {
+    public PacketCollection(PacketHandler standardExecutor) {
         this((short) 0, standardExecutor);
     }
 
@@ -32,7 +32,7 @@ public class PacketCollection implements IPacketCollection {
         this(id, null);
     }
 
-    public PacketCollection(short id, PacketExecutor standardExecutor) {
+    public PacketCollection(short id, PacketHandler standardExecutor) {
         this.id = id;
         this.standardExecutor = standardExecutor;
     }
@@ -41,7 +41,7 @@ public class PacketCollection implements IPacketCollection {
     public void extract(CursorByteBuffer buf) {
         short packetId = getShort(buf);
         if (!isAllowed(packetId, buf))return;
-        IPacket packet = getPacket(packetId);
+        IPacketDefinition packet = getPacket(packetId);
         if (packet==null) {
             throw new IllegalStateException("There is no command handler registered for id " + packetId + " in " + getClass().toString());
         }
@@ -59,7 +59,7 @@ public class PacketCollection implements IPacketCollection {
     protected boolean isAllowed(short packetId, CursorByteBuffer buf){return true;}
 
     @Override
-    public void register(IPacket packet) {
+    public void register(IPacketDefinition packet) {
         if (packets.get(packet.getId())!=null) {
             throw new IllegalStateException("There is already a packet with the id " + packet.getId());
         }
@@ -78,33 +78,33 @@ public class PacketCollection implements IPacketCollection {
     }
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacket child, IConnection... iConnections) {
+    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
         Stream result = new MultiStream(new ShortStream(child.getId()), streamChild);
         return parent==null?result:parent.createSteam(result, this, iConnections);
     }
 
     @Override
-    public void setParent(IPacket parent) {
+    public void setParent(IPacketDefinition parent) {
         this.parent = parent;
     }
 
     @Override
-    public IPacket getParent() {
+    public IPacketDefinition getParent() {
         return parent;
     }
 
     @Override
-    public PacketExecutor getStandardExecutor() {
+    public PacketHandler getStandardExecutor() {
         return standardExecutor;
     }
 
     @Override
-    public IPacket getPacket(short packetId) {
+    public IPacketDefinition getPacket(short packetId) {
         return packets.get(packetId);
     }
 
     @Override
-    public IPacket getPacket(CursorByteBuffer buf) {
+    public IPacketDefinition getPacket(CursorByteBuffer buf) {
         return getPacket(getShort(buf));
     }
 

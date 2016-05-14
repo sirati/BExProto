@@ -1,15 +1,16 @@
 package de.sirati97.bex_proto.v1.network;
 
+import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.util.exception.NotImplementedException;
+import de.sirati97.bex_proto.v1.StreamReader;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
-
-import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.v1.StreamReader;
-import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
 public class NetServer implements NetCreator{
 	private AsyncHelper asyncHelper;
@@ -18,7 +19,7 @@ public class NetServer implements NetCreator{
 	private boolean enabled = false;
 	private NetConnectionManager netConnectionManager = new NetConnectionManager();
 	private StreamReader streamReader;
-	private AsyncHelper.AsyncTask readerTask;
+	private AsyncTask readerTask;
 	private InetAddress address;
 	private ISocketFactory socketFactory;
 	

@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
-import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
 
 import java.io.IOException;

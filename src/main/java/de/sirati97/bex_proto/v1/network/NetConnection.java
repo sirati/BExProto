@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v1.network;
 
 import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
@@ -357,7 +357,7 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 		setSocket(newSocket);
 
 		class TaskWrap {
-			public AsyncHelper.AsyncTask task;
+			public AsyncTask task;
 		}
 		final TaskWrap task = new TaskWrap();
 

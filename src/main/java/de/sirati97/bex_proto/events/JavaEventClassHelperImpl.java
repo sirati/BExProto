@@ -64,4 +64,14 @@ public class JavaEventClassHelperImpl extends EventClassHelperBase {
     public String getMalformedListenerClassMessage(Class<? extends Listener> listenerClass) {
         return "Listener " + listenerClass.getName() + " has a malformed structure. This exception should not been thrown in a unmodded environment";
     }
+
+    @Override
+    public String getEventDistributorMissingMessage(Class<? extends Event> eventClass) {
+        return "Event " + eventClass.getName() + " must have 'public static EventDistributor getEventDistributor(){...}'";
+    }
+
+    @Override
+    public String getGenericSuperclassesMissingMessage(Class<? extends Event> eventClass) {
+        return "Event " + eventClass.getName() + " must have 'public static Class[] getGenericsSuperclasses(){...}'";
+    }
 }

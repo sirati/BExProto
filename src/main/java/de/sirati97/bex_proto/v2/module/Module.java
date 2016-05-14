@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2.module;
 
 import de.sirati97.bex_proto.util.IConnection;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 
 import static de.sirati97.bex_proto.v2.module.ModuleHandler.assertConnectionModuleSupport;
 
@@ -10,20 +10,20 @@ import static de.sirati97.bex_proto.v2.module.ModuleHandler.assertConnectionModu
  */
 public abstract class Module<ModuleDataType> implements IModule {
     private final short id;
-    private final IPacket packet;
+    private final IPacketDefinition packet;
 
     public Module(short id) {
         this.id = id;
         this.packet = createPacket();
     }
 
-    protected abstract IPacket createPacket();
+    protected abstract IPacketDefinition createPacket();
 
     public final short getId() {
         return id;
     }
 
-    public IPacket getPacket() {
+    public IPacketDefinition getPacket() {
         return packet;
     }
 

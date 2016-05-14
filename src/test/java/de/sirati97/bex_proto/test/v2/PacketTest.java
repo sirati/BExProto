@@ -9,7 +9,7 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketExecutor;
+import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.PacketManager;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class PacketTest implements PacketExecutor{
+public class PacketTest implements PacketHandler {
 
     @Test
     public void start() {

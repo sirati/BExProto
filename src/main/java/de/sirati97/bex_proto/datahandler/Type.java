@@ -52,11 +52,6 @@ public abstract class Type<T> implements TypeBase<T>{
 		return arrayType==null?(arrayType=createArrayType()):arrayType;
 	}
 
-    @SuppressWarnings("unchecked")
-	@Override
-	public final Stream createStream(Object obj) {
-		return createStreamCasted((T) obj);
-	}
 
     @SuppressWarnings("unchecked")
     @Override
@@ -73,8 +68,12 @@ public abstract class Type<T> implements TypeBase<T>{
 	public static final StringType String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
 	public static final PrimitiveType<Integer> Integer = new PrimitiveType<Integer>() {
 		IntegerExtractor extractor = new IntegerExtractor();
-		
-		@Override public Stream createStreamCasted(Integer obj) {
+
+        @Override public Integer castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toInt(obj);
+        }
+
+        @Override public Stream createStreamCasted(Integer obj) {
 			return new IntegerStream(obj);
 		}
 
@@ -104,6 +103,10 @@ public abstract class Type<T> implements TypeBase<T>{
 	};
 	public static final PrimitiveType<Long> Long = new PrimitiveType<Long>() {
 		LongExtractor extractor = new LongExtractor();
+
+        @Override public Long castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toLong(obj);
+        }
 		
 		@Override public Stream createStreamCasted(Long obj) {
 			return new LongStream(obj);
@@ -136,6 +139,10 @@ public abstract class Type<T> implements TypeBase<T>{
 	};
 	public static final PrimitiveType<Short> Short = new PrimitiveType<Short>() {
 		ShortExtractor extractor = new ShortExtractor();
+
+        @Override public Short castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toShort(obj);
+        }
 		
 		@Override public Stream createStreamCasted(Short obj) {
 			return new ShortStream(obj);
@@ -168,6 +175,10 @@ public abstract class Type<T> implements TypeBase<T>{
 	};
 	public static final PrimitiveType<Byte> Byte = new PrimitiveType<Byte>() {
 		ByteExtractor extractor = new ByteExtractor();
+
+        @Override public Byte castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toByte(obj);
+        }
 		
 		@Override public Stream createStreamCasted(Byte obj) {
 			return new ByteStream(obj);
@@ -200,6 +211,10 @@ public abstract class Type<T> implements TypeBase<T>{
 	};
 	public static final PrimitiveType<Double> Double = new PrimitiveType<Double>() {
 		DoubleExtractor extractor = new DoubleExtractor();
+
+        @Override public Double castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toDouble(obj);
+        }
 		
 		@Override public Stream createStreamCasted(Double obj) {
 			return new DoubleStream(obj);
@@ -232,6 +247,10 @@ public abstract class Type<T> implements TypeBase<T>{
 	};
 	public static final PrimitiveType<Float> Float = new PrimitiveType<Float>() {
 		FloatExtractor extractor = new FloatExtractor();
+
+        @Override public Float castToPrimitive(Object obj) {
+            return PrimitiveHelper.INSTANCE.toFloat(obj);
+        }
 		
 		@Override public Stream createStreamCasted(Float obj) {
 			return new FloatStream(obj);

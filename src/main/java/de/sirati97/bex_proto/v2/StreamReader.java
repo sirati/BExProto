@@ -10,9 +10,9 @@ import javax.crypto.IllegalBlockSizeException;
 import java.security.MessageDigest;
 
 public class StreamReader {
-	private IPacket packet;
+	private IPacketDefinition packet;
 	
-	public StreamReader(IPacket packet) {
+	public StreamReader(IPacketDefinition packet) {
 		this.packet = packet;
 	}
 	
@@ -68,7 +68,7 @@ public class StreamReader {
 		}, name);
 	}
 	
-	public IPacket getPacket() {
+	public IPacketDefinition getPacket() {
 		return packet;
 	}
 	

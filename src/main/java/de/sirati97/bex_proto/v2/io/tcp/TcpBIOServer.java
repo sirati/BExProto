@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
 import de.sirati97.bex_proto.datahandler.InetAddressPort;
-import de.sirati97.bex_proto.threading.AsyncHelper.AsyncTask;
+import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IConnectionFactory;
 import de.sirati97.bex_proto.v2.ServerBase;
@@ -110,6 +110,6 @@ public class TcpBIOServer<Connection extends ArtifConnection> extends ServerBase
 
     @Override
     protected ILogger createLogger() {
-        return getFactory().getLogger().getLogger("TcpBIOServer{ip"+serverSocket.getInetAddress().getHostAddress()+", port="+serverSocket.getLocalPort()+"}");
+        return getFactory().getLogger().getLogger("TcpBIOServer{ip="+serverSocket.getInetAddress().getHostAddress()+", port="+serverSocket.getLocalPort()+"}");
     }
 }

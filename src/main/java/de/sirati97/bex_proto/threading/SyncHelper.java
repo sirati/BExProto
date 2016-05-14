@@ -1,7 +1,10 @@
 package de.sirati97.bex_proto.threading;
 
+import de.sirati97.bex_proto.util.exception.NotImplementedException;
+
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -32,6 +35,21 @@ public class SyncHelper implements AsyncHelper {
     @Override
     public AsyncHelperExecutorService createExecutorService(String name) {
         return new AsyncHelperExecutorService(this, name);
+    }
+
+    @Override
+    public void stop() {
+        throw new NotImplementedException("stop() is not implemented");
+    }
+
+    @Override
+    public boolean isStopped() {
+        throw new NotImplementedException("isStopped() is not implemented");
+    }
+
+    @Override
+    public Set<? extends AsyncTask> getActiveTasks() {
+        throw new NotImplementedException("getActiveTasks() is not implemented");
     }
 
     public class SyncTask implements AsyncTask {
@@ -71,6 +89,11 @@ public class SyncHelper implements AsyncHelper {
             if (thread != null && updateThreadName) {
                 thread.setName(name);
             }
+        }
+
+        @Override
+        public Thread getThread() {
+            return thread;
         }
 
         public void start() {

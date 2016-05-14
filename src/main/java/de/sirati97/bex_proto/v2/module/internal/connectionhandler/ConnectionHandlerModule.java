@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v2.module.internal.connectionhandler;
 import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.IServerConnection;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
 import de.sirati97.bex_proto.v2.module.internal.ICallback;
@@ -28,7 +28,7 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
     }
 
     @Override
-    protected IPacket createPacket() {
+    protected IPacketDefinition createPacket() {
         if (packetCollection==null) {
             packetCollection = new PacketCollection(getId());
             handshakePacket = new HandshakePacket(packetCollection, this);

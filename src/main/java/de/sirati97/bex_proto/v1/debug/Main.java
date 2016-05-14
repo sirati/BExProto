@@ -6,13 +6,14 @@ import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.datahandler.TypeBase;
-import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
+import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
+import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.command.CommandRegister;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.SocketFactory;
 import de.sirati97.bex_proto.v1.network.adv.AdvClient;
 import de.sirati97.bex_proto.v1.network.adv.AdvServer;
-import de.sirati97.bex_proto.util.EncryptionContainer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,10 +31,10 @@ import java.util.Set;
 
 
 public class Main {
-	private static AdvThreadAsyncHelper asyncHelper;
+	private static ThreadPoolAsyncHelper asyncHelper;
 	private static long sleepTime;
 	public static void main(String[] args) throws InterruptedException {
-		asyncHelper = new AdvThreadAsyncHelper();
+		asyncHelper = new ThreadPoolAsyncHelper();
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				try {
@@ -180,9 +181,10 @@ public class Main {
 				System.out.println(iCountCommand.toString());
 				System.out.println("Needed " + finalTimeICount + "ms for sending all iCount Commands.");
 				
-				Set<Thread> threads = new HashSet<>(asyncHelper.getActiveThreads());
-				System.out.println("There are " + threads.size() + " threads active:");
-				for (Thread thread:threads) {
+				Set<AsyncTask> tasks = new HashSet<>(asyncHelper.getActiveTasks());
+				System.out.println("There are " + tasks.size() + " threads active:");
+				for (AsyncTask task:tasks) {
+					Thread thread = task.getThread();
 					System.out.println(thread.getName() + " {id=" + thread.getId() + "}");
 				}
 //				System.out.println("Client: There are " + socketFactoryClient.getRegisteredInputStreams().size() + " inputstreams still registered!");
@@ -190,7 +192,7 @@ public class Main {
 				
 				long time = System.currentTimeMillis() - startTime;
 				System.out.println("Needed " + time + "ms. Test waited for " + sleepTime + "ms and worked for " + (time-sleepTime) + "ms.");
-				if (threads.size()==0) {
+				if (tasks.size()==0) {
 					System.out.println("Shutting down jvm!");
 					System.exit(0);
 				}

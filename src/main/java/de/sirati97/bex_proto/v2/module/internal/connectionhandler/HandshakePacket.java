@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.v2.IPacketCollection;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
-import de.sirati97.bex_proto.v2.SelfExecutingPacketDefinition;
+import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
 import de.sirati97.bex_proto.v2.module.HandshakeMismatchVersionException;
 import de.sirati97.bex_proto.v2.module.HandshakeRemoteException;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
@@ -16,7 +16,7 @@ import de.sirati97.bex_proto.v2.module.internal.connectionhandler.ConnectionHand
 /**
  * Created by sirati97 on 16.04.2016.
  */
-public class HandshakePacket extends SelfExecutingPacketDefinition {
+public class HandshakePacket extends SelfHandlingPacketDefinition {
     private final ConnectionHandlerModule parent;
 
     public HandshakePacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {

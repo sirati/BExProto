@@ -10,7 +10,7 @@ import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.StreamReader;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 
@@ -35,7 +35,7 @@ public class ArtifConnection implements IConnection, IEventRegister {
     private final EventRegister eventRegister;
 
 
-    public ArtifConnection(String connectionName, AsyncHelper asyncHelper, IOHandler ioHandler, ILogger logger, IPacket packet) {
+    public ArtifConnection(String connectionName, AsyncHelper asyncHelper, IOHandler ioHandler, ILogger logger, IPacketDefinition packet) {
         this.connectionName = connectionName;
         this.asyncHelper = asyncHelper;
         this.ioHandler = ioHandler;

@@ -1,13 +1,14 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.threading.AdvThreadAsyncHelper;
+import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.RuntimeGeneratedUnsecureEncryptionContainer;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketExecutor;
+import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
@@ -24,9 +25,9 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class EncryptedHandshakeTest implements PacketExecutor{
+public class EncryptedHandshakeTest implements PacketHandler {
     private ILogger log = new SysOutLogger();
-    private AdvThreadAsyncHelper asyncHelper = new AdvThreadAsyncHelper();
+    private ThreadPoolAsyncHelper asyncHelper = new ThreadPoolAsyncHelper();
     private final Object receiveMutex = new Object();
     private boolean received = false;
 
@@ -68,21 +69,22 @@ public class EncryptedHandshakeTest implements PacketExecutor{
                 }
             }
 
-            Set<Thread> threadSet = asyncHelper.getActiveThreads();
+            Set<? extends AsyncTask> taskSet = asyncHelper.getActiveTasks();
             for (int i=0;i<100;i++) {
-                if (threadSet.size() > 0) {
+                if (taskSet.size() > 0) {
                     Thread.sleep(1);
                 } else {
                     break;
                 }
             }
-            if (threadSet.size() > 0) {
+            if (taskSet.size() > 0) {
                 log.info("Still active threads: ");
-                for (Thread t:threadSet) {
+                for (AsyncTask task:taskSet) {
+                    Thread t = task.getThread();
                     log.info(t.getName() + " state=" + t.getState().toString());
                 }
                 asyncHelper.stop();
-                fail("There are still thread(s) active: " + threadSet.size());
+                fail("There are still thread(s) active: " + taskSet.size());
             }
             asyncHelper.stop();
             log.info("Encrypted Handshake test successful. Handshake took " + (timestamp/1000000) + "ms");

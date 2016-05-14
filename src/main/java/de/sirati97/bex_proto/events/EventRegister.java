@@ -99,7 +99,7 @@ public class EventRegister implements IEventRegister{
         }
         //noinspection unchecked
         Class<? extends Event> eventClass = parameter[0];
-        if (!GenericEvent.class.isAssignableFrom(eventClass) && genericEventHandler == null) {
+        if (GenericEvent.class.isAssignableFrom(eventClass) && genericEventHandler == null) {
             genericEventHandler = EventHelperUtil.getGenericEventHandlerByMethod(eventClass, method);
         }
 

@@ -4,10 +4,10 @@ import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.IEncryptionContainer;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketExecutor;
+import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.events.TrustPublicKeyEvent;
 import de.sirati97.bex_proto.v2.module.HandshakeRejectedException;
@@ -36,9 +36,9 @@ import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.*;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class EncryptionModule extends InternalModule<EncryptionModule.EncryptionData> implements IModuleHandshake, PacketExecutor {
+public class EncryptionModule extends InternalModule<EncryptionModule.EncryptionData> implements IModuleHandshake, PacketHandler {
     private static class EncryptionPacketDefinition extends PacketDefinition {
-        public EncryptionPacketDefinition(short id, PacketExecutor executor) {
+        public EncryptionPacketDefinition(short id, PacketHandler executor) {
             super(id, executor, Type.Byte, Type.Byte.asArray().asNullable(), Type.Byte.asArray().asNullable());
         }
     }
@@ -66,7 +66,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     @Override
-    protected IPacket createPacket() {
+    protected IPacketDefinition createPacket() {
         return packetDefinition==null?(packetDefinition=new EncryptionPacketDefinition(getId(), this)):packetDefinition;
     }
 

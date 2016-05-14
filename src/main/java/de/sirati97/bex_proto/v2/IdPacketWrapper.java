@@ -7,13 +7,13 @@ import de.sirati97.bex_proto.util.IConnection;
 /**
  * Created by sirati97 on 12.04.2016.
  */
-public class IdPacketWrapper implements IPacket {
+public class IdPacketWrapper implements IPacketDefinition {
     private final short id;
-    private IPacket child;
-    private IPacket parent;
+    private IPacketDefinition child;
+    private IPacketDefinition parent;
     private Boolean requiresReliableConnection = new Boolean(true);
 
-    public IdPacketWrapper(short id, IPacket child) {
+    public IdPacketWrapper(short id, IPacketDefinition child) {
         this.id = id;
         setChild(child);
     }
@@ -27,17 +27,17 @@ public class IdPacketWrapper implements IPacket {
     public void setId(short id) {}
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacket child, IConnection... iConnections) {
+    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
         return getParent().createSteam(streamChild, child, iConnections);
     }
 
     @Override
-    public void setParent(IPacket parent) {
+    public void setParent(IPacketDefinition parent) {
         this.parent = parent;
     }
 
     @Override
-    public IPacket getParent() {
+    public IPacketDefinition getParent() {
         return parent;
     }
 
@@ -57,11 +57,11 @@ public class IdPacketWrapper implements IPacket {
         this.requiresReliableConnection = requiresReliableConnection;
     }
 
-    public IPacket getChild() {
+    public IPacketDefinition getChild() {
         return child;
     }
 
-    public void setChild(IPacket child) {
+    public void setChild(IPacketDefinition child) {
         this.child = child;
         child.setId(getId());
         child.setParent(this);

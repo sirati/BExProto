@@ -104,6 +104,6 @@ public class TcpAIOServer<Connection extends ArtifConnection> extends ServerBase
 
     @Override
     protected ILogger createLogger() {
-        return getFactory().getLogger().getLogger("TcpAIOServer{ip"+socketAddress.getAddress().getHostAddress()+", port="+socketAddress.getPort()+"}");
+        return getFactory().getLogger().getLogger("TcpAIOServer{ip="+socketAddress.getAddress().getHostAddress()+", port="+socketAddress.getPort()+"}");
     }
 }

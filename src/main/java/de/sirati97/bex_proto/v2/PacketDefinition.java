@@ -8,11 +8,11 @@ import de.sirati97.bex_proto.util.IConnection;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class PacketDefinition implements IPacket, Cloneable{
+public class PacketDefinition implements IPacketDefinition, Cloneable{
     private TypeBase[] types;
     private short id;
-    private PacketExecutor executor;
-    private IPacket parent;
+    private PacketHandler executor;
+    private IPacketDefinition parent;
     private Boolean requiresReliableConnection = null;
 
 
@@ -20,7 +20,7 @@ public class PacketDefinition implements IPacket, Cloneable{
         this(id, null, null, true, null, types);
     }
 
-    public PacketDefinition(short id, PacketExecutor executor, TypeBase... types) {
+    public PacketDefinition(short id, PacketHandler executor, TypeBase... types) {
         this(id, null, executor, false, null, types);
     }
 
@@ -32,21 +32,21 @@ public class PacketDefinition implements IPacket, Cloneable{
         this(id, parent, parent.getStandardExecutor(), selfExecuting, requiresReliableConnection, types);
     }
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, TypeBase... types) {
+    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, TypeBase... types) {
         this(id, parent, executor, false, null, types);
     }
 
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, Boolean requiresReliableConnection, TypeBase... types) {
+    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, Boolean requiresReliableConnection, TypeBase... types) {
         this(id, parent, executor, false, requiresReliableConnection, types);
     }
 
-    private PacketDefinition(short id, IPacketCollection parent, PacketExecutor executor, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
+    private PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
         this.id = id;
         if (parent != null) {
             parent.register(this);
         }
-        this.executor = selfExecuting? (PacketExecutor) this :executor;
+        this.executor = selfExecuting? (PacketHandler) this :executor;
         this.types = types;
         this.requiresReliableConnection = requiresReliableConnection;
     }
@@ -62,7 +62,7 @@ public class PacketDefinition implements IPacket, Cloneable{
     }
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacket child, IConnection... iConnections) {
+    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
         return parent==null?streamChild:parent.createSteam(streamChild, this, iConnections);
     }
 
@@ -75,12 +75,12 @@ public class PacketDefinition implements IPacket, Cloneable{
     }
 
     @Override
-    public void setParent(IPacket parent) {
+    public void setParent(IPacketDefinition parent) {
         this.parent = parent;
     }
 
     @Override
-    public IPacket getParent() {
+    public IPacketDefinition getParent() {
         return parent;
     }
 
@@ -90,7 +90,7 @@ public class PacketDefinition implements IPacket, Cloneable{
         executor.execute(packet);
     }
 
-    public PacketExecutor getExecutor() {
+    public PacketHandler getExecutor() {
         return executor;
     }
 
@@ -100,7 +100,7 @@ public class PacketDefinition implements IPacket, Cloneable{
     }
 
 
-    public PacketDefinition clone(IPacket newParent) {
+    public PacketDefinition clone(IPacketDefinition newParent) {
         PacketDefinition result = new PacketDefinition(id, null, executor, executor==this, requiresReliableConnection, types);
         result.setParent(newParent);
         return result;

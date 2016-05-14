@@ -29,6 +29,11 @@ public class BooleanType extends PrimitiveType<Boolean> {
     }
 
     @Override
+    public Boolean castToPrimitive(Object obj) {
+        return PrimitiveHelper.INSTANCE.toBoolean(obj);
+    }
+
+    @Override
     public Class<?> getType() {
         return boolean.class;
     }

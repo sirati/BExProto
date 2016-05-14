@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.v2.IPacket;
+import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketExecutor;
+import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.module.IModuleHandshake;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
@@ -15,9 +15,9 @@ import de.sirati97.bex_proto.v2.module.internal.YieldCause;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class StressModule extends Module<StressModule.StressData> implements IModuleHandshake, PacketExecutor {
+public class StressModule extends Module<StressModule.StressData> implements IModuleHandshake, PacketHandler {
     private static class StressPacketDefinition extends PacketDefinition {
-        public StressPacketDefinition(short id, PacketExecutor executor) {
+        public StressPacketDefinition(short id, PacketHandler executor) {
             super(id, executor, Type.Integer);
         }
     }
@@ -55,7 +55,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
 
     @Override
-    protected IPacket createPacket() {
+    protected IPacketDefinition createPacket() {
         return new StressPacketDefinition(getId(), this);
     }
 
