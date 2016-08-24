@@ -30,6 +30,16 @@ public class JavaSerializableType<T extends Serializable> extends ObjType<T> {
     }
 
     @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return !platformIndependent && clazz.isInstance(obj);
+    }
+
+    @Override
+    public boolean isEncodable(Class clazz, boolean platformIndependent) {
+        return !platformIndependent && super.isEncodable(clazz, false);
+    }
+
+    @Override
     public StreamExtractor<T> getExtractor() {
         return extractor;
     }

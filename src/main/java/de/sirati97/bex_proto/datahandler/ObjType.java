@@ -15,4 +15,9 @@ public abstract class ObjType<T> extends Type<T> {
 	public final Stream createStream(Object obj) {
 		return createStreamCasted((T) obj);
 	}
+
+    @Override
+    public boolean isEncodable(Class clazz, boolean platformIndependent) {
+        return getType().isAssignableFrom(clazz);
+    }
 }

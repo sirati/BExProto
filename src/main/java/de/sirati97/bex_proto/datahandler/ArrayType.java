@@ -37,7 +37,17 @@ public class ArrayType<T> extends DerivedType<T[],T> implements IArrayType<T>{
 		return new ArrayStream(type, obj);
 	}
 
-	@Override
+    @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return clazz.isInstance(obj);
+    }
+
+    @Override
+    public boolean isEncodable(Class paramClass, boolean platformIndependent) {
+        return this.clazz.equals(paramClass);
+    }
+
+    @Override
 	public StreamExtractor<T[]> getExtractor() {
 		return extractor;
 	}

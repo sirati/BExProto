@@ -12,7 +12,12 @@ public class SSCWrapperType extends ObjType<SSCWrapper> {
 		return new SSCWrapperStream(obj);
 	}
 
-	@Override
+    @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return obj instanceof SSCWrapper;
+    }
+
+    @Override
 	public StreamExtractor<SSCWrapper> getExtractor() {
 		return extractor;
 	}

@@ -31,7 +31,18 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 		return new NullableStream(getInnerType(), obj);
 	}
 
-	@Override
+    @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return type.isEncodable(obj, platformIndependent);
+    }
+
+    @Override
+    public boolean isEncodable(Class paramClass, boolean platformIndependent) {
+        return type.isEncodable(paramClass, platformIndependent);
+    }
+
+
+    @Override
 	public StreamExtractor<T> getExtractor() {
 		return extractor;
 	}

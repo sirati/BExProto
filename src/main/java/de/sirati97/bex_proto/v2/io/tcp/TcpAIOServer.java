@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.ShutdownChannelGroupException;
 import java.util.HashSet;
@@ -68,11 +69,15 @@ public class TcpAIOServer<Connection extends ArtifConnection> extends ServerBase
                     }
                     e.printStackTrace();
                 }
+                listen();
             }
 
             @Override
             public void failed(Throwable e, Object attachment) {
-                e.printStackTrace();
+                if (!(e instanceof ShutdownChannelGroupException || e instanceof ClosedChannelException)) {
+                    e.printStackTrace();
+                }
+                listen();
             }
         });
     }

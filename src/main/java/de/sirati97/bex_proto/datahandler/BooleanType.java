@@ -51,4 +51,14 @@ public class BooleanType extends PrimitiveType<Boolean> {
     protected IArrayType<Boolean> createArrayType() {
         return new BitArrayType(this);
     }
+
+    @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return PrimitiveHelper.INSTANCE.isBoolean(obj);
+    }
+
+    @Override
+    public boolean isEncodable(Class clazz, boolean platformIndependent) {
+        return PrimitiveHelper.INSTANCE.isBoolean(clazz);
+    }
 }

@@ -1,62 +1,69 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.events.EventHandler;
-import de.sirati97.bex_proto.events.EventPriority;
-import de.sirati97.bex_proto.events.GenericEventHandler;
-import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
+import de.sirati97.bex_proto.v2.ClientBase;
+import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
-import de.sirati97.bex_proto.v2.ServerBase;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
-import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.io.tcp.TcpAIOServer;
-import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
+import de.sirati97.bex_proto.v2.io.tcp.TcpAIOClient;
 import de.sirati97.bex_proto.v2.module.ModularArtifConnectionFactory;
 import de.sirati97.bex_proto.v2.module.ModuleHandler;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class EchoServer implements Listener {
+public class EchoClient {
     public static void main(String... args) throws Throwable {
-        EchoServer server = new EchoServer();
-        server.start();
+        EchoClient client = new EchoClient();
+        client.start();
     }
 
     private PacketCollection collection = new PacketCollection();
     private PacketDefinition packetWelcome = new SelfHandlingPacketDefinition((short)0, collection) {
         @Override
         public void execute(ReceivedPacket packet) {
-            packet.sendTo(packet.getSender());
+            System.out.println("Server welcomed client");
         }
     };
     private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, collection, Type.String_Utf_8) {
         @Override
         public void execute(ReceivedPacket packet) {
-            System.out.println("Received from " + ((ArtifConnection)packet.getSender()).getConnectionName() + ": " + packet.get(0));
-            packet.sendTo(packet.getSender());
+            System.out.println("Received message from server: " + packet.get(0));
         }
     };
 
     public void start() throws Throwable {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter client name: ");
+        String name = in.readLine();
         final ILogger log = new SysOutLogger();
         ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper();
         ModuleHandler moduleHandler = new ModuleHandler(collection, helper, log);
         ModularArtifConnectionFactory factory = new ModularArtifConnectionFactory(moduleHandler);
-        ServerBase server = new TcpAIOServer<>(factory, 12312); //keine addresse >- *
-        server.registerEventListener(this);
-        server.startListening();
+        ClientBase client = new TcpAIOClient<>(factory, name, InetAddress.getLocalHost(), 12312);
+        client.connect();
+        Packet packetWelcome = new Packet(this.packetWelcome);
+        packetWelcome.sendTo(client.getConnection());
+        String input;
+        while (true) {
+            System.out.print("Input: ");
+            input = in.readLine();
+            if ("exit".equalsIgnoreCase(input)) {
+                break;
+            }
+            Packet packet = new Packet(packetMessage, input);
+            packet.sendTo(client.getConnection());
+        }
+        client.stop();
     }
 
-    @GenericEventHandler(generics = {ModularArtifConnection.class})
-    @EventHandler(priority = EventPriority.Monitor)
-    public void onNewConnectionEvent(NewConnectionEvent<ModularArtifConnection> event) {
-        System.out.println("Server accepted new connection");
-    }
 }

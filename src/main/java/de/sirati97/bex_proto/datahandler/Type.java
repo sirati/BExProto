@@ -5,13 +5,15 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public abstract class Type<T> implements TypeBase<T>{
-	private static Map<String, TypeBase> types = new HashMap<>();
+	private static final Map<String, TypeBase> types = new HashMap<>();
+    private static final CharsetEncoder ASCII_CHECKER = StandardCharsets.US_ASCII.newEncoder();
 	private INullableType<T> nullableType;
 	private IArrayType<T> arrayType;
 
@@ -23,13 +25,71 @@ public abstract class Type<T> implements TypeBase<T>{
 	public static TypeBase get(String name) {
 		return types.get(name);
 	}
+
+    public static TypeBase getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable) {
+        return getByInstance(obj, platformIndependent, subtypeNullable, null);
+    }
+
+    public static TypeBase getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable, TypeBase defaultType) {
+        if(obj instanceof Object[]) {
+            Class parentClazz = ((Object[]) obj).getClass().getComponentType();
+            TypeBase parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
+            if (parentType == null) {
+                return null;
+            }
+
+            if (!parentClazz.isPrimitive()) {
+                parentType = parentType.asNullable();
+            }
+            return parentType.asArray();
+        } else {
+            for (TypeBase type:types.values()) {
+                if (type.isEncodable(obj, platformIndependent)) {
+                    return type;
+                }
+            }
+        }
+        return defaultType;
+    }
+
+
+    public static TypeBase getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable) {
+        return getByClazz(clazz, platformIndependent, subtypeNullable, null);
+    }
+
+    public static TypeBase getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable, TypeBase defaultType) {
+        if(clazz.isArray()) {
+            Class parentClazz = clazz.getComponentType();
+            TypeBase parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
+            if (parentType == null) {
+                return null;
+            }
+            if (!parentClazz.isPrimitive()) {
+                parentType = parentType.asNullable();
+            }
+            return parentType.asArray();
+        } else {
+            for (TypeBase type:types.values()) {
+                if (type.isEncodable(clazz, platformIndependent)) {
+                    return type;
+                }
+            }
+        }
+        return defaultType;
+    }
 	
 	protected boolean earlyRegister() {
 		return true;
 	}
 	
 	protected void register() {
-		types.put(getTypeName(), this);
+        String typeName = getTypeName();
+        synchronized (ASCII_CHECKER) {
+            if (!ASCII_CHECKER.canEncode(typeName)) {
+                throw new IllegalStateException("Typename has to be ascii string");
+            }
+        }
+		types.put(typeName, this);
 	}
 
 	public abstract Stream createStreamCasted(T obj);
@@ -77,7 +137,17 @@ public abstract class Type<T> implements TypeBase<T>{
 			return new IntegerStream(obj);
 		}
 
-		@Override public IntegerExtractor getExtractor() {
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isInt(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isInt(clazz);
+        }
+
+        @Override public IntegerExtractor getExtractor() {
 			return extractor;
 		}
 
@@ -111,6 +181,16 @@ public abstract class Type<T> implements TypeBase<T>{
 		@Override public Stream createStreamCasted(Long obj) {
 			return new LongStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isLong(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isLong(clazz);
+        }
 
 		@Override public LongExtractor getExtractor() {
 			return extractor;
@@ -148,6 +228,16 @@ public abstract class Type<T> implements TypeBase<T>{
 			return new ShortStream(obj);
 		}
 
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isShort(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isShort(clazz);
+        }
+
 		@Override public ShortExtractor getExtractor() {
 			return extractor;
 		}
@@ -183,6 +273,16 @@ public abstract class Type<T> implements TypeBase<T>{
 		@Override public Stream createStreamCasted(Byte obj) {
 			return new ByteStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isByte(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isByte(clazz);
+        }
 
 		@Override public ByteExtractor getExtractor() {
 			return extractor;
@@ -220,6 +320,16 @@ public abstract class Type<T> implements TypeBase<T>{
 			return new DoubleStream(obj);
 		}
 
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isDouble(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isDouble(clazz);
+        }
+
 		@Override public DoubleExtractor getExtractor() {
 			return extractor;
 		}
@@ -255,6 +365,16 @@ public abstract class Type<T> implements TypeBase<T>{
 		@Override public Stream createStreamCasted(Float obj) {
 			return new FloatStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isFloat(obj);
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isFloat(clazz);
+        }
 
 		@Override public FloatExtractor getExtractor() {
 			return extractor;
@@ -299,6 +419,11 @@ public abstract class Type<T> implements TypeBase<T>{
 		public Stream createStreamCasted(UUID obj) {
 			return new UUIDStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return obj instanceof UUID;
+        }
 		
 		public String getTypeName() {
 			return "UUID";
@@ -321,6 +446,16 @@ public abstract class Type<T> implements TypeBase<T>{
 		public Stream createStreamCasted(java.net.InetAddress obj) {
 			return new InetAddressStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return obj instanceof java.net.InetAddress;
+        }
+
+        @Override
+        public boolean isEncodable(Class clazz, boolean platformIndependent) {
+            return PrimitiveHelper.INSTANCE.isInt(clazz);
+        }
 		
 		public String getTypeName() {
 			return "InetAddress";
@@ -343,6 +478,11 @@ public abstract class Type<T> implements TypeBase<T>{
 		public Stream createStreamCasted(InetAddressPort obj) {
 			return new InetAddressPortStream( obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return obj instanceof InetAddressPort;
+        }
 		
 		public String getTypeName() {
 			return "InetAddressPort";
@@ -370,6 +510,11 @@ public abstract class Type<T> implements TypeBase<T>{
 		public Stream createStreamCasted(TypeBase obj) {
 			return new TypeStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return obj instanceof TypeBase;
+        }
 	};
 	public static final ObjType<DynamicObj> DynamicObj = new ObjType<DynamicObj>() {
 		DynamicObjExtractor extractor = new DynamicObjExtractor();
@@ -393,6 +538,11 @@ public abstract class Type<T> implements TypeBase<T>{
 		public Stream createStreamCasted(DynamicObj obj) {
 			return new DynamicObjStream(obj);
 		}
+
+        @Override
+        public boolean isEncodable(Object obj, boolean platformIndependent) {
+            return obj instanceof DynamicObj;
+        }
 	};
 	public static final JavaSerializableType<Serializable> JavaSerializable = new JavaSerializableType<>(Serializable.class, "JavaSerializable", true);
 	public static final JavaSerializableType<Throwable> JavaThrowable = new JavaSerializableType<>(Throwable.class, "JavaThrowable", true);

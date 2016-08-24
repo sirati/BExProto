@@ -18,7 +18,12 @@ public class StringType extends ObjType<String> {
 		return new StringStream(obj, charset);
 	}
 
-	@Override
+    @Override
+    public boolean isEncodable(Object obj, boolean platformIndependent) {
+        return obj instanceof String;
+    }
+
+    @Override
 	public StreamExtractor<String> getExtractor() {
 		return extractor;
 	}
