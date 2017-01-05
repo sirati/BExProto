@@ -10,9 +10,9 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
-import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
-import de.sirati97.bex_proto.v2.module.ModuleHandler;
-import de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper;
+import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
+import de.sirati97.bex_proto.v2.modular.ModuleHandler;
+import de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper;
 import org.junit.Test;
 
 import java.security.MessageDigest;
@@ -36,14 +36,14 @@ public class HandshakeTest implements PacketHandler {
             try {
                 log.info("Handshake test preparing");
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
-                ModuleHandler moduleHandler = new ModuleHandler(definition, helper, log);
+                ModuleHandler moduleHandler = new ModuleHandler(helper, log, definition);
                 //moduleHandler.register(new FailModule()); // - will fail every handshake
                 //moduleHandler.register(new FailModule2()); // - will fail every handshake
                 //moduleHandler.register(new StressModule()); //will send 2^15 packets
                 TestIOHandler pipe1 = new TestIOHandler();
                 TestIOHandler pipe2 = new TestIOHandler();
-                ModularArtifConnection connection1 = new ModularArtifConnection("TestCon1", pipe1, moduleHandler);
-                ModularArtifConnection connection2 = new ModularArtifConnection("TestCon2", pipe2, moduleHandler);
+                ModularArtifConnectionService connection1 = new ModularArtifConnectionService("TestCon1", pipe1, moduleHandler);
+                ModularArtifConnectionService connection2 = new ModularArtifConnectionService("TestCon2", pipe2, moduleHandler);
                 MessageDigest md = MessageDigest.getInstance(BouncyCastleHelper.HASH_ALGORITHM);
                 connection1.setHashAlgorithm(md);
                 connection2.setHashAlgorithm(md);

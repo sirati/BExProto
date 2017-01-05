@@ -1,58 +1,39 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
-import de.sirati97.bex_proto.datahandler.InetAddressPort;
-import de.sirati97.bex_proto.v2.ClientBase;
-import de.sirati97.bex_proto.v2.IConnectionFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.builder.ITcpAddress;
+import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
+import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.networkmodell.ClientBase;
+import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeoutException;
+
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
 
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpBIOClient<Connection extends ArtifConnection> extends ClientBase<Connection> {
-    private final Socket socket;
+public class TcpBIOClient<Connection extends ArtifConnectionService> extends ClientBase<Connection> {
+    private final Socket socket = new Socket();
+    private final ITcpAddress address;
 
-    protected TcpBIOClient(IConnectionFactory<Connection> factory, String name, Socket socket) {
+    public TcpBIOClient(IConnectionServiceFactory<Connection> factory, String name, ITcpAddress address) {
         super(factory, name);
-        this.socket = socket;
+        this.address = address;
     }
 
-    protected TcpBIOClient(IConnectionFactory<Connection> factory, String name, String host, int port) throws IOException {
-        this(factory, name, new Socket(host, port));
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetAddress address, int port) throws IOException {
-        this(factory, name, new Socket(address, port));
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetAddressPort inetAddressPort) throws IOException {
-        this(factory, name, inetAddressPort.getInetAddress(), inetAddressPort.getPort());
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetSocketAddress socketAddress) throws IOException {
-        this(factory, name, socketAddress.getAddress(), socketAddress.getPort());
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetAddress address, int port, InetAddress localAddress, int localPort) throws IOException {
-        this(factory, name, new Socket(address, port, localAddress, localPort));
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetAddressPort inetAddressPort, InetAddressPort localInetAddressPort) throws IOException {
-        this(factory, name, inetAddressPort.getInetAddress(), inetAddressPort.getPort(), localInetAddressPort.getInetAddress(), localInetAddressPort.getPort());
-    }
-
-    public TcpBIOClient(IConnectionFactory<Connection> factory, String name, InetSocketAddress socketAddress, InetSocketAddress localSocketAddress) throws IOException {
-        this(factory, name, socketAddress.getAddress(), socketAddress.getPort(), localSocketAddress.getAddress(), localSocketAddress.getPort());
-    }
 
     @Override
     public synchronized void connect() throws InterruptedException, IOException, TimeoutException {
         if (getConnection() == null) {
+            if (address.hasLocal()) {
+                socket.bind(address.getLocal());
+            }
+            socket.connect(address.getServer());
             setConnection(getFactory().createClient(getName(), new TcpSocketBIOHandler(socket)));
         }
         getConnection().connect();
@@ -61,5 +42,15 @@ public class TcpBIOClient<Connection extends ArtifConnection> extends ClientBase
     @Override
     public boolean isConnected() {
         return super.isConnected() &&socket.isConnected();
+    }
+
+    @Override
+    public INetworkProtocol getUnderlyingProtocol() {
+        return TCP;
+    }
+
+    @Override
+    public INetworkStackImplementation getNetworkStackImplementation() {
+        return BlockingIO;
     }
 }

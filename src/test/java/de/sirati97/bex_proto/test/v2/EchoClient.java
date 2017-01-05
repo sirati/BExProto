@@ -1,22 +1,20 @@
 package de.sirati97.bex_proto.test.v2;
 
+import de.sirati97.bex_proto.builder.Builder;
+import de.sirati97.bex_proto.builder.IpPortAddress;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
-import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.util.logging.SysOutLogger;
-import de.sirati97.bex_proto.v2.ClientBase;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
-import de.sirati97.bex_proto.v2.io.tcp.TcpAIOClient;
-import de.sirati97.bex_proto.v2.module.ModularArtifConnectionFactory;
-import de.sirati97.bex_proto.v2.module.ModuleHandler;
+import de.sirati97.bex_proto.v2.networkmodell.IClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+
+import static de.sirati97.bex_proto.builder.ConnectionTypes.ModularManagedConnection;
 
 /**
  * Created by sirati97 on 18.04.2016.
@@ -45,11 +43,7 @@ public class EchoClient {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter client name: ");
         String name = in.readLine();
-        final ILogger log = new SysOutLogger();
-        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper();
-        ModuleHandler moduleHandler = new ModuleHandler(collection, helper, log);
-        ModularArtifConnectionFactory factory = new ModularArtifConnectionFactory(moduleHandler);
-        ClientBase client = new TcpAIOClient<>(factory, name, InetAddress.getLocalHost(), 12312);
+        IClient client = new Builder<>(ModularManagedConnection,  collection).buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), name);
         client.connect();
         Packet packetWelcome = new Packet(this.packetWelcome);
         packetWelcome.sendTo(client.getConnection());

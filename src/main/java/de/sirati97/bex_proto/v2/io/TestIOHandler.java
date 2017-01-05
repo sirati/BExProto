@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.io;
 
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.IOException;
  * Created by sirati97 on 13.04.2016.
  */
 public class TestIOHandler implements IOHandler {
-    private ArtifConnection connection;
+    private ArtifConnectionService connection;
     public TestIOHandler receiver;
     private boolean open = false;
     private boolean closed = false;
@@ -63,7 +63,7 @@ public class TestIOHandler implements IOHandler {
     }
 
     @Override
-    public synchronized void setConnection(ArtifConnection connection) {
+    public synchronized void setConnection(ArtifConnectionService connection) {
         this.connection = connection;
     }
 

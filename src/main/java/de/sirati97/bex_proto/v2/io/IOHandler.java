@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.io;
 
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
 
 import java.io.IOException;
 
@@ -12,6 +12,6 @@ public interface IOHandler {
     boolean isOpen();
     void close();
     void open() throws IOException;
-    void setConnection(ArtifConnection connection);
+    void setConnection(ArtifConnectionService connection);
     void updateConnectionName(String newName);
 }

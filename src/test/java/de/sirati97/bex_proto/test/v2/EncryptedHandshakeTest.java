@@ -11,9 +11,9 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
-import de.sirati97.bex_proto.v2.module.ModularArtifConnection;
-import de.sirati97.bex_proto.v2.module.ModuleHandler;
-import de.sirati97.bex_proto.v2.module.internal.EncryptionModule;
+import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
+import de.sirati97.bex_proto.v2.modular.ModuleHandler;
+import de.sirati97.bex_proto.v2.modular.internal.EncryptionModule;
 import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
@@ -41,8 +41,8 @@ public class EncryptedHandshakeTest implements PacketHandler {
                 PacketDefinition definition2 = definition1.clone();
                 TestIOHandler pipe1 = new TestIOHandler();
                 TestIOHandler pipe2 = new TestIOHandler();
-                ModularArtifConnection connection1 = createConnection("TestEnCon1", definition1, pipe1);
-                ModularArtifConnection connection2 = createConnection("TestEnCon2", definition2, pipe2);
+                ModularArtifConnectionService connection1 = createConnection("TestEnCon1", definition1, pipe1);
+                ModularArtifConnectionService connection2 = createConnection("TestEnCon2", definition2, pipe2);
 
                 pipe1.receiver = pipe2;
                 pipe2.receiver = pipe1;
@@ -93,11 +93,11 @@ public class EncryptedHandshakeTest implements PacketHandler {
         }
     }
 
-    private ModularArtifConnection createConnection(String name, PacketDefinition definition, TestIOHandler pipe) throws NoSuchAlgorithmException, NoSuchProviderException {
-        ModuleHandler handler = new ModuleHandler(definition, asyncHelper, log);
+    private ModularArtifConnectionService createConnection(String name, PacketDefinition definition, TestIOHandler pipe) throws NoSuchAlgorithmException, NoSuchProviderException {
+        ModuleHandler handler = new ModuleHandler(asyncHelper, log, definition);
         handler.register(new EncryptionModule(new RuntimeGeneratedUnsecureEncryptionContainer()));
         //handler.register(new StressModule());
-        return new ModularArtifConnection(name, pipe, handler);
+        return new ModularArtifConnectionService(name, pipe, handler);
     }
 
     @Override

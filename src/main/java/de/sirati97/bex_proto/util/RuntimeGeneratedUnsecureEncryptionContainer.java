@@ -10,9 +10,9 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
-import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.ASYMMETRIC_TYPE;
-import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.PROVIDER;
-import static de.sirati97.bex_proto.v2.module.internal.BouncyCastleHelper.initBouncyCastle;
+import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.ASYMMETRIC_TYPE;
+import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.PROVIDER;
+import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.initBouncyCastle;
 
 /**
  * Created by sirati97 on 15.04.2016.

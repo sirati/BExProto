@@ -1,48 +1,42 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
-import de.sirati97.bex_proto.datahandler.InetAddressPort;
-import de.sirati97.bex_proto.v2.ClientBase;
-import de.sirati97.bex_proto.v2.IConnectionFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.builder.ITcpAddress;
+import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
+import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.networkmodell.ClientBase;
+import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
+
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpAIOClient<Connection extends ArtifConnection> extends ClientBase<Connection> {
+public class TcpAIOClient<Connection extends ArtifConnectionService> extends ClientBase<Connection> {
     private final AsynchronousSocketChannel socket;
-    private final InetSocketAddress socketAddress;
+    private final ITcpAddress address;
 
-    protected TcpAIOClient(IConnectionFactory<Connection> factory, String name, String host, int port) throws IOException {
-        this(factory, name, new InetSocketAddress(host, port));
-    }
-
-    public TcpAIOClient(IConnectionFactory<Connection> factory, String name, InetAddress address, int port) throws IOException {
-        this(factory, name, new InetSocketAddress(address, port));
-    }
-
-    public TcpAIOClient(IConnectionFactory<Connection> factory, String name, InetAddressPort inetAddressPort) throws IOException {
-        this(factory, name, inetAddressPort.toInetSocketAddress());
-    }
-
-    public TcpAIOClient(IConnectionFactory<Connection> factory, String name, InetSocketAddress socketAddress) throws IOException {
+    public TcpAIOClient(IConnectionServiceFactory<Connection> factory, String name, ITcpAddress address) throws IOException {
         super(factory, name);
         this.socket = AsynchronousSocketChannel.open();
-        this.socketAddress = socketAddress;
+        this.address = address;
 
     }
 
     @Override
     public synchronized void connect() throws InterruptedException, IOException, TimeoutException {
         if (getConnection() == null) {
-            Future future = socket.connect(socketAddress);
+            if (address.hasLocal()) {
+                socket.bind(address.getLocal());
+            }
+            Future future = socket.connect(address.getServer());
             try {
                 future.get();
             } catch (ExecutionException e) {
@@ -56,5 +50,15 @@ public class TcpAIOClient<Connection extends ArtifConnection> extends ClientBase
     @Override
     public boolean isConnected() {
         return super.isConnected() &&socket.isOpen();
+    }
+
+    @Override
+    public INetworkProtocol getUnderlyingProtocol() {
+        return TCP;
+    }
+
+    @Override
+    public INetworkStackImplementation getNetworkStackImplementation() {
+        return AsynchronousIO;
     }
 }

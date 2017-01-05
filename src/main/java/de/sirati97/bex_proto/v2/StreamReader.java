@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v2;
 import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnection;
+import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -16,7 +16,7 @@ public class StreamReader {
 		this.packet = packet;
 	}
 	
-	public byte[] read(byte[] bytes, ArtifConnection sender, AsyncHelper asyncHelper, String name) {
+	public byte[] read(byte[] bytes, ArtifConnectionService sender, AsyncHelper asyncHelper, String name) {
 		int location = 0;
 		streamLoop: do {
 			int streamLength = BExStatic.getInteger(bytes, location);
