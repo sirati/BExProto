@@ -17,6 +17,7 @@ import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
+import de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodell.IClient;
 import de.sirati97.bex_proto.v2.networkmodell.IServer;
 import org.junit.Test;
@@ -42,11 +43,11 @@ public class TcpSocketTest implements PacketHandler, Listener {
         try {
             try {
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
-                Builder builder = new Builder<>(ModularManagedConnection,  definition);
+                Builder builder = new Builder<>(ModularManagedConnection,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO);
                 InetAddress address = InetAddress.getLocalHost();
                 IServer server = builder.buildServer(new IpPortAddress(address, 12312));//new TcpAIOServer<>(factory, address, 12312);
                 server.registerEventListener(this);
-                IClient client = builder.buildClient(new IpPortAddress(address, 12312), "TestConnection");//new TcpAIOClient<>(factory, "TestConnection", address, 12312);
+                IClient client = new Builder<>(ModularManagedConnection,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO).buildClient(new IpPortAddress(address, 12312), "TestConnection");//new TcpAIOClient<>(factory, "TestConnection", address, 12312);
                 server.startListening();
                 timestamp = System.nanoTime();
                 client.connect();

@@ -2,7 +2,6 @@ package de.sirati97.bex_proto.datahandler;
 
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
-import de.sirati97.bex_proto.util.bytebuffer.ByteBufferSegment;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -124,10 +123,9 @@ public final class BExStatic {
 		return  new String(stream, charset);
 	}
 	
-	public static ByteBuffer setString(String str , Charset charset) {
+	public static void setString(String str ,Charset charset, ByteBuffer buffer) {
 		byte[] strStream = str.getBytes(charset);
-		ByteBuffer lengthStream = setInteger(strStream.length);
-		return new ByteBuffer(lengthStream, new ByteBufferSegment(strStream));
+		setByteArray(strStream, buffer);
 	}
 
 	
@@ -153,49 +151,61 @@ public final class BExStatic {
 	}
 	
 
-	public static ByteBuffer setByteArray(byte[] bytes) {
-		ByteBuffer length = BExStatic.setInteger(bytes.length);
-		return new ByteBuffer(length, new ByteBufferSegment(bytes));
+	public static void setByteArray(byte[] bytes, ByteBuffer buffer) {
+		BExStatic.setInteger(bytes.length, buffer);
+		buffer.append(bytes);
 	}
 
-	public static ByteBuffer setShort(short value) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(2);
-		buffer.putShort(value);
-		return new ByteBuffer(buffer.array());
-	}
+    public static void setShort(short value, ByteBuffer buffer) {
+        java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(2);
+        nioBuffer.putShort(value);
+        buffer.append(nioBuffer.array());
+    }
+
+    public static void insertShort(short value, ByteBuffer buffer) {
+        java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(2);
+        nioBuffer.putShort(value);
+        buffer.insertFirst(nioBuffer.array());
+    }
 	
 	public static short getShort(byte[] data) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		return buffer.getShort();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		return nioBuffer.getShort();
 	}
-	
-	public static ByteBuffer setInteger(int value) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(4);
-		buffer.putInt(value);
-		return new ByteBuffer(buffer.array());
-	}
+
+    public static void setInteger(int value, ByteBuffer buffer) {
+        java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(4);
+        nioBuffer.putInt(value);
+        buffer.append(nioBuffer.array());
+    }
+
+    public static void insertInteger(int value, ByteBuffer buffer) {
+        java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(4);
+        nioBuffer.putInt(value);
+        buffer.insertFirst(nioBuffer.array());
+    }
 	
 	public static int getInteger(byte[] data) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		return buffer.getInt();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		return nioBuffer.getInt();
 	}
 	
 	public static int getInteger(byte[] data, int startPos) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		buffer.position(startPos);
-		return buffer.getInt();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		nioBuffer.position(startPos);
+		return nioBuffer.getInt();
 	}
 	
 	
 	public static long getLong(byte[] data) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		return buffer.getLong();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		return nioBuffer.getLong();
 	}
 	
-	public static ByteBuffer setLong(long value) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
-		buffer.putLong(value);
-		return new ByteBuffer(buffer.array());
+	public static void setLong(long value, ByteBuffer buffer) {
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(8);
+		nioBuffer.putLong(value);
+		buffer.append(nioBuffer.array());
 	}
 	
 
@@ -203,16 +213,16 @@ public final class BExStatic {
 		return dat.getOne();
 	}
 
-	public static ByteBuffer setByte(byte b) {
-		return new ByteBuffer(new byte[]{b});
+	public static void setByte(byte b, ByteBuffer buffer) {
+		buffer.append(new byte[]{b});
 	}
 	
 	public static boolean getBoolean(CursorByteBuffer dat) {
 		return dat.getOne()!=0;
 	}
 
-	public static  ByteBuffer setBoolean(boolean b) {
-		return new ByteBuffer(new byte[]{b?(byte)1:(byte)0});
+	public static  void setBoolean(boolean b, ByteBuffer buffer) {
+		setByte(b?(byte)1:(byte)0, buffer);
 	}
 	
 
@@ -221,15 +231,15 @@ public final class BExStatic {
 	}
 
 	public static double getDouble(byte[] data) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		return buffer.getDouble();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		return nioBuffer.getDouble();
 	}
 	
 
-	public static ByteBuffer setDouble(double value) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
-		buffer.putDouble(value);
-		return new ByteBuffer(buffer.array());
+	public static void setDouble(double value, ByteBuffer buffer) {
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(8);
+		nioBuffer.putDouble(value);
+		buffer.append(nioBuffer.array());
 	}
 	
 	
@@ -238,15 +248,15 @@ public final class BExStatic {
 	}
 
 	public static float getFloat(byte[] data) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(data);
-		return buffer.getFloat();
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.wrap(data);
+		return nioBuffer.getFloat();
 	}
 	
 
-	public static ByteBuffer setFloat(float value) {
-		java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocate(8);
-		buffer.putFloat(value);
-		return new ByteBuffer(buffer.array());
+	public static void setFloat(float value, ByteBuffer buffer) {
+		java.nio.ByteBuffer nioBuffer = java.nio.ByteBuffer.allocate(8);
+		nioBuffer.putFloat(value);
+		buffer.append(nioBuffer.array());
 	}
 	
 	

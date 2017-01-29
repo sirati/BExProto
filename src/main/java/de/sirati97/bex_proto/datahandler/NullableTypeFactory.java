@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-public class NullableTypeFactory implements DerivedTypeBase.DerivedFactory {
+public class NullableTypeFactory implements IDerivedType.DerivedFactory {
 
 	@Override
 	public byte getDerivedID() {
@@ -8,7 +8,7 @@ public class NullableTypeFactory implements DerivedTypeBase.DerivedFactory {
 	}
 
 	@Override
-	public DerivedTypeBase create(TypeBase inner) {
+	public IDerivedType create(IType inner) {
 		return new NullableType(this, inner);
 	}
 

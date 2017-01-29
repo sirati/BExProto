@@ -1,47 +1,47 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.TypeBase;
+import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 /**
  * Created by sirati97 on 15.03.2016.
  */
 public class PacketDefinition implements IPacketDefinition, Cloneable{
-    private TypeBase[] types;
+    private IType[] types;
     private short id;
     private PacketHandler executor;
     private IPacketDefinition parent;
     private Boolean requiresReliableConnection = null;
 
 
-    PacketDefinition(short id, TypeBase... types) {
+    PacketDefinition(short id, IType... types) {
         this(id, null, null, true, null, types);
     }
 
-    public PacketDefinition(short id, PacketHandler executor, TypeBase... types) {
+    public PacketDefinition(short id, PacketHandler executor, IType... types) {
         this(id, null, executor, false, null, types);
     }
 
-    public PacketDefinition(short id, IPacketCollection parent, TypeBase... types) {
+    public PacketDefinition(short id, IPacketCollection parent, IType... types) {
         this(id, parent, parent.getStandardExecutor(),  false, null, types);
     }
 
-    PacketDefinition(short id, IPacketCollection parent, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
-        this(id, parent, parent.getStandardExecutor(), selfExecuting, requiresReliableConnection, types);
+    PacketDefinition(short id, IPacketCollection parent, boolean selfExecuting, Boolean requiresReliableConnection, IType... types) {
+        this(id, parent, parent==null?null:parent.getStandardExecutor(), selfExecuting, requiresReliableConnection, types);
     }
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, TypeBase... types) {
+    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, IType... types) {
         this(id, parent, executor, false, null, types);
     }
 
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, Boolean requiresReliableConnection, TypeBase... types) {
+    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, Boolean requiresReliableConnection, IType... types) {
         this(id, parent, executor, false, requiresReliableConnection, types);
     }
 
-    private PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, boolean selfExecuting, Boolean requiresReliableConnection, TypeBase... types) {
+    private PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, boolean selfExecuting, Boolean requiresReliableConnection, IType... types) {
         this.id = id;
         if (parent != null) {
             parent.register(this);
@@ -62,11 +62,11 @@ public class PacketDefinition implements IPacketDefinition, Cloneable{
     }
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
-        return parent==null?streamChild:parent.createSteam(streamChild, this, iConnections);
+    public ByteBuffer createSteam(ByteBuffer stream, IPacketDefinition child, IConnection... iConnections) {
+        return parent==null? stream :parent.createSteam(stream, this, iConnections);
     }
 
-    public TypeBase[] getTypes() {
+    public IType[] getTypes() {
         return types;
     }
 

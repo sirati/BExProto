@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.v2.modular.internal;
 
+import de.sirati97.bex_proto.datahandler.EncryptionModifier;
+import de.sirati97.bex_proto.datahandler.HashModifier;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
@@ -9,6 +11,7 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
+import de.sirati97.bex_proto.v2.artifcon.StreamModifiers;
 import de.sirati97.bex_proto.v2.events.TrustPublicKeyEvent;
 import de.sirati97.bex_proto.v2.modular.HandshakeRejectedException;
 import de.sirati97.bex_proto.v2.modular.IModuleHandshake;
@@ -94,7 +97,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     protected void sendError(String error, IConnection connection) {
-        send(State.Error, Type.String_US_ASCII.createStream(error).getByteBuffer().getBytes(), connection);
+        send(State.Error, Type.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connection);
     }
 
     @Override
@@ -105,7 +108,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         ModularArtifConnectionService connection = (ModularArtifConnectionService) packet.getSender();
         switch (State.getById(state)) {
             case Error:
-                onError((String) Type.String_US_ASCII.getExtractor().extract(new CursorByteBuffer(data, connection)), connection);
+                onError((String) Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, connection)), connection);
                 break;
             case ClientPublicKey:
                 onClientPublicKey(data, connection);
@@ -297,9 +300,9 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             sendCipher.init(Cipher.ENCRYPT_MODE, encryptionData.secretKey, secretVector);
             Cipher receiveCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             receiveCipher.init(Cipher.DECRYPT_MODE, encryptionData.secretKey, secretVector);
-            connection.setReceiveCipher(receiveCipher);
-            connection.setSendCipher(sendCipher);
-            connection.setHashAlgorithm(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER));
+            StreamModifiers modifiers = connection.getStreamModifiers();
+            modifiers.setEncryptionModifier(new EncryptionModifier(sendCipher, receiveCipher));
+            modifiers.setHashingModifier(new HashModifier(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER)));
             encryptionData.done = true;
             encryptionData.callback.callback();
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
@@ -429,9 +432,9 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
             Cipher receiveCipher = Cipher.getInstance(SYMMETRIC_PATTERN, PROVIDER);
             receiveCipher.init(Cipher.DECRYPT_MODE, encryptionData.secretKey, secretVector);
             send(State.Success, connection);
-            connection.setReceiveCipher(receiveCipher);
-            connection.setSendCipher(sendCipher);
-            connection.setHashAlgorithm(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER));
+            StreamModifiers modifiers = connection.getStreamModifiers();
+            modifiers.setEncryptionModifier(new EncryptionModifier(sendCipher, receiveCipher));
+            modifiers.setHashingModifier(new HashModifier(MessageDigest.getInstance(HASH_ALGORITHM, PROVIDER)));
             encryptionData.done = true;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
             closeWithError("Unexpected Error!", e, connection);

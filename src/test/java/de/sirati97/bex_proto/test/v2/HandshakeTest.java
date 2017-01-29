@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
+import de.sirati97.bex_proto.datahandler.HashModifier;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
@@ -44,9 +45,9 @@ public class HandshakeTest implements PacketHandler {
                 TestIOHandler pipe2 = new TestIOHandler();
                 ModularArtifConnectionService connection1 = new ModularArtifConnectionService("TestCon1", pipe1, moduleHandler);
                 ModularArtifConnectionService connection2 = new ModularArtifConnectionService("TestCon2", pipe2, moduleHandler);
-                MessageDigest md = MessageDigest.getInstance(BouncyCastleHelper.HASH_ALGORITHM);
-                connection1.setHashAlgorithm(md);
-                connection2.setHashAlgorithm(md);
+                HashModifier hash = new HashModifier(MessageDigest.getInstance(BouncyCastleHelper.HASH_ALGORITHM));
+                connection1.getStreamModifiers().setHashingModifier(hash);
+                connection2.getStreamModifiers().setHashingModifier(hash);
                 pipe1.receiver = pipe2;
                 pipe2.receiver = pipe1;
                 log.info("Handshake test start");

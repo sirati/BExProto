@@ -99,7 +99,7 @@ public class TcpBIOServer<Connection extends ArtifConnectionService> extends Ser
 
     @Override
     protected ILogger createLogger() {
-        return getFactory().getLogger().getLogger("TcpBIOServer{ip="+serverSocket.getInetAddress().getHostAddress()+", port="+serverSocket.getLocalPort()+"}");
+        return getFactory().getLogger().getLogger("TcpBIOServer{ip="+address.getServer().getAddress().getHostAddress()+", port="+address.getServer().getPort()+"}");
     }
 
     @Override

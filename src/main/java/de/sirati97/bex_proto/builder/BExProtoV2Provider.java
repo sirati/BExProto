@@ -1,11 +1,8 @@
 package de.sirati97.bex_proto.builder;
 
+import de.sirati97.bex_proto.builder.internal.PExProtoIOFactoryHelper;
 import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
-import de.sirati97.bex_proto.v2.io.tcp.TcpAIOClient;
-import de.sirati97.bex_proto.v2.io.tcp.TcpAIOServer;
-import de.sirati97.bex_proto.v2.io.tcp.TcpBIOClient;
-import de.sirati97.bex_proto.v2.io.tcp.TcpBIOServer;
 import de.sirati97.bex_proto.v2.networkmodell.IArchitectureFunction;
 import de.sirati97.bex_proto.v2.networkmodell.IConnection;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
@@ -51,7 +48,7 @@ public final class BExProtoV2Provider implements IProvider{
                 if (tcpAddress.hasLocal()) {
                     throw new IllegalStateException(ERROR_LOCAL_ADDRESS);
                 }
-                return new TcpBIOServer<>(factory, tcpAddress);
+                return PExProtoIOFactoryHelper.instance.createTcpBIOServer(factory, tcpAddress);
             }
         });
         //TcpBIOClient
@@ -65,7 +62,7 @@ public final class BExProtoV2Provider implements IProvider{
                     throw new IllegalStateException(ERROR_NO_NAME_SET);
                 }
                 ITcpAddress tcpAddress = (ITcpAddress) address;
-                return new TcpBIOClient<>(factory, options.getName(), tcpAddress);
+                return PExProtoIOFactoryHelper.instance.createTcpBIOClient(factory, options.getName(), tcpAddress);
             }
         });
         //TcpAIOServer
@@ -79,7 +76,7 @@ public final class BExProtoV2Provider implements IProvider{
                 if (tcpAddress.hasLocal()) {
                     throw new IllegalStateException(ERROR_LOCAL_ADDRESS);
                 }
-                return new TcpAIOServer<>(factory, tcpAddress);
+                return PExProtoIOFactoryHelper.instance.createTcpAIOServer(factory, tcpAddress);
             }
         });
         //TcpAIOClient
@@ -93,7 +90,7 @@ public final class BExProtoV2Provider implements IProvider{
                     throw new IllegalStateException(ERROR_NO_NAME_SET);
                 }
                 ITcpAddress tcpAddress = (ITcpAddress) address;
-                return new TcpAIOClient<>(factory, options.getName(), tcpAddress);
+                return PExProtoIOFactoryHelper.instance.createTcpAIOClient(factory, options.getName(), tcpAddress);
             }
         });
     }

@@ -2,9 +2,9 @@ package de.sirati97.bex_proto.datahandler;
 
 public class DynamicObj {
 	private Object value;
-	private TypeBase type;
+	private IType type;
 	
-	public DynamicObj(TypeBase type, Object value) {
+	public DynamicObj(IType type, Object value) {
 		this.type = type;
 		this.value = value;
 	}
@@ -13,7 +13,7 @@ public class DynamicObj {
 		return value;
 	}
 	
-	public TypeBase getType() {
+	public IType getType() {
 		return type;
 	}
 }

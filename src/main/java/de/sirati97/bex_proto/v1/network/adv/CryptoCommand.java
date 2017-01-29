@@ -16,7 +16,7 @@ public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
 	@Override
 	public void receive(Byte state, byte[] data, byte[] data2, NetConnection sender) {
 		if (state==States.Error.getId()) {
-			onError((String) Type.String_US_ASCII.getExtractor().extract(new CursorByteBuffer(data, sender)), sender);
+			onError((String) Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, sender)), sender);
 		} else if (state==States.Request.getId()) {
 			onRequest(sender);
 		} else if (state==States.PublicKey.getId()) {
@@ -59,7 +59,7 @@ public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
 	}
 	
 	public void sendError(String error, NetConnection... connections) {
-		send(States.Error, Type.String_US_ASCII.createStream(error).getByteBuffer().getBytes(), connections);
+		send(States.Error, Type.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connections);
 	}
 	
 	public static enum States{

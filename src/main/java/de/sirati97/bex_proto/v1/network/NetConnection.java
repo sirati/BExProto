@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.v1.network;
 
-import de.sirati97.bex_proto.datahandler.SendStream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v1.StreamReader;
@@ -423,17 +423,17 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 		this.subnet = subnet;
 	}
 
-	@Override
-	public void send(SendStream stream, boolean reliable) {
-		send(stream);
-	}
+    @Override
+    public void send(ByteBuffer stream, boolean reliable) {
+        send(stream);
+    }
 
-	@Override
-	public void send(SendStream stream) {
-		send(stream.getByteBuffer().getBytes());
-	}
+    @Override
+    public void send(ByteBuffer stream) {
+        send(stream.getBytes());
+    }
 
-	@Override
+    @Override
 	public ILogger getLogger() {
 		throw new NotImplementedException("online available in BExProto v2");
 	}

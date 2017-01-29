@@ -2,16 +2,15 @@ package de.sirati97.bex_proto.datahandler;
 
 import java.lang.reflect.Array;
 
-public abstract class DerivedType<Type,InnerType> implements DerivedTypeBase<Type,InnerType> {
+public abstract class DerivedType<Type,InnerType> extends CommonTypeBase<Type> implements IDerivedType<Type,InnerType> {
 	private DerivedFactory factory;
-	private INullableType<Type> nullableType;
-	private IArrayType<Type> arrayType;
-	
-	public DerivedType(DerivedFactory factory) {
-		this.factory = factory;
-	}
-	
-	public DerivedFactory getFactory() {
+
+    public DerivedType(IEncoder<Type> encoder, IDecoder<Type> decoder, DerivedFactory factory) {
+        super(encoder, decoder);
+        this.factory = factory;
+    }
+
+    public DerivedFactory getFactory() {
 		return factory;
 	}
 	
@@ -26,19 +25,6 @@ public abstract class DerivedType<Type,InnerType> implements DerivedTypeBase<Typ
 			return getInnerArray().toPrimitiveArray(obj);
 		}
 		return obj;
-	}
-
-	protected abstract IArrayType<Type> createArrayType();
-	protected abstract INullableType<Type> createNullableType();
-
-	@Override
-	public final INullableType<Type> asNullable() {
-		return nullableType==null?(nullableType=createNullableType()):nullableType;
-	}
-
-	@Override
-	public final IArrayType<Type> asArray() {
-		return arrayType==null?(arrayType=createArrayType()):arrayType;
 	}
 
     @Override

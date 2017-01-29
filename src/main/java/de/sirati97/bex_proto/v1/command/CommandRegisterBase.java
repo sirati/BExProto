@@ -1,12 +1,12 @@
 package de.sirati97.bex_proto.v1.command;
 
+import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
+import de.sirati97.bex_proto.v1.network.NetConnection;
+import de.sirati97.bex_proto.v1.stream.Stream;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class CommandRegisterBase implements CommandBase {
 	private Map<Short, CommandBase> commands = new HashMap<>();
@@ -22,14 +22,14 @@ public class CommandRegisterBase implements CommandBase {
 	}
 	
 	@Override
-	public Void extract(CursorByteBuffer dat) {
-		short commandId = (Short) Type.Short.getExtractor().extract(dat);
+	public Void decode(CursorByteBuffer dat) {
+		short commandId = (Short) Type.Short.getDecoder().decode(dat);
 		if (!checkID(commandId, dat))return null;
 		CommandBase command = commands.get(commandId);
 		if (command==null) {
 			throw new IllegalStateException("There is no command handler registered for id " + commandId + " in " + getClass().toString());
 		}
-		return command.extract(dat);
+		return command.decode(dat);
 	}
 	
 	protected boolean checkID(short commandId, CursorByteBuffer dat){return true;}

@@ -3,9 +3,8 @@ package de.sirati97.bex_proto.v1.debug;
 import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.DynamicObj;
 import de.sirati97.bex_proto.datahandler.NullableType;
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.datahandler.TypeBase;
+import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.EncryptionContainer;
@@ -14,6 +13,7 @@ import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.SocketFactory;
 import de.sirati97.bex_proto.v1.network.adv.AdvClient;
 import de.sirati97.bex_proto.v1.network.adv.AdvServer;
+import de.sirati97.bex_proto.v1.stream.Stream;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,7 +82,7 @@ public class Main {
 		
 		final long startTime = System.currentTimeMillis();
 		Stream stream;
-		TypeBase type;
+		IType type;
 		//testdaten zu byte[] 
 		type = new NullableType(new ArrayType(new NullableType(Type.Integer)));
 		System.out.println(type.getTypeName());

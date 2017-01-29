@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 /**
  * Created by sirati97 on 12.04.2016.
@@ -27,8 +27,8 @@ public class IdPacketWrapper implements IPacketDefinition {
     public void setId(short id) {}
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
-        return getParent().createSteam(streamChild, child, iConnections);
+    public ByteBuffer createSteam(ByteBuffer stream, IPacketDefinition child, IConnection... iConnections) {
+        return getParent().createSteam(stream, child, iConnections);
     }
 
     @Override

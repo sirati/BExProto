@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.v2.io;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
 
 import java.io.IOException;
@@ -13,14 +14,14 @@ public abstract class IOHandlerBase implements IOHandler {
 
 
     @Override
-    public synchronized final void send(byte[] stream, boolean reliable) throws IOException {
+    public synchronized final void send(ByteBuffer stream, boolean reliable) throws IOException {
         if (!isOpen()) {
             throw new IOException("Pipe is not open");
         }
         sendInternal(stream, reliable);
     }
 
-    protected abstract void sendInternal(byte[] stream, boolean reliable) throws IOException;
+    protected abstract void sendInternal(ByteBuffer stream, boolean reliable) throws IOException;
 
     @Override
     public synchronized final boolean isOpen() {

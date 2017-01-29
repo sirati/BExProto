@@ -1,7 +1,8 @@
 package de.sirati97.bex_proto.v1.command;
 
 import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.v1.stream.ByteBufferStream;
+import de.sirati97.bex_proto.v1.stream.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
@@ -16,7 +17,7 @@ public abstract class CommandNone implements CommandBase {
 	}
 
 	@Override
-	public Void extract(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat) {
 		receive((NetConnection) dat.getIConnection());
 		return null;
 	}
@@ -50,7 +51,7 @@ public abstract class CommandNone implements CommandBase {
 	}
 
 	public void send(NetConnection... connections) {
-		getParent().send(Type.Short.createStream(getId()), connections);
+		getParent().send(new ByteBufferStream(Type.Short.getEncoder().encodeIndependent(getId())), connections);
 	}
 
 	@Override

@@ -11,22 +11,12 @@ public class BitArrayType extends ArrayType<Boolean> {
     }
 
     public BitArrayType(BooleanType type) {
-        super(type);
-    }
-
-    @Override
-    public Stream createStream(Object obj) {
-        return new BitArrayStream((boolean[]) obj);
+        super(new BitArrayEncoder(), new BitArrayDecoder(), type);
     }
 
     @Override
     protected IArrayType<Boolean[]> createArrayType() {
         return new ArrayType<>(this);
-    }
-
-    @Override
-    protected StreamExtractor<Boolean[]> createExtractor() {
-        return new BitArrayExtractor();
     }
 
 }

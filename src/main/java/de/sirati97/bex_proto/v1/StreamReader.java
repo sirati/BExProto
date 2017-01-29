@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v1;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.datahandler.VoidExtractor;
+import de.sirati97.bex_proto.datahandler.VoidDecoder;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
@@ -10,9 +10,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 public class StreamReader {
-	private VoidExtractor extractor;
+	private VoidDecoder extractor;
 	
-	public StreamReader(VoidExtractor extractor) {
+	public StreamReader(VoidDecoder extractor) {
 		this.extractor = extractor;
 	}
 	
@@ -51,12 +51,12 @@ public class StreamReader {
 	public void exercute(final CursorByteBuffer dat, NetConnection sender, AsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
-				extractor.extract(dat);
+				extractor.decode(dat);
 			}
 		}, name);
 	}
 	
-	public VoidExtractor getExtractor() {
+	public VoidDecoder getExtractor() {
 		return extractor;
 	}
 	

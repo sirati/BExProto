@@ -1,31 +1,26 @@
 package de.sirati97.bex_proto.v2.artifcon;
 
-import de.sirati97.bex_proto.datahandler.EncryptionStream;
-import de.sirati97.bex_proto.datahandler.HashStream;
-import de.sirati97.bex_proto.datahandler.SendStream;
+import de.sirati97.bex_proto.datahandler.BExStatic;
 import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.IEventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.StreamReader;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 
-import javax.crypto.Cipher;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sirati97 on 15.03.2016.
  */
 public class ArtifConnectionService implements IConnection, IEventRegister {
-    private Cipher sendCipher;
-    private Cipher receiveCipher;
-    private MessageDigest hashAlgorithm;
+    private final StreamModifiers streamModifiers = new StreamModifiers();
     private String connectionName;
     private StreamReader streamReader;
     private AsyncHelper asyncHelper;
@@ -49,52 +44,32 @@ public class ArtifConnectionService implements IConnection, IEventRegister {
         return read(bufferIn, 0);
     }
 
+
+    private Object readMutex = new Object();
     public byte[] read(byte[] bufferIn, int skip) {
-        if (overflow != null) {
-            byte[] buffer2 = new byte[overflow.length + bufferIn.length-skip];
-            System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
-            System.arraycopy(bufferIn, skip, buffer2, overflow.length, bufferIn.length-skip);
-            bufferIn = buffer2;
-            System.out.println(bufferIn.length + new String(bufferIn));
-        } else if (skip > 0) {
-            byte[] buffer2 = new byte[bufferIn.length-skip];
-            System.arraycopy(bufferIn, skip, buffer2, 0, bufferIn.length-skip);
-            bufferIn = buffer2;
+        synchronized (readMutex) {
+            if (overflow != null) {
+                byte[] buffer2 = new byte[overflow.length + bufferIn.length-skip];
+                System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
+                System.arraycopy(bufferIn, skip, buffer2, overflow.length, bufferIn.length-skip);
+                bufferIn = buffer2;
+                System.out.println(bufferIn.length + new String(bufferIn));
+            } else if (skip > 0) {
+                byte[] buffer2 = new byte[bufferIn.length-skip];
+                System.arraycopy(bufferIn, skip, buffer2, 0, bufferIn.length-skip);
+                bufferIn = buffer2;
+            }
+            overflow = executeInput(bufferIn);
+            return overflow;
         }
-        overflow = executeInput(bufferIn);
-        return overflow;
     }
 
-    private Object executeInputMutex = new Object();
-    protected synchronized byte[] executeInput(byte[] received) {
-        synchronized (executeInputMutex) {
+    protected byte[] executeInput(byte[] received) {
             return streamReader.read(received, this, asyncHelper, "Stream Executor Thread for " + getConnectionName());
-        }
     }
 
-
-    public Cipher getSendCipher() {
-        return sendCipher;
-    }
-
-    public void setSendCipher(Cipher sendCipher) {
-        this.sendCipher = sendCipher;
-    }
-
-    public Cipher getReceiveCipher() {
-        return receiveCipher;
-    }
-
-    public void setReceiveCipher(Cipher receiveCipher) {
-        this.receiveCipher = receiveCipher;
-    }
-
-    public MessageDigest getHashAlgorithm() {
-        return hashAlgorithm;
-    }
-
-    public void setHashAlgorithm(MessageDigest hashAlgorithm) {
-        this.hashAlgorithm = hashAlgorithm;
+    public StreamModifiers getStreamModifiers() {
+        return streamModifiers;
     }
 
     public String getConnectionName() {
@@ -141,22 +116,18 @@ public class ArtifConnectionService implements IConnection, IEventRegister {
     }
 
     @Override
-    public void send(SendStream stream, boolean reliable) {
-        if (getHashAlgorithm()!= null) {
-            stream = new SendStream(new HashStream(stream.getHeadlessStream(), getHashAlgorithm()));
-        }
-        if (getSendCipher()!= null) {
-            stream = new SendStream(new EncryptionStream(stream.getHeadlessStream(), getSendCipher()));
-        }
+    public void send(ByteBuffer stream, boolean reliable) {
+        stream = streamModifiers.apply(stream);
+        BExStatic.insertInteger(stream.getLength(), stream);
         try {
-            ioHandler.send(stream.getByteBuffer().getBytes(), reliable);
+            ioHandler.send(stream, reliable);
         } catch (IOException e) {
             onIOException(e);
         }
     }
 
     @Override
-    public void send(SendStream stream) {
+    public void send(ByteBuffer stream) {
         send(stream, true);
     }
 

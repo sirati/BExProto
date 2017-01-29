@@ -11,29 +11,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class Type<T> implements TypeBase<T>{
-	private static final Map<String, TypeBase> types = new HashMap<>();
+public abstract class Type<T> extends CommonTypeBase<T>{
+	private static final Map<String, IType> types = new HashMap<>();
     private static final CharsetEncoder ASCII_CHECKER = StandardCharsets.US_ASCII.newEncoder();
-	private INullableType<T> nullableType;
-	private IArrayType<T> arrayType;
 
 
-	public Type() {
-		if(earlyRegister())register();
+	public Type(IEncoder<T> encoder, IDecoder<T> decoder) {
+        super(encoder, decoder);
+        if(earlyRegister())register();
 	}
 	
-	public static TypeBase get(String name) {
+	public static IType get(String name) {
 		return types.get(name);
 	}
 
-    public static TypeBase getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable) {
+    public static IType getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable) {
         return getByInstance(obj, platformIndependent, subtypeNullable, null);
     }
 
-    public static TypeBase getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable, TypeBase defaultType) {
+    public static IType getByInstance(Object obj, boolean platformIndependent, boolean subtypeNullable, IType defaultType) {
         if(obj instanceof Object[]) {
             Class parentClazz = ((Object[]) obj).getClass().getComponentType();
-            TypeBase parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
+            IType parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
             if (parentType == null) {
                 return null;
             }
@@ -43,7 +42,7 @@ public abstract class Type<T> implements TypeBase<T>{
             }
             return parentType.asArray();
         } else {
-            for (TypeBase type:types.values()) {
+            for (IType type:types.values()) {
                 if (type.isEncodable(obj, platformIndependent)) {
                     return type;
                 }
@@ -53,14 +52,14 @@ public abstract class Type<T> implements TypeBase<T>{
     }
 
 
-    public static TypeBase getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable) {
+    public static IType getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable) {
         return getByClazz(clazz, platformIndependent, subtypeNullable, null);
     }
 
-    public static TypeBase getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable, TypeBase defaultType) {
+    public static IType getByClazz(Class clazz, boolean platformIndependent, boolean subtypeNullable, IType defaultType) {
         if(clazz.isArray()) {
             Class parentClazz = clazz.getComponentType();
-            TypeBase parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
+            IType parentType = getByClazz(parentClazz, platformIndependent,subtypeNullable, defaultType);
             if (parentType == null) {
                 return null;
             }
@@ -69,7 +68,7 @@ public abstract class Type<T> implements TypeBase<T>{
             }
             return parentType.asArray();
         } else {
-            for (TypeBase type:types.values()) {
+            for (IType type:types.values()) {
                 if (type.isEncodable(clazz, platformIndependent)) {
                     return type;
                 }
@@ -92,27 +91,6 @@ public abstract class Type<T> implements TypeBase<T>{
 		types.put(typeName, this);
 	}
 
-	public abstract Stream createStreamCasted(T obj);
-
-    protected IArrayType<T> createArrayType() {
-        return new ArrayType<>(this);
-    }
-
-    protected INullableType<T> createNullableType() {
-        return new NullableType<>(this);
-    }
-
-	@Override
-	public final INullableType<T> asNullable() {
-		return nullableType==null?(nullableType=createNullableType()):nullableType;
-	}
-
-	@Override
-	public final IArrayType<T> asArray() {
-		return arrayType==null?(arrayType=createArrayType()):arrayType;
-	}
-
-
     @SuppressWarnings("unchecked")
     @Override
     public T[] createArray(int length) {
@@ -126,16 +104,11 @@ public abstract class Type<T> implements TypeBase<T>{
 	public static final StringType String_Utf_16LE = new StringType(StandardCharsets.UTF_16LE);
 	public static final StringType String_ISO_8859_1 = new StringType(StandardCharsets.ISO_8859_1);
 	public static final StringType String_US_ASCII = new StringType(StandardCharsets.US_ASCII);
-	public static final PrimitiveType<Integer> Integer = new PrimitiveType<Integer>() {
-		IntegerExtractor extractor = new IntegerExtractor();
+	public static final PrimitiveType<Integer> Integer = new PrimitiveType<Integer>(new IntegerEncoder(), new IntegerDecoder()) {
 
         @Override public Integer castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toInt(obj);
         }
-
-        @Override public Stream createStreamCasted(Integer obj) {
-			return new IntegerStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -147,15 +120,12 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isInt(clazz);
         }
 
-        @Override public IntegerExtractor getExtractor() {
-			return extractor;
+
+		@Override public Object toPrimitiveArray(Integer[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Integer[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Integer[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((int[])obj);
 		}
 
@@ -171,16 +141,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Integer";
 		}
 	};
-	public static final PrimitiveType<Long> Long = new PrimitiveType<Long>() {
-		LongExtractor extractor = new LongExtractor();
+	public static final PrimitiveType<Long> Long = new PrimitiveType<Long>(new LongEncoder(), new LongDecoder()) {
 
         @Override public Long castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toLong(obj);
         }
-		
-		@Override public Stream createStreamCasted(Long obj) {
-			return new LongStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -192,15 +157,12 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isLong(clazz);
         }
 
-		@Override public LongExtractor getExtractor() {
-			return extractor;
+
+		@Override public Object toPrimitiveArray(Long[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Long[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Long[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((long[])obj);
 		}
 
@@ -217,16 +179,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Long";
 		}
 	};
-	public static final PrimitiveType<Short> Short = new PrimitiveType<Short>() {
-		ShortExtractor extractor = new ShortExtractor();
+	public static final PrimitiveType<Short> Short = new PrimitiveType<Short>(new ShortEncoder(), new ShortDecoder()) {
 
         @Override public Short castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toShort(obj);
         }
-		
-		@Override public Stream createStreamCasted(Short obj) {
-			return new ShortStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -238,15 +195,11 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isShort(clazz);
         }
 
-		@Override public ShortExtractor getExtractor() {
-			return extractor;
+		@Override public Object toPrimitiveArray(Short[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Short[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Short[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((short[])obj);
 		}
 
@@ -263,16 +216,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Short";
 		}
 	};
-	public static final PrimitiveType<Byte> Byte = new PrimitiveType<Byte>() {
-		ByteExtractor extractor = new ByteExtractor();
+	public static final PrimitiveType<Byte> Byte = new PrimitiveType<Byte>(new ByteEncoder(), new ByteDecoder()) {
 
         @Override public Byte castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toByte(obj);
         }
-		
-		@Override public Stream createStreamCasted(Byte obj) {
-			return new ByteStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -284,15 +232,11 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isByte(clazz);
         }
 
-		@Override public ByteExtractor getExtractor() {
-			return extractor;
+		@Override public Object toPrimitiveArray(Byte[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Byte[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Byte[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((byte[])obj);
 		}
 
@@ -309,16 +253,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Byte";
 		}
 	};
-	public static final PrimitiveType<Double> Double = new PrimitiveType<Double>() {
-		DoubleExtractor extractor = new DoubleExtractor();
+	public static final PrimitiveType<Double> Double = new PrimitiveType<Double>(new DoubleEncoder(), new DoubleDecoder()) {
 
         @Override public Double castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toDouble(obj);
         }
-		
-		@Override public Stream createStreamCasted(Double obj) {
-			return new DoubleStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -330,15 +269,11 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isDouble(clazz);
         }
 
-		@Override public DoubleExtractor getExtractor() {
-			return extractor;
+		@Override public Object toPrimitiveArray(Double[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Double[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Double[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((double[])obj);
 		}
 
@@ -355,16 +290,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "Double";
 		}
 	};
-	public static final PrimitiveType<Float> Float = new PrimitiveType<Float>() {
-		FloatExtractor extractor = new FloatExtractor();
+	public static final PrimitiveType<Float> Float = new PrimitiveType<Float>(new FloatEncoder(), new FloatDecoder()) {
 
         @Override public Float castToPrimitive(Object obj) {
             return PrimitiveHelper.INSTANCE.toFloat(obj);
         }
-		
-		@Override public Stream createStreamCasted(Float obj) {
-			return new FloatStream(obj);
-		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
@@ -376,15 +306,11 @@ public abstract class Type<T> implements TypeBase<T>{
             return PrimitiveHelper.INSTANCE.isFloat(clazz);
         }
 
-		@Override public FloatExtractor getExtractor() {
-			return extractor;
+		@Override public Object toPrimitiveArray(Float[] obj) {
+			return ArrayUtils.toPrimitive(obj);
 		}
 
-		@Override public Object toPrimitiveArray(Object obj) {
-			return ArrayUtils.toPrimitive((Float[])obj);
-		}
-
-		@Override public Object toObjectArray(Object obj) {
+		@Override public Float[] toObjectArray(Object obj) {
 			return ArrayUtils.toObject((float[])obj);
 		}
 
@@ -402,22 +328,11 @@ public abstract class Type<T> implements TypeBase<T>{
 		}
 	};
 	public static final BooleanType Boolean = new BooleanType();
-	public static final ObjType<java.util.UUID> UUID = new ObjType<java.util.UUID>() {
-		UUIDExtractor extractor = new UUIDExtractor();
+	public static final ObjType<java.util.UUID> UUID = new ObjType<java.util.UUID>(new UUIDEncoder(), new UUIDDecoder()) {
 		
 		@Override
 		public Class<UUID> getType() {
 			return java.util.UUID.class;
-		}
-		
-		@Override
-		public StreamExtractor<UUID> getExtractor() {
-			return extractor;
-		}
-		
-		@Override
-		public Stream createStreamCasted(UUID obj) {
-			return new UUIDStream(obj);
 		}
 
         @Override
@@ -429,22 +344,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "UUID";
 		}
 	};
-	public static final ObjType<java.net.InetAddress> InetAddress = new ObjType<java.net.InetAddress>() {
-		InetAddressExtractor extractor = new InetAddressExtractor();
+	public static final ObjType<java.net.InetAddress> InetAddress = new ObjType<java.net.InetAddress>(new InetAddressEncoder(), new InetAddressDecoder()) {
 		
 		@Override
 		public Class<java.net.InetAddress> getType() {
 			return java.net.InetAddress.class;
-		}
-		
-		@Override
-		public StreamExtractor<java.net.InetAddress> getExtractor() {
-			return extractor;
-		}
-		
-		@Override
-		public Stream createStreamCasted(java.net.InetAddress obj) {
-			return new InetAddressStream(obj);
 		}
 
         @Override
@@ -461,22 +365,11 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "InetAddress";
 		}
 	};
-	public static final ObjType<InetAddressPort> InetAddressPort = new ObjType<InetAddressPort>() {
-		InetAddressPortExtractor extractor = new InetAddressPortExtractor();
+	public static final ObjType<InetAddressPort> InetAddressPort = new ObjType<InetAddressPort>(new InetAddressPortEncoder(), new InetAddressPortDecoder()) {
 		
 		@Override
 		public Class<InetAddressPort> getType() {
 			return InetAddressPort.class;
-		}
-		
-		@Override
-		public StreamExtractor<InetAddressPort> getExtractor() {
-			return extractor;
-		}
-		
-		@Override
-		public Stream createStreamCasted(InetAddressPort obj) {
-			return new InetAddressPortStream( obj);
 		}
 
         @Override
@@ -488,8 +381,7 @@ public abstract class Type<T> implements TypeBase<T>{
 			return "InetAddressPort";
 		}
 	};
-	public static final ObjType<TypeBase> Type = new ObjType<TypeBase>() {
-		TypeExtractor extractor = new TypeExtractor();
+	public static final ObjType<IType> Type = new ObjType<IType>(new TypeEncoder(), new TypeDecoder()) {
 		
 		@Override
 		public String getTypeName() {
@@ -497,27 +389,17 @@ public abstract class Type<T> implements TypeBase<T>{
 		}
 		
 		@Override
-		public Class<TypeBase> getType() {
-			return TypeBase.class;
-		}
-		
-		@Override
-		public StreamExtractor<TypeBase> getExtractor() {
-			return extractor;
-		}
-		
-		@Override
-		public Stream createStreamCasted(TypeBase obj) {
-			return new TypeStream(obj);
+		public Class<IType> getType() {
+			return IType.class;
 		}
 
         @Override
         public boolean isEncodable(Object obj, boolean platformIndependent) {
-            return obj instanceof TypeBase;
+            return obj instanceof IType;
         }
 	};
-	public static final ObjType<DynamicObj> DynamicObj = new ObjType<DynamicObj>() {
-		DynamicObjExtractor extractor = new DynamicObjExtractor();
+	public static final ObjType<DynamicObj> DynamicObj = new ObjType<DynamicObj>(new DynamicObjEncoder(), new DynamicObjDecoder()) {
+		DynamicObjDecoder decoder = new DynamicObjDecoder();
 		
 		@Override
 		public String getTypeName() {
@@ -527,16 +409,6 @@ public abstract class Type<T> implements TypeBase<T>{
 		@Override
 		public Class<DynamicObj> getType() {
 			return DynamicObj.class;
-		}
-		
-		@Override
-		public StreamExtractor<DynamicObj> getExtractor() {
-			return extractor;
-		}
-		
-		@Override
-		public Stream createStreamCasted(DynamicObj obj) {
-			return new DynamicObjStream(obj);
 		}
 
         @Override

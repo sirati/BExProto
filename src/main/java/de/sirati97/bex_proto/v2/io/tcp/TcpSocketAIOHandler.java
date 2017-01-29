@@ -1,8 +1,11 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
+import de.sirati97.bex_proto.util.bytebuffer.ByteBufferSegment;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.ClosedChannelException;
@@ -23,13 +26,41 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
 
 
     @Override
-    protected void sendInternal(byte[] stream, boolean reliable) throws IOException {
-        Future f = socket.write(ByteBuffer.wrap(stream));
+    protected void sendInternal(de.sirati97.bex_proto.util.bytebuffer.ByteBuffer stream, boolean reliable) throws IOException {
+        ByteBuffer nioByteBuffer = ByteBuffer.allocateDirect(stream.getLength());
+        for (ByteBufferSegment segment:stream) {
+            nioByteBuffer.put(segment.getBytes(), segment.getOffset(), segment.getLength());
+        }
+        nioByteBuffer.flip();
+        Future f = socket.write(nioByteBuffer);
         try {
             f.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new IOException(e);
         }
+//        finally {
+//            try {
+//                unallocateDirectByteBuffer(nioByteBuffer);
+//            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//                throw new IOException(e);
+//            }
+//        }
+    }
+
+    private static void unallocateDirectByteBuffer(ByteBuffer buffer)
+            throws IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, SecurityException, NoSuchMethodException {
+
+        if (!buffer.isDirect()) {
+            throw new IllegalStateException("ByteBuffer is not direct");
+        }
+
+        Method cleanerMethod = buffer.getClass().getMethod("cleaner");
+        cleanerMethod.setAccessible(true);
+        Object cleaner = cleanerMethod.invoke(buffer);
+        Method cleanMethod = cleaner.getClass().getMethod("clean");
+        cleanMethod.setAccessible(true);
+        cleanMethod.invoke(cleaner);
     }
 
     @Override
@@ -65,6 +96,7 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
                 buffer.flip();
                 byte[] read = new byte[result];
                 buffer.get(read);
+//                System.out.println("read bytes: " + TestIOHandler.bytesToString(read));
                 read();
                 getConnection().read(read);
             }

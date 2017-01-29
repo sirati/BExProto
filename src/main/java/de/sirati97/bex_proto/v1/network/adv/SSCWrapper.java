@@ -1,7 +1,5 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetCreator;
 
 public class SSCWrapper {
@@ -37,9 +35,9 @@ public class SSCWrapper {
 		return ((AdvCreator) creator).getServerSideConnection(getClientName(), isGeneric(), getId());
 	}
 	
-	public Stream getStream() {
-		return Type.SSCWrapper.createStream(this);
-	}
+//	public Encoder getStream() {
+//		return Type.SSCWrapper.getEncoder(this);
+//	}
 	
 	@Override
 	public String toString() {

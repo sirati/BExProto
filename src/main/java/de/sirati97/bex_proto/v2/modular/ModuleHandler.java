@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.v2.modular;
 
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.IdPacketWrapper;
@@ -103,13 +103,13 @@ public class ModuleHandler {
         }
 
         @Override
-        public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
+        public ByteBuffer createSteam(ByteBuffer stream, IPacketDefinition child, IConnection... iConnections) {
             for (IConnection connection:iConnections) {
                 if (connection instanceof ModularArtifConnectionService && !((ModularArtifConnectionService) connection).isConnectionEstablished()) {
                     error();
                 }
             }
-            return super.createSteam(streamChild, child, iConnections);
+            return super.createSteam(stream, child, iConnections);
         }
 
         private void error() throws IllegalStateException {

@@ -2,18 +2,23 @@ package de.sirati97.bex_proto.datahandler;
 
 
 public class NullableType<T> extends DerivedType<T,T> implements INullableType<T> {
-	private TypeBase<T> type;
-	private StreamExtractor<T> extractor;
+	private IType<T> type;
 
 
-	public NullableType(TypeBase<T> type) {
-		this(DerivedTypeBase.Register.NULLABLE_TYPE_FACTORY, type);
+	public NullableType(IType<T> type) {
+		this(IDerivedType.Register.NULLABLE_TYPE_FACTORY, type);
 	}
-	
-	public NullableType(NullableTypeFactory factory, TypeBase<T> type) {
-		super(factory);
+
+    public NullableType(NullableTypeFactory factory, IType<T> type) {
+        this(new NullableEncoder<T>(type), new NullableDecoder<T>(type), factory, type);
+    }
+
+    public NullableType(IEncoder<T> encoder, IDecoder<T> decoder, IType<T> type) {
+        this(encoder, decoder, IDerivedType.Register.NULLABLE_TYPE_FACTORY, type);
+    }
+    public NullableType(IEncoder<T> encoder, IDecoder<T> decoder, NullableTypeFactory factory, IType<T> type) {
+		super(encoder, decoder, factory);
 		this.type = type;
-		this.extractor = new NullableExtractor<>(type);
 	}
 
 	@Override
@@ -26,11 +31,6 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 		return false;
 	}
 
-	@Override
-	public Stream createStream(Object obj) {
-		return new NullableStream(getInnerType(), obj);
-	}
-
     @Override
     public boolean isEncodable(Object obj, boolean platformIndependent) {
         return type.isEncodable(obj, platformIndependent);
@@ -40,12 +40,6 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
     public boolean isEncodable(Class paramClass, boolean platformIndependent) {
         return type.isEncodable(paramClass, platformIndependent);
     }
-
-
-    @Override
-	public StreamExtractor<T> getExtractor() {
-		return extractor;
-	}
 
 	@Override
 	public T[] createArray(int length) {
@@ -57,7 +51,7 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 		return getInnerType().getObjType();
 	}
 	
-	public TypeBase<T> getInnerType() {
+	public IType<T> getInnerType() {
 		return type;
 	}
 
@@ -80,8 +74,8 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 		if (isArray()) {
 			if (getInnerType() instanceof IArrayType) {
 				return (IArrayType) getInnerType();
-			} else if (getInnerType() instanceof DerivedTypeBase) {
-				return ((DerivedTypeBase)getInnerType()).getInnerArray();
+			} else if (getInnerType() instanceof IDerivedType) {
+				return ((IDerivedType)getInnerType()).getInnerArray();
 			} else {
 				throw new IllegalStateException("Inner type is no array, but isArray() returns true!");
 			}
@@ -95,8 +89,8 @@ public class NullableType<T> extends DerivedType<T,T> implements INullableType<T
 		if (getInnerType().isPrimitive()) {
 			return false;
 		} else {
-			if (getInnerType() instanceof DerivedTypeBase) {
-				return ((DerivedTypeBase)getInnerType()).isBasePrimitive();
+			if (getInnerType() instanceof IDerivedType) {
+				return ((IDerivedType)getInnerType()).isBasePrimitive();
 			} else {
 				return false;
 			}

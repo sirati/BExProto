@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.MultiStream;
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
+import de.sirati97.bex_proto.v1.stream.MultiStream;
+import de.sirati97.bex_proto.v1.stream.Stream;
 
 public class CommandRegister extends CommandRegisterBase {
 	
@@ -17,7 +17,7 @@ public class CommandRegister extends CommandRegisterBase {
 
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
-		getParent().send(new MultiStream(Type.Short.createStream(getId()),stream), connections);
+		getParent().send(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), connections);
 	}
 	
 
@@ -25,6 +25,6 @@ public class CommandRegister extends CommandRegisterBase {
 
 	@Override
 	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
-		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+		return getParent().generateSendableStream(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), receiver);
 	}
 }

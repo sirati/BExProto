@@ -1,9 +1,8 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.datahandler.SendStream;
-import de.sirati97.bex_proto.datahandler.Stream;
-import de.sirati97.bex_proto.datahandler.TypeBase;
+import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -41,16 +40,16 @@ public class Packet {
         return clazz.isInstance(definition);
     }
 
-    public TypeBase getType(int i) {
+    public IType getType(int i) {
         return getDefinition().getTypes()[i];
     }
 
-    public Stream createStream(IConnection... connections) {
+    public ByteBuffer createStream(IConnection... connections) {
         return getDefinition().createSteam(PacketManager.createStream(this), null, connections);
     }
 
     public void sendTo(IConnection... connections) {
-        SendStream stream = new SendStream(createStream(connections));
+        ByteBuffer stream = createStream(connections);
         for (IConnection connection:connections) {
             connection.send(stream, definition.getRequiresReliableConnection());
         }

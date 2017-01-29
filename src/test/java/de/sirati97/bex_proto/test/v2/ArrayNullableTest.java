@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
@@ -33,8 +33,8 @@ public class ArrayNullableTest implements PacketHandler {
 
         Packet packetSend = new Packet(definition, (Object)data);
 
-        Stream stream = packetSend.createStream();
-        byte[] bytes = stream.getByteBuffer().getBytes();
+        ByteBuffer stream = packetSend.createStream();
+        byte[] bytes = stream.getBytes();
 
         System.out.println(TestIOHandler.bytesToString(bytes));
 

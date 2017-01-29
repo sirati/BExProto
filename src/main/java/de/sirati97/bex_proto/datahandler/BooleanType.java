@@ -6,25 +6,18 @@ import org.apache.commons.lang3.ArrayUtils;
  * Created by sirati97 on 28.04.2016.
  */
 public class BooleanType extends PrimitiveType<Boolean> {
-    BooleanExtractor extractor = new BooleanExtractor();
 
-    @Override
-    public Stream createStreamCasted(Boolean obj) {
-        return new BooleanStream(obj);
+    public BooleanType() {
+        super(new BooleanEncoder(), new BooleanDecoder());
     }
 
     @Override
-    public BooleanExtractor getExtractor() {
-        return extractor;
+    public Object toPrimitiveArray(Boolean[] obj) {
+        return ArrayUtils.toPrimitive(obj);
     }
 
     @Override
-    public Object toPrimitiveArray(Object obj) {
-        return ArrayUtils.toPrimitive((Boolean[]) obj);
-    }
-
-    @Override
-    public Object toObjectArray(Object obj) {
+    public Boolean[] toObjectArray(Object obj) {
         return ArrayUtils.toObject((boolean[]) obj);
     }
 

@@ -3,9 +3,9 @@ package de.sirati97.bex_proto.test.v2;
 import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.InetAddressPort;
 import de.sirati97.bex_proto.datahandler.NullableType;
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
@@ -72,8 +72,8 @@ public class PacketTest implements PacketHandler {
                     new TestException("TEXT1"),
                     null, false);
 
-            Stream stream = packetSend.createStream();
-            CursorByteBuffer buffer = new CursorByteBuffer(stream.getByteBuffer().getBytes(), null);
+            ByteBuffer stream = packetSend.createStream();
+            CursorByteBuffer buffer = new CursorByteBuffer(stream.getBytes(), null);
             PacketDefinition extracted = (PacketDefinition) collection.getPacket(buffer);
             assertTrue("PacketDefinition have different length!", definition1==extracted);
             Packet packetReceived = PacketManager.extract(extracted, buffer);

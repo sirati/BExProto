@@ -1,31 +1,32 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.DerivedTypeBase;
+import de.sirati97.bex_proto.datahandler.IDerivedType;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.datahandler.MultiStream;
-import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.v1.stream.MultiStream;
+import de.sirati97.bex_proto.v1.stream.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
-import de.sirati97.bex_proto.datahandler.TypeBase;
+import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.v1.network.NetConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 public class BEx1Command<t1> implements CommandBase{
-	TypeBase[] types;
+	IType[] types;
 	private short id;
 	private CommandBase parent;
 	
-	public BEx1Command(short id, TypeBase...types) {
+	public BEx1Command(short id, IType...types) {
 		this.types = types;
 		this.id = id;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Void extract(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat) {
 		Object[] r = new Object[1];
 		int counter=0;
-		for (TypeBase type:types) {
-			 Object tempObj = type.getExtractor().extract(dat);
-			 if (type.isArray() && type instanceof DerivedTypeBase) {
-				 tempObj = ((DerivedTypeBase) type).toPrimitiveArray(tempObj);
+		for (IType type:types) {
+			 Object tempObj = type.getDecoder().decode(dat);
+			 if (type.isArray() && type instanceof IDerivedType) {
+				 tempObj = ((IDerivedType) type).toPrimitiveArray(tempObj);
 			 }
 			 r[counter++] = tempObj;
 		}
@@ -39,14 +40,14 @@ public class BEx1Command<t1> implements CommandBase{
 
 
 	public Stream send(t1 arg1) {
-		Stream[] streams = new Stream[types.length];
+		ByteBuffer[] buffers = new ByteBuffer[types.length];
 		switch (types.length) {
 		case 1:
-			streams[0]=types[0].createStream(arg1);
+			buffers[0]=types[0].getEncoder().encodeIndependent(arg1);
 		default:
 			break;
 		}
-		return new MultiStream(streams);
+		return new MultiStream(buffers);
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class BEx1Command<t1> implements CommandBase{
 	
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
-		getParent().send(new MultiStream(Type.Short.createStream(getId()),stream), connections);
+		getParent().send(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), connections);
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class BEx1Command<t1> implements CommandBase{
 
 	@Override
 	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
-		return getParent().generateSendableStream(new MultiStream(Type.Short.createStream(getId()),stream), receiver);
+		return getParent().generateSendableStream(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), receiver);
 	}
 	
 }

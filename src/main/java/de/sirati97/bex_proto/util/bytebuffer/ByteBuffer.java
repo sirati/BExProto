@@ -1,9 +1,11 @@
 package de.sirati97.bex_proto.util.bytebuffer;
 
+import java.util.Iterator;
+
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public class ByteBuffer implements IByteBufferSegment {
+public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegment> {
     private ByteBufferSegment first;
     private ByteBufferSegment last;
     private byte[] result;
@@ -163,5 +165,31 @@ public class ByteBuffer implements IByteBufferSegment {
             result.append(buffers[i]);
         }
         return result;
+    }
+
+    @Override
+    public Iterator<ByteBufferSegment> iterator() {
+        return new Iterator<ByteBufferSegment>() {
+            ByteBufferSegment current = first;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public ByteBufferSegment next() {
+               try {
+                   return current;
+               } finally {
+                   current = current.getNext();
+               }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }

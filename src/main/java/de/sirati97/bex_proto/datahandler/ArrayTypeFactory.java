@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.datahandler;
 
-public class ArrayTypeFactory implements DerivedTypeBase.DerivedFactory {
+public class ArrayTypeFactory implements IDerivedType.DerivedFactory {
 
 	@Override
 	public byte getDerivedID() {
@@ -8,7 +8,7 @@ public class ArrayTypeFactory implements DerivedTypeBase.DerivedFactory {
 	}
 
 	@Override
-	public DerivedTypeBase create(TypeBase inner) {
+	public IDerivedType create(IType inner) {
 		return new ArrayType(this, inner);
 	}
 

@@ -1,11 +1,12 @@
 package de.sirati97.bex_proto.v2;
 
-import de.sirati97.bex_proto.datahandler.MultiStream;
-import de.sirati97.bex_proto.datahandler.ShortStream;
-import de.sirati97.bex_proto.datahandler.Stream;
+import de.sirati97.bex_proto.datahandler.BExStatic;
+import de.sirati97.bex_proto.datahandler.IEncoder;
+import de.sirati97.bex_proto.datahandler.ShortEncoder;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
+import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,9 +79,9 @@ public class PacketCollection implements IPacketCollection {
     }
 
     @Override
-    public Stream createSteam(Stream streamChild, IPacketDefinition child, IConnection... iConnections) {
-        Stream result = new MultiStream(new ShortStream(child.getId()), streamChild);
-        return parent==null?result:parent.createSteam(result, this, iConnections);
+    public ByteBuffer createSteam(ByteBuffer buffer, IPacketDefinition child, IConnection... iConnections) {
+        BExStatic.insertShort(child.getId(), buffer);
+        return parent==null?buffer:parent.createSteam(buffer, this, iConnections);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class PacketCollection implements IPacketCollection {
     }
 
     private short getShort(CursorByteBuffer buf) {
-        return (Short) Type.Short.getExtractor().extract(buf);
+        return (Short) Type.Short.getDecoder().decode(buf);
     }
 
 }

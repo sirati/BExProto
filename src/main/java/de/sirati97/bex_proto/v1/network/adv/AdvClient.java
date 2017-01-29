@@ -1,6 +1,5 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.Stream;
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.StreamReader;
@@ -12,6 +11,7 @@ import de.sirati97.bex_proto.v1.command.ConnectionInfo;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.NetClient;
 import de.sirati97.bex_proto.v1.network.NetConnection;
+import de.sirati97.bex_proto.v1.stream.Stream;
 
 import javax.crypto.Cipher;
 import java.io.IOException;

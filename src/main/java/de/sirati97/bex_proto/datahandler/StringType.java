@@ -4,29 +4,18 @@ import java.nio.charset.Charset;
 
 public class StringType extends ObjType<String> {
 	private Charset charset;
-	private StreamExtractor<String> extractor
 ;
 	
 	public StringType(Charset charset) {
+	    super(new StringEncoder(charset), new StringDecoder(charset));
 		this.charset = charset;
-		this.extractor = new StringExtractor(charset);
 		register();
-	}
-
-	@Override
-	public Stream createStreamCasted(String obj) {
-		return new StringStream(obj, charset);
 	}
 
     @Override
     public boolean isEncodable(Object obj, boolean platformIndependent) {
         return obj instanceof String;
     }
-
-    @Override
-	public StreamExtractor<String> getExtractor() {
-		return extractor;
-	}
 
 	@Override
 	public Class<String> getType() {

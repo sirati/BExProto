@@ -5,26 +5,10 @@ package de.sirati97.bex_proto.datahandler;
  */
 public class ArrayNullableType<T> extends ArrayType<T> {
     public ArrayNullableType(INullableType<T> type) {
-        super(type);
+        super(new ArrayNullableEncoder<>(type), new ArrayNullableDecoder<>(type), type);
     }
-
-    @Override
-    public Stream createStream(Object obj) {
-        return new ArrayNullableStream(getInnerType(), obj);
-    }
-
     @Override
     public INullableType<T> getInnerType() {
         return (INullableType<T>) super.getInnerType();
-    }
-
-    @Override
-    protected IArrayType<T[]> createArrayType() {
-        return new ArrayType<>(this);
-    }
-
-    @Override
-    protected StreamExtractor<T[]> createExtractor() {
-        return new ArrayNullableExtractor<>(getInnerType());
     }
 }
