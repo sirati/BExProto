@@ -6,6 +6,7 @@ import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.command.CommandRegister;
@@ -34,7 +35,7 @@ public class Main {
 	private static ThreadPoolAsyncHelper asyncHelper;
 	private static long sleepTime;
 	public static void main(String[] args) throws InterruptedException {
-		asyncHelper = new ThreadPoolAsyncHelper();
+		asyncHelper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				try {

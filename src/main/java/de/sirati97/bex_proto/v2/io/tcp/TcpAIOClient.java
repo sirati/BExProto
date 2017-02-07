@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
 import de.sirati97.bex_proto.builder.ITcpAddress;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodell.ClientBase;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
@@ -19,11 +19,11 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplement
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpAIOClient<Connection extends ArtifConnectionService> extends ClientBase<Connection> {
+public class TcpAIOClient<Connection extends BasicService> extends ClientBase<Connection> {
     private final AsynchronousSocketChannel socket;
     private final ITcpAddress address;
 
-    public TcpAIOClient(IConnectionServiceFactory<Connection> factory, String name, ITcpAddress address) throws IOException {
+    public TcpAIOClient(IServiceFactory<Connection> factory, String name, ITcpAddress address) throws IOException {
         super(factory, name);
         this.socket = AsynchronousSocketChannel.open();
         this.address = address;
@@ -42,7 +42,7 @@ public class TcpAIOClient<Connection extends ArtifConnectionService> extends Cli
             } catch (ExecutionException e) {
                 throw new IOException(e);
             }
-            setConnection(getFactory().createClient(getName(), new TcpSocketAIOHandler(socket)));
+            setConnection(getFactory().createClientService(getName(), new TcpSocketAIOHandler(socket)));
         }
         getConnection().connect();
     }

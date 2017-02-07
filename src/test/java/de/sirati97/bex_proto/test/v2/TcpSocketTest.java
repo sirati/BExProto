@@ -8,6 +8,7 @@ import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.GenericEventHandler;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
@@ -16,7 +17,6 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
 import de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodell.IClient;
 import de.sirati97.bex_proto.v2.networkmodell.IServer;
@@ -25,7 +25,7 @@ import org.junit.Test;
 import java.net.InetAddress;
 import java.util.Set;
 
-import static de.sirati97.bex_proto.builder.ConnectionTypes.ModularManagedConnection;
+import static de.sirati97.bex_proto.builder.ServiceTypes.ModularService;
 import static org.junit.Assert.fail;
 
 /**
@@ -39,15 +39,15 @@ public class TcpSocketTest implements PacketHandler, Listener {
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         long timestamp;
-        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper();
+        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
         try {
             try {
                 PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
-                Builder builder = new Builder<>(ModularManagedConnection,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO);
+                Builder builder = new Builder<>(ModularService,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO);
                 InetAddress address = InetAddress.getLocalHost();
                 IServer server = builder.buildServer(new IpPortAddress(address, 12312));//new TcpAIOServer<>(factory, address, 12312);
                 server.registerEventListener(this);
-                IClient client = new Builder<>(ModularManagedConnection,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO).buildClient(new IpPortAddress(address, 12312), "TestConnection");//new TcpAIOClient<>(factory, "TestConnection", address, 12312);
+                IClient client = new Builder<>(ModularService,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO).buildClient(new IpPortAddress(address, 12312), "TestConnection");//new TcpAIOClient<>(factory, "TestConnection", address, 12312);
                 server.startListening();
                 timestamp = System.nanoTime();
                 client.connect();
@@ -105,9 +105,9 @@ public class TcpSocketTest implements PacketHandler, Listener {
         System.out.println(packet.get(0));
     }
 
-    @GenericEventHandler(generics = {ModularArtifConnectionService.class})
+    @GenericEventHandler(generics = {de.sirati97.bex_proto.v2.service.modular.ModularService.class})
     @EventHandler(priority = EventPriority.Monitor)
-    public void onNewConnectionEvent(NewConnectionEvent<ModularArtifConnectionService> event) {
+    public void onNewConnectionEvent(NewConnectionEvent<de.sirati97.bex_proto.v2.service.modular.ModularService> event) {
         System.out.println("Server accepted new connection");
     }
 }

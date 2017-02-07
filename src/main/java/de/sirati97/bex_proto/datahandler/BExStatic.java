@@ -11,11 +11,11 @@ public final class BExStatic {
 	private BExStatic() {}
 	
 	public static byte[] tobyteArray(List<Byte> list) {return tobyteArray(list,	list.size());}
-	public static byte[] tobyteArray(List<Byte> list, int lenght) {return tobyteArray(list, 0, lenght);}
-	public static byte[] tobyteArray(List<Byte> list, int start, int lenght) {
-		//if (start + lenght > list.size())lenght = list.size() - start;
-		byte[] result = new byte[lenght];
-		for (int i = 0;i < lenght;i++) {
+	public static byte[] tobyteArray(List<Byte> list, int length) {return tobyteArray(list, 0, length);}
+	public static byte[] tobyteArray(List<Byte> list, int start, int length) {
+		//if (start + length > list.size())length = list.size() - start;
+		byte[] result = new byte[length];
+		for (int i = 0;i < length;i++) {
 			result[i] = list.get(start + i);
 		}
 		return result;
@@ -70,11 +70,11 @@ public final class BExStatic {
 	
 
 	public static byte[] mergeStream(byte[][] streams) {
-		int resultLenght = 0;
+		int resultLength = 0;
 		for (byte[] element:streams) {
-			if (element != null && element.length > 0)resultLenght += element.length;
+			if (element != null && element.length > 0)resultLength += element.length;
 		}
-		byte[] result = new byte[resultLenght];
+		byte[] result = new byte[resultLength];
 		byte[] tmp;
 		int loc = 0;
 		for (byte[] element:streams) {
@@ -130,8 +130,8 @@ public final class BExStatic {
 
 	
 	public static String getString(CursorByteBuffer dat, Charset charset) {
-		int streamLenght = getInteger(dat);
-		byte[] stream = dat.getMulti(streamLenght);
+		int streamLength = getInteger(dat);
+		byte[] stream = dat.getMulti(streamLength);
 		return new String(stream, charset);
 	}
 	

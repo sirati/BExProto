@@ -4,8 +4,8 @@ import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 
 import java.io.IOException;
@@ -15,11 +15,11 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public abstract class ServerBase<Connection extends ArtifConnectionService> extends ConnectionBase<Connection> implements IServer<Connection> {
+public abstract class ServerBase<Connection extends BasicService> extends ConnectionBase<Connection> implements IServer<Connection> {
     private ILogger logger;
     private EventRegister eventRegister;
 
-    public ServerBase(IConnectionServiceFactory<Connection> factory) {
+    public ServerBase(IServiceFactory<Connection> factory) {
         super(factory);
     }
 

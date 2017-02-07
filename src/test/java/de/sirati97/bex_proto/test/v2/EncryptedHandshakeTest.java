@@ -2,6 +2,7 @@ package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.RuntimeGeneratedUnsecureEncryptionContainer;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -11,9 +12,9 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
-import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
-import de.sirati97.bex_proto.v2.modular.ModuleHandler;
-import de.sirati97.bex_proto.v2.modular.internal.EncryptionModule;
+import de.sirati97.bex_proto.v2.service.modular.ModularService;
+import de.sirati97.bex_proto.v2.service.modular.ModuleHandler;
+import de.sirati97.bex_proto.v2.service.modular.internal.EncryptionModule;
 import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +28,7 @@ import static org.junit.Assert.fail;
  */
 public class EncryptedHandshakeTest implements PacketHandler {
     private ILogger log = new SysOutLogger();
-    private ThreadPoolAsyncHelper asyncHelper = new ThreadPoolAsyncHelper();
+    private ThreadPoolAsyncHelper asyncHelper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
     private final Object receiveMutex = new Object();
     private boolean received = false;
 
@@ -41,8 +42,8 @@ public class EncryptedHandshakeTest implements PacketHandler {
                 PacketDefinition definition2 = definition1.clone();
                 TestIOHandler pipe1 = new TestIOHandler();
                 TestIOHandler pipe2 = new TestIOHandler();
-                ModularArtifConnectionService connection1 = createConnection("TestEnCon1", definition1, pipe1);
-                ModularArtifConnectionService connection2 = createConnection("TestEnCon2", definition2, pipe2);
+                ModularService connection1 = createConnection("TestEnCon1", definition1, pipe1);
+                ModularService connection2 = createConnection("TestEnCon2", definition2, pipe2);
 
                 pipe1.receiver = pipe2;
                 pipe2.receiver = pipe1;
@@ -93,11 +94,11 @@ public class EncryptedHandshakeTest implements PacketHandler {
         }
     }
 
-    private ModularArtifConnectionService createConnection(String name, PacketDefinition definition, TestIOHandler pipe) throws NoSuchAlgorithmException, NoSuchProviderException {
+    private ModularService createConnection(String name, PacketDefinition definition, TestIOHandler pipe) throws NoSuchAlgorithmException, NoSuchProviderException {
         ModuleHandler handler = new ModuleHandler(asyncHelper, log, definition);
         handler.register(new EncryptionModule(new RuntimeGeneratedUnsecureEncryptionContainer()));
         //handler.register(new StressModule());
-        return new ModularArtifConnectionService(name, pipe, handler);
+        return new ModularService(name, pipe, handler);
     }
 
     @Override

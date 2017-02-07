@@ -3,8 +3,8 @@ package de.sirati97.bex_proto.v2.io.tcp;
 import de.sirati97.bex_proto.builder.ITcpAddress;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodell.ServerBase;
@@ -20,13 +20,13 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplement
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public class TcpBIOServer<Connection extends ArtifConnectionService> extends ServerBase<Connection> {
+public class TcpBIOServer<Connection extends BasicService> extends ServerBase<Connection> {
     private final ServerSocket serverSocket = new ServerSocket();
     private AsyncTask task;
     private boolean listening = false;
     private final ITcpAddress address;
 
-    public TcpBIOServer(IConnectionServiceFactory<Connection> factory, ITcpAddress address) throws IOException {
+    public TcpBIOServer(IServiceFactory<Connection> factory, ITcpAddress address) throws IOException {
         super(factory);
         this.address = address;
     }
@@ -52,7 +52,7 @@ public class TcpBIOServer<Connection extends ArtifConnectionService> extends Ser
                                 getLogger().warn("The socket was closed!");
                             } else if ((socket = serverSocket.accept()) != null) {
                                 try {
-                                    Connection connection = getFactory().createServer(new TcpSocketBIOHandler(socket));
+                                    Connection connection = getFactory().createServerService(new TcpSocketBIOHandler(socket));
                                     registerConnection(connection);
                                     connection.expectConnection();
                                 } catch (Throwable e) {

@@ -4,8 +4,8 @@ import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.util.HashSet;
 
@@ -14,11 +14,11 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public abstract class ClientBase<Connection extends ArtifConnectionService> extends ConnectionBase<Connection> implements IClient<Connection> {
+public abstract class ClientBase<Connection extends BasicService> extends ConnectionBase<Connection> implements IClient<Connection> {
     private Connection connection;
     private final String name;
 
-    public ClientBase(IConnectionServiceFactory<Connection> factory, String name) {
+    public ClientBase(IServiceFactory<Connection> factory, String name) {
         super(factory);
         this.name = name;
     }

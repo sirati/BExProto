@@ -3,14 +3,14 @@ package de.sirati97.bex_proto.v2.events;
 import de.sirati97.bex_proto.events.EventDistributor;
 import de.sirati97.bex_proto.events.EventDistributorImpl;
 import de.sirati97.bex_proto.events.GenericEvent;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 /**
  * Created by sirati97 on 29.04.2016.
  */
-public class NewConnectionEvent<Connection extends ArtifConnectionService> implements GenericEvent {
+public class NewConnectionEvent<Connection extends BasicService> implements GenericEvent {
     private static final EventDistributor DISTRIBUTOR = new EventDistributorImpl();
-    private static final Class[] GENERIC_SUPERCLASSES = {ArtifConnectionService.class};
+    private static final Class[] GENERIC_SUPERCLASSES = {BasicService.class};
     public static EventDistributor getEventDistributor() {
         return DISTRIBUTOR;
     }

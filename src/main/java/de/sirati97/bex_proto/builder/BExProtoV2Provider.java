@@ -1,8 +1,8 @@
 package de.sirati97.bex_proto.builder;
 
 import de.sirati97.bex_proto.builder.internal.PExProtoIOFactoryHelper;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodell.IArchitectureFunction;
 import de.sirati97.bex_proto.v2.networkmodell.IConnection;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
@@ -40,7 +40,7 @@ public final class BExProtoV2Provider implements IProvider{
         //TcpBIOServer
         register(TCP, BlockingIO, Server, new Factory() {
             @Override
-            public <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
+            public <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
                 if (!(address instanceof ITcpAddress)) {
                     throw new IllegalArgumentException(ERROR_ADDRESS_WRONG_TYPE);
                 }
@@ -54,7 +54,7 @@ public final class BExProtoV2Provider implements IProvider{
         //TcpBIOClient
         register(TCP, BlockingIO, Client, new Factory() {
             @Override
-            public <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
+            public <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
                 if (!(address instanceof ITcpAddress)) {
                     throw new IllegalArgumentException(ERROR_ADDRESS_WRONG_TYPE);
                 }
@@ -68,7 +68,7 @@ public final class BExProtoV2Provider implements IProvider{
         //TcpAIOServer
         register(TCP, AsynchronousIO, Server, new Factory() {
             @Override
-            public <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
+            public <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
                 if (!(address instanceof ITcpAddress)) {
                     throw new IllegalArgumentException(ERROR_ADDRESS_WRONG_TYPE);
                 }
@@ -82,7 +82,7 @@ public final class BExProtoV2Provider implements IProvider{
         //TcpAIOClient
         register(TCP, AsynchronousIO, Client, new Factory() {
             @Override
-            public <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
+            public <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException {
                 if (!(address instanceof ITcpAddress)) {
                     throw new IllegalArgumentException(ERROR_ADDRESS_WRONG_TYPE);
                 }
@@ -109,7 +109,7 @@ public final class BExProtoV2Provider implements IProvider{
     }
 
     @Override
-    public <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, INetworkProtocol underlyingProtocol, INetworkStackImplementation stackImplementation, IArchitectureFunction function, IAddress address, Options options) throws IOException {
+    public <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, INetworkProtocol underlyingProtocol, INetworkStackImplementation stackImplementation, IArchitectureFunction function, IAddress address, Options options) throws IOException {
         Factory f = map.get(new Key(underlyingProtocol, stackImplementation, function));
         if (f == null) {
             throw new IllegalStateException("Cannot find builder for underlyingProtocol=" + underlyingProtocol.getName() + ", stackImplementation=" + underlyingProtocol.getName() + " and architectureFunction=" + function.getName());
@@ -144,6 +144,6 @@ public final class BExProtoV2Provider implements IProvider{
     }
 
     public interface Factory {
-        <ConnectionType extends ArtifConnectionService> IConnection<ConnectionType> build(IConnectionServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException;
+        <ConnectionType extends BasicService> IConnection<ConnectionType> build(IServiceFactory<ConnectionType> factory, IAddress address, Options options) throws IOException;
     }
 }

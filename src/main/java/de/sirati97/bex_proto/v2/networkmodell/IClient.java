@@ -1,9 +1,9 @@
 package de.sirati97.bex_proto.v2.networkmodell;
 
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 /**
  * Created by sirati97 on 04.01.2017 for BexProto.
  */
-public interface IClient<Connection extends ArtifConnectionService> extends ISingleConnection<Connection> {
+public interface IClient<Connection extends BasicService> extends ISingleConnection<Connection> {
 }

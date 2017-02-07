@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import static org.apache.bcel.Constants.*;
 
@@ -34,7 +35,15 @@ public class ClassBuilder {
     public static boolean allowNonPublic = false;
     public static Runnable threadPreparer = null;
     private static final String builderThreadName = "Class Builder Compile Thread";
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            t.setName(builderThreadName);
+            return t;
+        }
+    });
 
 
     private ClassBuilder(){}
@@ -56,7 +65,6 @@ public class ClassBuilder {
                 executor.submit(new Runnable() {
                     @Override
                     public void run() {
-                        Thread.currentThread().setName(builderThreadName);
                         if (threadPreparer != null) {
                             threadPreparer.run();
                         }

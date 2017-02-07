@@ -2,8 +2,8 @@ package de.sirati97.bex_proto.v2.networkmodell;
 
 import de.sirati97.bex_proto.threading.AsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,18 +14,18 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public abstract class ConnectionBase<Connection extends ArtifConnectionService> implements IConnection<Connection> {
-    private final IConnectionServiceFactory<Connection> factory;
+public abstract class ConnectionBase<Connection extends BasicService> implements IConnection<Connection> {
+    private final IServiceFactory<Connection> factory;
     private final Set<Connection> connections = new HashSet<>();
     private final Set<Connection> connectionsReadOnly = Collections.unmodifiableSet(connections);
 
-    public ConnectionBase(IConnectionServiceFactory<Connection> factory) {
+    public ConnectionBase(IServiceFactory<Connection> factory) {
         this.factory = factory;
     }
 
     protected abstract ILogger getLogger();
 
-    protected IConnectionServiceFactory<Connection> getFactory() {
+    protected IServiceFactory<Connection> getFactory() {
         return factory;
     }
 

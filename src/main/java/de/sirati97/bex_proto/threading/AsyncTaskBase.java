@@ -7,7 +7,12 @@ public abstract class AsyncTaskBase implements AsyncTask {
     private final Task task;
 
     public AsyncTaskBase(Runnable runnable, String name) {
-        this.task = new Task(runnable, name);
+        this.task = createTask(runnable, name);
+    }
+
+
+    protected Task createTask(Runnable runnable, String name) {
+        return new Task(runnable, name);
     }
 
     @Override
@@ -33,6 +38,7 @@ public abstract class AsyncTaskBase implements AsyncTask {
     protected abstract void beforeExecution();
     protected abstract void afterExecution();
     protected abstract void onUncaughtException(Throwable t);
+    protected abstract void resetThreadName(Thread t);
 
     protected Task getTask() {
         return task;
@@ -57,7 +63,7 @@ public abstract class AsyncTaskBase implements AsyncTask {
         @Override
         public void run() {
             thread = Thread.currentThread();
-            thread.setName(name);
+            setName(name);
             beforeExecution();
             running = true;
             try {
@@ -67,9 +73,10 @@ public abstract class AsyncTaskBase implements AsyncTask {
             } finally {
                 running = false;
                 afterExecution();
-                thread.setName("Thread finished execution. Waiting on next Task.");
+                resetThreadName(thread);
             }
         }
+
 
         public boolean isRunning() {
             return running;
@@ -80,7 +87,11 @@ public abstract class AsyncTaskBase implements AsyncTask {
         }
 
         public void setName(String name) {
-            if (thread!=null)thread.setName(name);
+            setName(name, true);
+        }
+
+        protected void setName(String name, boolean setThread) {
+            if (setThread&&thread!=null)thread.setName(name);
             this.name = name;
         }
 

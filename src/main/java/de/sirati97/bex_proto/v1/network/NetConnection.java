@@ -121,12 +121,12 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 	protected byte[] read(byte[] overflow, InputStream in) throws SSLException, IOException, InterruptedException {
 		if (!isReadingLocked() && (socket.isClosed() || isPassAlong() || in.available() > 0)) {
 			if (socket.isClosed() || isPassAlong()) {
-				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow lenght=" + (overflow==null?0:overflow.length));
+				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow length=" + (overflow==null?0:overflow.length));
 				return overflow;
 			}
 			int available = in.available();
 			if (socket.isClosed() || isPassAlong()) {
-				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow lenght=" + (overflow==null?0:overflow.length));
+				if(isPassAlong())System.out.println("Cancelled reading because other thread is also reading! overflow length=" + (overflow==null?0:overflow.length));
 				return overflow;
 			}
 			
@@ -140,9 +140,9 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 				overflow = null;
 			}
 			if (passAlong==null) {
-				overflow = exercuteInput(buffer);
+				overflow = executeInput(buffer);
 			} else {
-				passAlong.exercuteInput(buffer);
+				passAlong.executeInput(buffer);
 			}
 			
 		} else {
@@ -151,16 +151,16 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 		return overflow;
 	}
 	
-	private Object exercuteInputMetux = new Object();
-	protected synchronized byte[] exercuteInput(byte[] received) {
-		synchronized (exercuteInputMetux) {
-//			System.out.println("Exercute: " + Main.bytesToString(received));
-			return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+	private Object executeInputMenu = new Object();
+	protected synchronized byte[] executeInput(byte[] received) {
+		synchronized (executeInputMenu) {
+//			System.out.println("Execute: " + Main.bytesToString(received));
+			return streamReader.read(received, NetConnection.this, asyncHelper, "Stream Executor Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 		}
 	}
 	
-	public void exercuteInput(CursorByteBuffer dat) {
-		streamReader.exercute(dat, NetConnection.this, asyncHelper, "Stream Exercuter Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+	public void executeInput(CursorByteBuffer dat) {
+		streamReader.exercute(dat, NetConnection.this, asyncHelper, "Stream Executor Thread for " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 	}
 	
 	private Object sendMutex = new Object();

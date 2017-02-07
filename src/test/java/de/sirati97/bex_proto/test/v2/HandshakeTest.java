@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.test.v2;
 import de.sirati97.bex_proto.datahandler.HashModifier;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.threading.AsyncTask;
+import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
@@ -11,9 +12,9 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
-import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
-import de.sirati97.bex_proto.v2.modular.ModuleHandler;
-import de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper;
+import de.sirati97.bex_proto.v2.service.modular.ModularService;
+import de.sirati97.bex_proto.v2.service.modular.ModuleHandler;
+import de.sirati97.bex_proto.v2.service.modular.internal.BouncyCastleHelper;
 import org.junit.Test;
 
 import java.security.MessageDigest;
@@ -32,7 +33,7 @@ public class HandshakeTest implements PacketHandler {
     public void start() throws Throwable {
         ILogger log = new SysOutLogger();
         Long timestamp;
-        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper();
+        ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
         try {
             try {
                 log.info("Handshake test preparing");
@@ -43,8 +44,8 @@ public class HandshakeTest implements PacketHandler {
                 //moduleHandler.register(new StressModule()); //will send 2^15 packets
                 TestIOHandler pipe1 = new TestIOHandler();
                 TestIOHandler pipe2 = new TestIOHandler();
-                ModularArtifConnectionService connection1 = new ModularArtifConnectionService("TestCon1", pipe1, moduleHandler);
-                ModularArtifConnectionService connection2 = new ModularArtifConnectionService("TestCon2", pipe2, moduleHandler);
+                ModularService connection1 = new ModularService("TestCon1", pipe1, moduleHandler);
+                ModularService connection2 = new ModularService("TestCon2", pipe2, moduleHandler);
                 HashModifier hash = new HashModifier(MessageDigest.getInstance(BouncyCastleHelper.HASH_ALGORITHM));
                 connection1.getStreamModifiers().setHashingModifier(hash);
                 connection2.getStreamModifiers().setHashingModifier(hash);

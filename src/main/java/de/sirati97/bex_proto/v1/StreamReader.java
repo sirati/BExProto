@@ -19,10 +19,10 @@ public class StreamReader {
 	public byte[] read(byte[] bytes, NetConnection sender, AsyncHelper asyncHelper, String name) {
 		int location = 0;
 		do {
-			int streamLenght = BExStatic.getInteger(bytes, location);
+			int streamLength = BExStatic.getInteger(bytes, location);
 			location +=4;
-			byte[] stream = new byte[streamLenght];
-			if (location +streamLenght > bytes.length) {
+			byte[] stream = new byte[streamLength];
+			if (location +streamLength > bytes.length) {
 				location -=4;
 				byte[] overflow = new byte[bytes.length-location];
 				System.arraycopy(bytes, location, overflow, 0, bytes.length-location);
@@ -30,8 +30,8 @@ public class StreamReader {
 				return overflow;
 			}
 			
-			System.arraycopy(bytes, location, stream, 0, streamLenght);
-			location +=streamLenght;
+			System.arraycopy(bytes, location, stream, 0, streamLength);
+			location +=streamLength;
 			if (sender.getReceiveCipher() != null) {
 				try {
 					stream = sender.getReceiveCipher().doFinal(stream);

@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 
 public class StringType extends ObjType<String> {
 	private Charset charset;
-;
 	
 	public StringType(Charset charset) {
 	    super(new StringEncoder(charset), new StringDecoder(charset));

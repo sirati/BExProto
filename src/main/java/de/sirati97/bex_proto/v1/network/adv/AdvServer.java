@@ -128,7 +128,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 			}
 			if (connection.isPassAlong()) {
 				dat.setCursor(0);
-				connection.getPassAlong().exercuteInput(dat);
+				connection.getPassAlong().executeInput(dat);
 				return false;
 			}
 			return true;

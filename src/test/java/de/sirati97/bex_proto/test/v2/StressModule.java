@@ -6,11 +6,11 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.PacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
-import de.sirati97.bex_proto.v2.modular.IModuleHandshake;
-import de.sirati97.bex_proto.v2.modular.ModularArtifConnectionService;
-import de.sirati97.bex_proto.v2.modular.Module;
-import de.sirati97.bex_proto.v2.modular.internal.ICallback;
-import de.sirati97.bex_proto.v2.modular.internal.YieldCause;
+import de.sirati97.bex_proto.v2.service.modular.IModuleHandshake;
+import de.sirati97.bex_proto.v2.service.modular.ModularService;
+import de.sirati97.bex_proto.v2.service.modular.Module;
+import de.sirati97.bex_proto.v2.service.modular.internal.ICallback;
+import de.sirati97.bex_proto.v2.service.modular.internal.YieldCause;
 
 /**
  * Created by sirati97 on 13.04.2016.
@@ -32,7 +32,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
 
     @Override
-    public void onHandshake(ModularArtifConnectionService connection, ICallback callback) {
+    public void onHandshake(ModularService connection, ICallback callback) {
         StressData data = getOrCreateModuleData(connection);
         data.callback = callback;
         data.last = 1;
@@ -40,12 +40,12 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
 
     @Override
-    public void onHandshakeServerSide(ModularArtifConnectionService connection, ICallback callback) throws Throwable {
+    public void onHandshakeServerSide(ModularService connection, ICallback callback) throws Throwable {
         getOrCreateModuleData(connection).callback = callback;
     }
 
     @Override
-    public boolean completeHandshake(ModularArtifConnectionService connection) throws Throwable {
+    public boolean completeHandshake(ModularService connection) throws Throwable {
         return removeModuleData(connection).done;
     }
 
@@ -60,7 +60,7 @@ public class StressModule extends Module<StressModule.StressData> implements IMo
     }
 
     @Override
-    public StressData createData(ModularArtifConnectionService connection) {
+    public StressData createData(ModularService connection) {
         return new StressData();
     }
 

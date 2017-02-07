@@ -2,8 +2,8 @@ package de.sirati97.bex_proto.v2.io.tcp;
 
 import de.sirati97.bex_proto.builder.ITcpAddress;
 import de.sirati97.bex_proto.util.logging.ILogger;
-import de.sirati97.bex_proto.v2.IConnectionServiceFactory;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.IServiceFactory;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
 import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodell.ServerBase;
@@ -22,12 +22,12 @@ import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplement
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public class TcpAIOServer<Connection extends ArtifConnectionService> extends ServerBase<Connection> {
+public class TcpAIOServer<Connection extends BasicService> extends ServerBase<Connection> {
     private final AsynchronousServerSocketChannel serverSocket;
     private final ITcpAddress address;
     private boolean listening = false;
 
-    public TcpAIOServer(IConnectionServiceFactory<Connection> factory, ITcpAddress address) throws IOException {
+    public TcpAIOServer(IServiceFactory<Connection> factory, ITcpAddress address) throws IOException {
         super(factory);
         this.serverSocket = AsynchronousServerSocketChannel.open();
         this.address = address;
@@ -47,7 +47,7 @@ public class TcpAIOServer<Connection extends ArtifConnectionService> extends Ser
             @Override
             public void completed(AsynchronousSocketChannel socket, Object attachment) {
                 try {
-                    Connection connection = getFactory().createServer(new TcpSocketAIOHandler(socket));
+                    Connection connection = getFactory().createServerService(new TcpSocketAIOHandler(socket));
                     registerConnection(connection);
                     connection.expectConnection();
                 } catch (Throwable e) {

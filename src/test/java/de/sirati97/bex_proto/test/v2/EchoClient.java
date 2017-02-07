@@ -14,7 +14,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 
-import static de.sirati97.bex_proto.builder.ConnectionTypes.ModularManagedConnection;
+import static de.sirati97.bex_proto.builder.ServiceTypes.ModularService;
 
 /**
  * Created by sirati97 on 18.04.2016.
@@ -43,7 +43,7 @@ public class EchoClient {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter client name: ");
         String name = in.readLine();
-        IClient client = new Builder<>(ModularManagedConnection,  collection).buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), name);
+        IClient client = new Builder<>(ModularService,  collection).buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), name);
         client.connect();
         Packet packetWelcome = new Packet(this.packetWelcome);
         packetWelcome.sendTo(client.getConnection());

@@ -5,7 +5,7 @@ import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.IEventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.threading.AsyncHelper;
-import de.sirati97.bex_proto.v2.artifcon.ArtifConnectionService;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.io.IOException;
 import java.util.Set;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by sirati97 on 04.01.2017 for BexProto.
  */
-public interface IConnection<Connection extends ArtifConnectionService> extends IEventRegister {
+public interface IConnection<Connection extends BasicService> extends IEventRegister {
     void connect() throws InterruptedException, IOException, TimeoutException;
 
     void disconnect();

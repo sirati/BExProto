@@ -20,9 +20,9 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.ASYMMETRIC_TYPE;
-import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.PROVIDER;
-import static de.sirati97.bex_proto.v2.modular.internal.BouncyCastleHelper.initBouncyCastle;
+import static de.sirati97.bex_proto.v2.service.modular.internal.BouncyCastleHelper.ASYMMETRIC_TYPE;
+import static de.sirati97.bex_proto.v2.service.modular.internal.BouncyCastleHelper.PROVIDER;
+import static de.sirati97.bex_proto.v2.service.modular.internal.BouncyCastleHelper.initBouncyCastle;
 
 public class EncryptionContainer implements IEncryptionContainer{
 	private KeyStore keyStore;
