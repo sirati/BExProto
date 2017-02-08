@@ -1,8 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.InetAddressPort;
-import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
@@ -48,8 +46,8 @@ public class PacketTest implements PacketHandler {
                     Type.InetAddress,
                     Type.InetAddressPort,
                     Type.JavaThrowable, //JavaTypes
-                    new NullableType(Type.Boolean), //tests NullableType
-                    new NullableType(Type.Boolean));
+                    Type.Boolean.asNullable(), //tests NullableType
+                    Type.Boolean.asNullable());
 
             Packet packetSend = new Packet(definition1, //Create packet and fill in values
                     true,
@@ -65,7 +63,7 @@ public class PacketTest implements PacketHandler {
                     "Hello World",
                     "Hello World",
                     "Hello World",
-                    new NullableType(new ArrayType<>(new NullableType<>(Type.DynamicObj))),
+                    Type.DynamicObj.asNullable().asArray().asNullable(),
                     UUID.randomUUID(),
                     InetAddress.getByAddress(new byte[]{127,0,0,1}),
                     new InetAddressPort(InetAddress.getByAddress(new byte[]{8,8,8,8}), 20),

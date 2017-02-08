@@ -64,11 +64,7 @@ public class JavaEchoClient {
             if (result < 4) {
                 return false;
             }
-            result = socket.getInputStream().skip(4);
-            if (result < 4) {
-                return false;
-            }
-            int packetLength = ByteBuffer.wrap(header).getInt()-4; //message is always 4 bytes shorter than packet
+            int packetLength = ByteBuffer.wrap(header).getInt();
             byte[] packet = new byte[packetLength];
             result = socket.getInputStream().read(packet);
             if (result < packetLength) {
@@ -89,8 +85,7 @@ public class JavaEchoClient {
 
     private void sendMessage(String in) throws Throwable {
         byte[] packet = in.getBytes(StandardCharsets.UTF_8);
-        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(packet.length+4).array()); //packet length
-        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(packet.length).array()); //message length
+        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(packet.length).array()); //packet length - header
         socket.getOutputStream().write(packet);
         socket.getOutputStream().flush();
     }

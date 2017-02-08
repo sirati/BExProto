@@ -8,6 +8,6 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 public abstract class DecoderBase<Type> implements IDecoder<Type> {
     @Override
     public Type decode(CursorByteBuffer dat) {
-        return decode(dat, false);
+        return decode(dat, true);
     }
 }

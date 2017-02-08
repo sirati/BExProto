@@ -13,7 +13,7 @@ public class StringDecoder extends DecoderBase<String> {
 
 	@Override
 	public String decode(CursorByteBuffer dat, boolean header) {
-		return BExStatic.getString(dat, charset);
+		return BExStatic.getString(dat, charset, header);
 	}
 
 }

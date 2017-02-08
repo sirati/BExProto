@@ -23,7 +23,6 @@ public final class BExStatic {
     }
 
 	public static String getString(CursorByteBuffer dat, Charset charset, boolean header) {
-        System.out.println("2"+header);
 		int streamLength = header?getInteger(dat):(dat.size()-dat.getLocation());
 		byte[] stream = dat.getMulti(streamLength);
 		return new String(stream, charset);
@@ -53,7 +52,6 @@ public final class BExStatic {
 		if (header) {
 		    BExStatic.setInteger(bytes.length, buffer);
         }
-        System.out.println("1"+header);
         buffer.append(bytes);
 	}
 
