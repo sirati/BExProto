@@ -1,22 +1,20 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
-import de.sirati97.bex_proto.util.CursorByteBuffer;
-import de.sirati97.bex_proto.datahandler.NullableType;
 import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.command.BEx3Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
-public class CryptoCommand extends BEx3Command<Byte, byte[], byte[]> {
+public class EncryptionCommand extends BEx3Command<Byte, byte[], byte[]> {
 
-	public CryptoCommand() {
-		super((short)3, Type.Byte, new NullableType(new ArrayType(Type.Byte)), new NullableType(new ArrayType(Type.Byte)));
+	public EncryptionCommand() {
+		super((short)3, Type.Byte, Type.Byte.asArray().asNullable(), Type.Byte.asArray().asNullable());
 	}
 	
 	@Override
 	public void receive(Byte state, byte[] data, byte[] data2, NetConnection sender) {
 		if (state==States.Error.getId()) {
-			onError((String) Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, sender)), sender);
+			onError(Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, sender)), sender);
 		} else if (state==States.Request.getId()) {
 			onRequest(sender);
 		} else if (state==States.PublicKey.getId()) {

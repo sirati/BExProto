@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 
 import static de.sirati97.bex_proto.builder.ServiceTypes.BasicService;
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
 
 /**
  * Created by sirati97 on 18.04.2016.
@@ -33,7 +34,7 @@ public class BExEchoClient {
 
     public void start() throws Throwable {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        Builder builder = new Builder<>(BasicService,  packetMessage);
+        Builder builder = new Builder<>(BasicService,  packetMessage).stackImplementation(BlockingIO);
         IClient client = builder.buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), "EchoClient");
         client.connect();
         String input;

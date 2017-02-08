@@ -9,7 +9,7 @@ public class NullableTypeFactory implements IDerivedType.DerivedFactory {
 
 	@Override
 	public IDerivedType create(IType inner) {
-		return new NullableType(this, inner);
+		return inner.asNullable();
 	}
 
 }

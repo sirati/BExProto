@@ -5,7 +5,7 @@ import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 public class LongEncoder extends EncoderBase<Long> {
 
     @Override
-    public void encode(Long data, ByteBuffer buffer) {
+    public void encode(Long data, ByteBuffer buffer, boolean header) {
         BExStatic.setLong(data, buffer);
     }
 }

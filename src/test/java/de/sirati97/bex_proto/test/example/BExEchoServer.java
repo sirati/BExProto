@@ -21,7 +21,7 @@ import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
+import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
 
 /**
  * Created by sirati97 on 18.04.2016.
@@ -42,7 +42,7 @@ public class BExEchoServer implements Listener {
 
     public void start() throws Throwable {
         AsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.JavaVMShutdownNow);
-        IServer server = new Builder<>(ServiceTypes.BasicService,  packetMessage).asyncHelper(helper).stackImplementation(BlockingIO).buildServer(new IpPortAddress(12312)); //keine addresse -> 0.0.0.0
+        IServer server = new Builder<>(ServiceTypes.BasicService,  packetMessage).asyncHelper(helper).stackImplementation(AsynchronousIO).buildServer(new IpPortAddress(12312)); //keine addresse -> 0.0.0.0
         server.registerEventListener(this);
         server.startListening();
 

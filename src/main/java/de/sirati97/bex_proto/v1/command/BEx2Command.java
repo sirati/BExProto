@@ -9,7 +9,7 @@ import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
-public class BEx2Command<t1,t2> implements CommandBase{
+public class BEx2Command<t1,t2> extends CommandBase{
 	IType[] types;
 	private short id;
 	private CommandBase parent;
@@ -20,7 +20,7 @@ public class BEx2Command<t1,t2> implements CommandBase{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Void decode(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat, boolean header) {
 		Object[] r = new Object[2];
 		int counter=0;
 		for (IType type:types) {

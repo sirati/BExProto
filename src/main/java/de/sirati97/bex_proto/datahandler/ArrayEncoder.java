@@ -18,7 +18,7 @@ public class ArrayEncoder<T> extends EncoderBase<T[]> {
 //    }
 	
 	@Override
-	public void encode(T[] data, ByteBuffer buffer) {
+	public void encode(T[] data, ByteBuffer buffer, boolean header) {
 		BExStatic.setInteger(data.length, buffer);
         for (T aData : data) {
             baseType.getEncoder().encode(aData, buffer);
@@ -26,10 +26,10 @@ public class ArrayEncoder<T> extends EncoderBase<T[]> {
 	}
 
     @Override
-    public void encodeObj(Object data, ByteBuffer buffer) {
+    public void encodeObj(Object data, ByteBuffer buffer, boolean header) {
         if (baseType instanceof PrimitiveType) {
             data = ((PrimitiveType) baseType).toObjectArray(data);
         }
-        super.encodeObj(data, buffer);
+        super.encodeObj(data, buffer, header);
     }
 }

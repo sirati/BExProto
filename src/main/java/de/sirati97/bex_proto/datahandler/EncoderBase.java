@@ -9,12 +9,22 @@ public abstract class EncoderBase<Type> implements IEncoder<Type> {
     @Override
     public ByteBuffer encodeIndependent(Type data) {
         ByteBuffer buffer = new ByteBuffer();
-        encode(data, buffer);
+        encode(data, buffer, false);
         return buffer;
     }
 
     @Override
+    public void encodeObj(Object data, ByteBuffer buffer, boolean header) {
+        encode((Type) data, buffer, header);
+    }
+
+    @Override
     public void encodeObj(Object data, ByteBuffer buffer) {
-        encode((Type) data, buffer);
+        encodeObj(data, buffer, false);
+    }
+
+    @Override
+    public void encode(Type data, ByteBuffer buffer) {
+        encode(data, buffer, false);
     }
 }

@@ -4,133 +4,27 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
+@SuppressWarnings("WeakerAccess")
 public final class BExStatic {
 	private BExStatic() {}
-	
-	public static byte[] tobyteArray(List<Byte> list) {return tobyteArray(list,	list.size());}
-	public static byte[] tobyteArray(List<Byte> list, int length) {return tobyteArray(list, 0, length);}
-	public static byte[] tobyteArray(List<Byte> list, int start, int length) {
-		//if (start + length > list.size())length = list.size() - start;
-		byte[] result = new byte[length];
-		for (int i = 0;i < length;i++) {
-			result[i] = list.get(start + i);
-		}
-		return result;
-	}
-	
-	public static byte[][] cleanStreamArray(final byte[][] v) {
-		  int r, w, n = r = w = v.length;
-		  while (r > 0) {
-		    final byte[] b = v[--r];
-		    if (!b.equals(null) && b.length != 0) {
-		      v[--w] = b;
-		    }
-		  }
-		  final byte[][] c = new byte[n -= w][];
-		  System.arraycopy(v, w, c, 0, n);
-		  return c;
-	}
 
-	public static byte[][] toStreamArray(List<byte[]> list) {
-		byte[][] result = new byte[list.size()][];
-		int i = 0;
-		for (byte[] element:list) {
-			result[i++] = element;
-		}
-		return result;
-	}
-	
-//	public static byte[] setStreamArray(byte[][] streams) {
-//		int resultLength = 4;
-//		for (byte[] element:streams) {
-//			if (element != null && element.length > 0)resultLength += 4+element.length;
-//		}
-//		byte[] result = new byte[resultLength];
-//		byte[] tmp;
-//		int loc;
-//		tmp = setInteger(streams.length);
-//		System.arraycopy(tmp, 0, result, 0, tmp.length);
-//		loc = tmp.length;
-//		for (byte[] element:streams) {
-//			if (element != null && element.length > 0) {
-//				tmp = setInteger(element.length);
-//				System.arraycopy(tmp, 0, result, loc, tmp.length);
-//				loc += tmp.length;
-//				tmp = element;
-//				System.arraycopy(tmp, 0, result, loc, tmp.length);
-//				loc += tmp.length;
-//			}
-//
-//		}
-//		return result;
-//	}
-	
-
-	public static byte[] mergeStream(byte[][] streams) {
-		int resultLength = 0;
-		for (byte[] element:streams) {
-			if (element != null && element.length > 0)resultLength += element.length;
-		}
-		byte[] result = new byte[resultLength];
-		byte[] tmp;
-		int loc = 0;
-		for (byte[] element:streams) {
-			if (element != null && element.length > 0) {
-				tmp = element;
-				System.arraycopy(tmp, 0, result, loc, tmp.length);
-				loc += tmp.length;
-			}
-			
-		}
-		return result;
-	}
-	
-	public static List<Byte> toByteList(byte[] stream) {
-		List<Byte> result = new ArrayList<Byte>();
-		for (byte b:stream) {result.add(b);}
-		return result;
-	}
-	
-	
-	public static byte[] setSingleBoolean(boolean b1) {
-		return new byte[] {(byte) (b1?1:0)};
-	}
-	
-	public static boolean getSingleBoolean(List<Byte> data ,int startIndex) {
-		byte[] dataArray = tobyteArray(data);
-		return dataArray[startIndex]!=0;
-	}
-	
-//	public static byte[] setStringArray(String[] array, Charset charset) {
-//		byte[] result = setInteger(array.length);
-//		for (String str:array) {
-//			byte[] stream = setString(str, charset);
-//			byte[] temp = new byte[result.length + stream.length];
-//			System.arraycopy(result, 0, temp, 0, result.length);
-//			System.arraycopy(stream, 0, temp, result.length, stream.length);
-// 			result = temp;
-//		}
-//		return result;
-//	}
-	
-
-	public static String getString(CursorByteBuffer dat , int startIndex, Charset charset) {
-		int streamLength = getInteger(dat);
-		byte[] stream = dat.getMulti(streamLength);//toByteArray(data, startIndex + 4, streamLength);
-		return  new String(stream, charset);
-	}
-	
 	public static void setString(String str ,Charset charset, ByteBuffer buffer) {
+        setString(str, charset, buffer, true);
+    }
+	public static void setString(String str ,Charset charset, ByteBuffer buffer, boolean header) {
 		byte[] strStream = str.getBytes(charset);
-		setByteArray(strStream, buffer);
+		setByteArray(strStream, buffer, header);
 	}
 
 	
 	public static String getString(CursorByteBuffer dat, Charset charset) {
-		int streamLength = getInteger(dat);
+	    return getString(dat, charset, true);
+    }
+
+	public static String getString(CursorByteBuffer dat, Charset charset, boolean header) {
+        System.out.println("2"+header);
+		int streamLength = header?getInteger(dat):(dat.size()-dat.getLocation());
 		byte[] stream = dat.getMulti(streamLength);
 		return new String(stream, charset);
 	}
@@ -152,8 +46,15 @@ public final class BExStatic {
 	
 
 	public static void setByteArray(byte[] bytes, ByteBuffer buffer) {
-		BExStatic.setInteger(bytes.length, buffer);
-		buffer.append(bytes);
+        setByteArray(bytes, buffer, true);
+    }
+
+	public static void setByteArray(byte[] bytes, ByteBuffer buffer, boolean header) {
+		if (header) {
+		    BExStatic.setInteger(bytes.length, buffer);
+        }
+        System.out.println("1"+header);
+        buffer.append(bytes);
 	}
 
     public static void setShort(short value, ByteBuffer buffer) {
@@ -258,25 +159,10 @@ public final class BExStatic {
 		nioBuffer.putFloat(value);
 		buffer.append(nioBuffer.array());
 	}
-	
-	
-	public static class String_Value {
-		public final byte[] data;
-		public final String str;
-		public final Charset charset;
-		public final int usedLength;
-		
-		
-		public String_Value(byte[] data, String str, Charset charset, int usedLength) {
-			this.data = data;
-			this.str = str;
-			this.charset = charset;
-			this.usedLength = usedLength;
-		}
-	}
-	public static final String VERSION_STRING = "2.0.14";
-	public static final int VERSION_INT_MIN = 4;
-	public static final int VERSION_INT_CURRENT = 4;
+
+	public static final String VERSION_STRING = "2.1.03";
+	public static final int VERSION_INT_MIN = 5;
+	public static final int VERSION_INT_CURRENT = 5;
 
 
 }

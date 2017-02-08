@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.stream.Stream;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
-public class CommandSBase implements CommandBase {
+public class CommandSBase extends CommandBase {
 	private CommandBase command;
 	private short id;
 	private CommandBase parent;
@@ -21,7 +21,7 @@ public class CommandSBase implements CommandBase {
 	}
 
 	@Override
-	public Void decode(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat, boolean header) {
 		return command.decode(dat);
 	}
 

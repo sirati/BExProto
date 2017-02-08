@@ -6,7 +6,7 @@ import de.sirati97.bex_proto.v1.stream.Stream;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
-public abstract class CommandNone implements CommandBase {
+public abstract class CommandNone extends CommandBase {
 	private short id;
 	private CommandBase parent;
 	
@@ -17,7 +17,7 @@ public abstract class CommandNone implements CommandBase {
 	}
 
 	@Override
-	public Void decode(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat, boolean header) {
 		receive((NetConnection) dat.getIConnection());
 		return null;
 	}

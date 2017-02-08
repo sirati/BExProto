@@ -8,7 +8,7 @@ import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 public class ByteArrayEncoder extends EncoderBase<byte[]> {
 
     @Override
-    public void encode(byte[] data, ByteBuffer buffer) {
+    public void encode(byte[] data, ByteBuffer buffer, boolean header) {
         BExStatic.setByteArray(data, buffer);
     }
 }

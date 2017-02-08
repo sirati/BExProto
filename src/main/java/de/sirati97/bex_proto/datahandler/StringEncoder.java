@@ -12,7 +12,7 @@ public class StringEncoder extends EncoderBase<String> {
     }
 
     @Override
-    public void encode(String data, ByteBuffer buffer) {
+    public void encode(String data, ByteBuffer buffer, boolean header) {
         BExStatic.setString(data, charset, buffer);
     }
 

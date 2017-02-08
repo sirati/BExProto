@@ -108,7 +108,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         ModularService connection = (ModularService) packet.getSender();
         switch (State.getById(state)) {
             case Error:
-                onError((String) Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, connection)), connection);
+                onError(Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, connection)), connection);
                 break;
             case ClientPublicKey:
                 onClientPublicKey(data, connection);

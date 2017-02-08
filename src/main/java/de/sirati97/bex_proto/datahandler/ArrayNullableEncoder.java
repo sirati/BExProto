@@ -11,7 +11,7 @@ public class ArrayNullableEncoder<T> extends EncoderBase<T[]> {
 	}
 
     @Override
-    public void encode(T[] data, ByteBuffer buffer) {
+    public void encode(T[] data, ByteBuffer buffer, boolean header) {
         boolean[] nulls = new boolean[data.length];
         for (int i=0;i<data.length;i++) {
             nulls[i] = data[i]==null;

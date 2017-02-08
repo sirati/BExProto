@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
  */
 public class BitArrayEncoder extends EncoderBase<Boolean[]> {
     @Override
-    public void encode(Boolean[] bits, ByteBuffer buffer) {
+    public void encode(Boolean[] bits, ByteBuffer buffer, boolean header) {
         int byteLength = bits.length/8+(bits.length%8!=0?1:0);
         BExStatic.setInteger(bits.length, buffer);
         byte[] bytes = new byte[byteLength];
@@ -20,7 +20,7 @@ public class BitArrayEncoder extends EncoderBase<Boolean[]> {
     }
 
     @Override
-    public void encodeObj(Object data, ByteBuffer buffer) {
+    public void encodeObj(Object data, ByteBuffer buffer, boolean header) {
         encodePrimitive((boolean[]) data, buffer);
     }
 

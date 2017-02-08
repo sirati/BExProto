@@ -8,7 +8,7 @@ import de.sirati97.bex_proto.v1.stream.Stream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandRegisterBase implements CommandBase {
+public class CommandRegisterBase extends CommandBase {
 	private Map<Short, CommandBase> commands = new HashMap<>();
 	private short id;
 	private CommandBase parent;
@@ -22,8 +22,8 @@ public class CommandRegisterBase implements CommandBase {
 	}
 	
 	@Override
-	public Void decode(CursorByteBuffer dat) {
-		short commandId = (Short) Type.Short.getDecoder().decode(dat);
+	public Void decode(CursorByteBuffer dat, boolean header) {
+		short commandId = Type.Short.getDecoder().decode(dat);
 		if (!checkID(commandId, dat))return null;
 		CommandBase command = commands.get(commandId);
 		if (command==null) {

@@ -5,9 +5,9 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 /**
  * Created by sirati97 on 28.04.2016.
  */
-public class BitArrayDecoder implements IDecoder<Boolean[]> {
+public class BitArrayDecoder extends DecoderBase<Boolean[]> {
     @Override
-    public Boolean[] decode(CursorByteBuffer dat) {
+    public Boolean[] decode(CursorByteBuffer dat, boolean header) {
         int bitsLength = BExStatic.getInteger(dat.getMulti(4));
         Boolean[] result = new Boolean[bitsLength];
         byte current=0;

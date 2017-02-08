@@ -9,7 +9,7 @@ public class ArrayTypeFactory implements IDerivedType.DerivedFactory {
 
 	@Override
 	public IDerivedType create(IType inner) {
-		return new ArrayType(this, inner);
+		return inner.asArray();
 	}
 
 }

@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 public class SSCWrapperEncoder extends EncoderBase<SSCWrapper> {
 
     @Override
-    public void encode(SSCWrapper data, ByteBuffer buffer) {
+    public void encode(SSCWrapper data, ByteBuffer buffer, boolean header) {
         Type.String_US_ASCII.getEncoder().encode(data.getClientName(), buffer);
         Type.Boolean.getEncoder().encode(data.isGeneric(), buffer);
         Type.Integer.getEncoder().encode(data.getId(), buffer);

@@ -1,8 +1,6 @@
 package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.datahandler.IEncoder;
-import de.sirati97.bex_proto.datahandler.ShortEncoder;
 import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
@@ -109,8 +107,8 @@ public class PacketCollection implements IPacketCollection {
         return getPacket(getShort(buf));
     }
 
-    private short getShort(CursorByteBuffer buf) {
-        return (Short) Type.Short.getDecoder().decode(buf);
+    private static short getShort(CursorByteBuffer buf) {
+        return Type.Short.getDecoder().decode(buf, false);
     }
 
 }

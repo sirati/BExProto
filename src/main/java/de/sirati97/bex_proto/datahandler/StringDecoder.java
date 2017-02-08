@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 
 import java.nio.charset.Charset;
 
-public class StringDecoder implements IDecoder<String> {
+public class StringDecoder extends DecoderBase<String> {
 	private Charset charset;
 	
 	public StringDecoder(Charset charset) {
@@ -12,7 +12,7 @@ public class StringDecoder implements IDecoder<String> {
 	}
 
 	@Override
-	public String decode(CursorByteBuffer dat) {
+	public String decode(CursorByteBuffer dat, boolean header) {
 		return BExStatic.getString(dat, charset);
 	}
 

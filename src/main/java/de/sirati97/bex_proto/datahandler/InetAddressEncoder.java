@@ -7,7 +7,7 @@ import java.net.InetAddress;
 public class InetAddressEncoder extends EncoderBase<InetAddress> {
 
     @Override
-    public void encode(InetAddress data, ByteBuffer buffer) {
+    public void encode(InetAddress data, ByteBuffer buffer, boolean header) {
         BExStatic.setByteArray(data.getAddress(), buffer);
     }
 }

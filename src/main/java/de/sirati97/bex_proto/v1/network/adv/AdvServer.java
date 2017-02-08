@@ -22,7 +22,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	private ConnectionManager connectionManager = new ConnectionManager();
 	private CloseConnectionCommand closeConnectionCommand;
 	private PingCommand pingCommand;
-	private ServerCryptoCommand cryptoCommand;
+	private ServerEncryptionCommand cryptoCommand;
 	private Random rnd = new Random();
 	private EncryptionContainer cryptContainer;
 
@@ -34,7 +34,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 		register.register(new CommandWrapper(command, (short) 0));
 		register.register(serverRegCommand= new ServerRegCommand(connectionManager, this));
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
-		register.register(cryptoCommand=new ServerCryptoCommand());
+		register.register(cryptoCommand=new ServerEncryptionCommand());
 		register.register(pingCommand=new PingCommand(4));
 		
 	}
@@ -96,7 +96,7 @@ public class AdvServer extends NetServer implements AdvCreator{
 	}
 	
 	protected void sendEncryptionRequest(NetConnection connection) {
-		cryptoCommand.send(CryptoCommand.States.Request, connection);
+		cryptoCommand.send(EncryptionCommand.States.Request, connection);
 	}
 	
 	@Override

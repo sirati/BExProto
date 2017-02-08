@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.datahandler;
 
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 
-public class NullableDecoder<T> implements IDecoder<T> {
+public class NullableDecoder<T> extends DecoderBase<T> {
 	private IType base;
 
 	public NullableDecoder(IType base) {
@@ -10,7 +10,7 @@ public class NullableDecoder<T> implements IDecoder<T> {
 	}
 
 	@Override
-	public T decode(CursorByteBuffer dat) {
+	public T decode(CursorByteBuffer dat, boolean header) {
 		boolean isNull = (Boolean) Type.Boolean.getDecoder().decode(dat);
 		if (isNull) {
 			return null;

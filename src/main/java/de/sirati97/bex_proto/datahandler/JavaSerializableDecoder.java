@@ -10,11 +10,11 @@ import java.io.Serializable;
 /**
  * Created by sirati97 on 15.04.2016.
  */
-public class JavaSerializableDecoder<T extends Serializable> implements IDecoder<T> {
+public class JavaSerializableDecoder<T extends Serializable> extends DecoderBase<T> {
 
     @Override
-    public T decode(CursorByteBuffer dat) {
-        int length = (Integer) Type.Integer.getDecoder().decode(dat);
+    public T decode(CursorByteBuffer dat, boolean header) {
+        int length = Type.Integer.getDecoder().decode(dat);
         byte[] stream = dat.getMulti(length);
         ObjectInputStream deserializer = null;
         try {

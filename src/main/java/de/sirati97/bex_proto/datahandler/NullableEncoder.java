@@ -10,7 +10,7 @@ public class NullableEncoder<T> extends EncoderBase<T> {
 	}
 
     @Override
-    public void encode(T data, ByteBuffer buffer) {
+    public void encode(T data, ByteBuffer buffer, boolean header) {
         if (data == null) {
             Type.Boolean.getEncoder().encode(true, buffer);
         } else {

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class JavaSerializableEncoder<T extends Serializable>  extends EncoderBase<T> {
 
     @Override
-    public void encode(T serializable, ByteBuffer buffer) {
+    public void encode(T serializable, ByteBuffer buffer, boolean header) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream serializer = null;
         try {

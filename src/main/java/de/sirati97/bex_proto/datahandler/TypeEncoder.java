@@ -8,7 +8,7 @@ import java.util.List;
 public class TypeEncoder extends EncoderBase<IType> {
 
     @Override
-    public void encode(IType data, ByteBuffer buffer) {
+    public void encode(IType data, ByteBuffer buffer, boolean header) {
         boolean isDerived = (data instanceof IDerivedType);
         if (isDerived) {
             List<IDerivedType> derivedTypesList = new ArrayList<>();

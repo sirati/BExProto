@@ -1,14 +1,11 @@
 package de.sirati97.bex_proto.v1.debug;
 
-import de.sirati97.bex_proto.datahandler.ArrayType;
 import de.sirati97.bex_proto.datahandler.DynamicObj;
-import de.sirati97.bex_proto.datahandler.NullableType;
-import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.datahandler.IType;
+import de.sirati97.bex_proto.datahandler.Type;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
-import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.command.CommandRegister;
 import de.sirati97.bex_proto.v1.network.ISocketFactory;
 import de.sirati97.bex_proto.v1.network.SocketFactory;
@@ -16,7 +13,6 @@ import de.sirati97.bex_proto.v1.network.adv.AdvClient;
 import de.sirati97.bex_proto.v1.network.adv.AdvServer;
 import de.sirati97.bex_proto.v1.stream.Stream;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -60,17 +56,17 @@ public class Main {
 		// Um neue Threads zu erstellen. Was ja auf bungee nicht direkt geht, deswegen diese klasse
 		//Server & Client instanzieren
 		
-		EncryptionContainer encryptionContainerServer = new EncryptionContainer(new File("server2.jks"), "123456Server", "epicserver", "654321Server");
-		EncryptionContainer encryptionContainerClient = new EncryptionContainer(new File("client2.jks"), "123456Client", "epicclient", "654321Client");
+		//EncryptionContainer encryptionContainerServer = new EncryptionContainer(new File("server2.jks"), "123456Server", "epicserver", "654321Server");
+		//EncryptionContainer encryptionContainerClient = new EncryptionContainer(new File("client2.jks"), "123456Client", "epicclient", "654321Client");
 		final ISocketFactory socketFactoryServer = new SocketFactory();//new TLSv1_2SocketFactory(new File("server2.jks"), "123456Server", "654321Server", true);
 		final ISocketFactory socketFactoryClient = new SocketFactory();//new TLSv1_2SocketFactory(new File("client2.jks"), "123456Client", "654321Client");
 		
 		
 		//socketFactory1 = new SocketFactory();
 		AdvServer server = new AdvServer(asyncHelper, 10000, commandRegister, socketFactoryServer);
-		server.setCryptContainer(encryptionContainerServer);
+//		server.setCryptContainer(encryptionContainerServer);
 		final AdvClient client = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, commandRegister, socketFactoryClient);
-		client.setCryptContainer(encryptionContainerClient);
+//		client.setCryptContainer(encryptionContainerClient);
 		//		AdvClient client2 = new AdvClient(asyncHelper, "127.0.0.1", 10000, "TheSuperAwesomeClient", true, command);
 		
 		//Server & Client starten (server zuerst, weil sonst der client keine connection bekommen kann)
@@ -85,7 +81,7 @@ public class Main {
 		Stream stream;
 		IType type;
 		//testdaten zu byte[] 
-		type = new NullableType(new ArrayType(new NullableType(Type.Integer)));
+		type = Type.Integer.asNullable().asArray().asNullable();
 		System.out.println(type.getTypeName());
 		stream = maCommand.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
 		

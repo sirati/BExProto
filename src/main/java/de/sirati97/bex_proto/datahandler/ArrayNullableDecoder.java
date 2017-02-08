@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.datahandler;
 
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 
-public class ArrayNullableDecoder<T> implements IDecoder<T[]> {
+public class ArrayNullableDecoder<T> extends DecoderBase<T[]> {
 	private INullableType<T> type;
 
 	public ArrayNullableDecoder(INullableType<T> type) {
@@ -11,7 +11,7 @@ public class ArrayNullableDecoder<T> implements IDecoder<T[]> {
 	}
 	
 	@Override
-	public T[] decode(CursorByteBuffer dat) {
+	public T[] decode(CursorByteBuffer dat, boolean header) {
 		Boolean[] nulls = Type.Boolean.asArray().getDecoder().decode(dat);
 
 		Object[] result = type.createArray(nulls.length);

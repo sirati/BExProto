@@ -41,5 +41,9 @@ public class CursorByteBuffer {
 	public byte[] getBytes() {
 		return bytes;
 	}
+
+	public int size() {
+	    return bytes.length;
+    }
 	
 }

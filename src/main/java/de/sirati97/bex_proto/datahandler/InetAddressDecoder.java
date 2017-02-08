@@ -5,10 +5,10 @@ import de.sirati97.bex_proto.util.CursorByteBuffer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class InetAddressDecoder implements IDecoder<InetAddress> {
+public class InetAddressDecoder extends DecoderBase<InetAddress> {
 
 	@Override
-	public InetAddress decode(CursorByteBuffer dat) {
+	public InetAddress decode(CursorByteBuffer dat, boolean header) {
 		try {
 			int length = (Integer) Type.Integer.getDecoder().decode(dat);
 			return InetAddress.getByAddress(dat.getMulti(length));

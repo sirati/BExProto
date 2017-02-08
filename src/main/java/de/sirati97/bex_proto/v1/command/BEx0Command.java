@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.v1.stream.MultiStream;
 import de.sirati97.bex_proto.v1.stream.NullStream;
 import de.sirati97.bex_proto.v1.stream.Stream;
 
-public class BEx0Command implements CommandBase{
+public class BEx0Command extends CommandBase{
 	private short id;
 	private CommandBase parent;
 	
@@ -15,7 +15,7 @@ public class BEx0Command implements CommandBase{
 		this.id = id;
 	}
 	
-	public Void decode(CursorByteBuffer dat) {
+	public Void decode(CursorByteBuffer dat, boolean header) {
 		receive((NetConnection) dat.getIConnection());
 		return null;
 	}

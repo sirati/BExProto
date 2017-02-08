@@ -11,14 +11,14 @@ public class NullReferenceType extends ObjType<Object> {
     public NullReferenceType(IEncoder<Object> encoder, IDecoder<Object> decoder) {
         super(new EncoderBase<Object>() {
             @Override
-            public void encode(Object data, ByteBuffer buffer) {
+            public void encode(Object data, ByteBuffer buffer, boolean header) {
                 if (data != null) {
                     throw new IllegalStateException("This type is used for serializing null references. It should not be used anywhere else");
                 }
             }
-        }, new IDecoder<Object>() {
+        }, new DecoderBase<Object>() {
             @Override
-            public Object decode(CursorByteBuffer dat) {
+            public Object decode(CursorByteBuffer dat, boolean header) {
                 return null;
             }
         });

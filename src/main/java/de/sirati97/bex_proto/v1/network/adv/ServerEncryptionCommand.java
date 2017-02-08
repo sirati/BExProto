@@ -16,11 +16,11 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class ServerCryptoCommand extends CryptoCommand {
+public class ServerEncryptionCommand extends EncryptionCommand {
     private KeyGenerator keyGenerator;
 	private SecureRandom secureRandom;
     
-	public ServerCryptoCommand() {
+	public ServerEncryptionCommand() {
 
 		try {
 			keyGenerator = KeyGenerator.getInstance("AES");

@@ -43,7 +43,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		register.register(new ApplicationDataCommandWrapper(command, (short) 0, this));
 		register.register(clientRegCommand=new ClientRegCommand());
 		register.register(closeConnectionCommand=new CloseConnectionCommand());
-		register.register(new ClientCryptoCommand());
+		register.register(new ClientEncryptionCommand());
 		register.register(pingCommand=new PingCommand(4));
 		setRegistered(false);
 	}
