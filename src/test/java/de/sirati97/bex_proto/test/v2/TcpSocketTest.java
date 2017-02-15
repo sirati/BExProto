@@ -102,7 +102,7 @@ public class TcpSocketTest implements PacketHandler, Listener {
             received = true;
             receiveMutex.notifyAll();
         }
-        System.out.println(packet.get(0));
+        System.out.println((String)packet.get(0));
     }
 
     @GenericEventHandler(generics = {de.sirati97.bex_proto.v2.service.modular.ModularService.class})

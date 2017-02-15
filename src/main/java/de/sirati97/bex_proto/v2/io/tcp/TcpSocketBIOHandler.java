@@ -58,7 +58,7 @@ public class TcpSocketBIOHandler extends IOHandlerBase {
                             if ((available=in.available()) > 0) {
                                 byte[] read = new byte[available];
                                 in.read(read);
-                                getConnection().read(read);
+                                getConnection().read(TcpSocketBIOHandler.this, read);
                             } else {
                                 Thread.sleep(0, 1);
                             }

@@ -52,6 +52,8 @@ public class BExEchoServer implements Listener {
             input = in.readLine();
             if ("exit".equalsIgnoreCase(input)) {
                 break;
+            } else if ("gc".equalsIgnoreCase(input)) {
+                System.gc();
             } else {
                 System.out.println("Unknown command");
             }

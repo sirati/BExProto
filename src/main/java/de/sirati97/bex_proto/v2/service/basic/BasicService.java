@@ -10,6 +10,7 @@ import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
+import de.sirati97.bex_proto.v2.StreamChannel;
 import de.sirati97.bex_proto.v2.StreamReader;
 import de.sirati97.bex_proto.v2.io.IOHandler;
 
@@ -24,7 +25,6 @@ public class BasicService implements IConnection, IEventRegister {
     private String connectionName;
     private StreamReader streamReader;
     private AsyncHelper asyncHelper;
-    private byte[] overflow;
     private IOHandler ioHandler;
     private ILogger logger;
     private final EventRegister eventRegister;
@@ -40,33 +40,21 @@ public class BasicService implements IConnection, IEventRegister {
     }
 
 
-    public byte[] read(byte[] bufferIn) {
-        return read(bufferIn, 0);
+    public byte[] read(StreamChannel channel, byte[] bufferIn) {
+        return read(channel, bufferIn, 0);
     }
 
-
-    private Object readMutex = new Object();
-    public byte[] read(byte[] bufferIn, int skip) {
-        synchronized (readMutex) {
-            if (overflow != null) {
-                byte[] buffer2 = new byte[overflow.length + bufferIn.length-skip];
-                System.arraycopy(overflow, 0, buffer2, 0, overflow.length);
-                System.arraycopy(bufferIn, skip, buffer2, overflow.length, bufferIn.length-skip);
-                bufferIn = buffer2;
-                //System.out.println(bufferIn.length + new String(bufferIn));
-            } else if (skip > 0) {
-                byte[] buffer2 = new byte[bufferIn.length-skip];
-                System.arraycopy(bufferIn, skip, buffer2, 0, bufferIn.length-skip);
-                bufferIn = buffer2;
-            }
-            overflow = executeInput(bufferIn);
-            return overflow;
+    private final StreamChannel.DataProcessor dataProcessor = new StreamChannel.DataProcessor() {
+        @Override
+        public byte[] process(StreamChannel channel, byte[] in) {
+            return streamReader.read(channel, in, BasicService.this, asyncHelper, "Stream Executor Thread for " + getConnectionName());
         }
+    };
+
+    public byte[] read(StreamChannel channel, byte[] in, int skip) {
+        return channel.process(in, skip, dataProcessor);
     }
 
-    protected byte[] executeInput(byte[] received) {
-            return streamReader.read(received, this, asyncHelper, "Stream Executor Thread for " + getConnectionName());
-    }
 
     public StreamModifiers getStreamModifiers() {
         return streamModifiers;

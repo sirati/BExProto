@@ -1,6 +1,7 @@
 package de.sirati97.bex_proto.v2.io;
 
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+import de.sirati97.bex_proto.v2.StreamChannel;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class TestIOHandler implements IOHandler {
+public class TestIOHandler extends StreamChannel implements IOHandler {
     private BasicService connection;
     public TestIOHandler receiver;
     private boolean open = false;
@@ -40,7 +41,7 @@ public class TestIOHandler implements IOHandler {
         if (closed) {
             throw new IOException("Pipe is not open");
         }
-        connection.read(stream);
+        connection.read(this, stream);
     }
 
     @Override

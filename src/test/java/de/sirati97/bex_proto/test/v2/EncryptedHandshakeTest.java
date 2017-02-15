@@ -107,6 +107,6 @@ public class EncryptedHandshakeTest implements PacketHandler {
             received = true;
             receiveMutex.notifyAll();
         }
-        System.out.println(packet.get(0));
+        System.out.println((String)packet.get(0));
     }
 }

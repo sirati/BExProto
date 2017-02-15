@@ -79,7 +79,7 @@ public class JavaEchoClient {
     }
 
     private void receivedMessage(String in) {
-        System.out.println("Received message from server: " + in);
+        System.out.println("Received: " + in);
     }
 
 

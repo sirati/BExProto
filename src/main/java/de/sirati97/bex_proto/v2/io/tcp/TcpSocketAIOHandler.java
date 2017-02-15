@@ -90,15 +90,15 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
             @Override
             public void completed(Integer result, ByteBuffer buffer) {
                 if (result < 0){ //remote peer has closed channel
+                    System.out.println("remote peer has closed channel");
                     getConnection().disconnect();
                     return;
                 }
                 buffer.flip();
                 byte[] read = new byte[result];
                 buffer.get(read);
-//                System.out.println("read bytes: " + TestIOHandler.bytesToString(read));
+                getConnection().read(TcpSocketAIOHandler.this, read);
                 read();
-                getConnection().read(read);
             }
 
             @Override
