@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.test.example;
 
 import de.sirati97.bex_proto.builder.Builder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 
 import static de.sirati97.bex_proto.builder.ServiceTypes.BasicService;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
 
 /**
  * Created by sirati97 on 18.04.2016.
@@ -25,7 +24,7 @@ public class BExEchoClient {
         client.start();
     }
 
-    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 0, Type.String_Utf_8) {
+    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 0, Types.String_Utf_8) {
         @Override
         public void execute(ReceivedPacket packet) {
             System.out.println("Received: " + packet.get(0));
@@ -34,7 +33,7 @@ public class BExEchoClient {
 
     public void start() throws Throwable {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        Builder builder = new Builder<>(BasicService,  packetMessage).stackImplementation(AsynchronousIO);
+        Builder builder = new Builder<>(BasicService,  packetMessage);
         IClient client = builder.buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), "EchoClient");
         client.connect();
         String input;

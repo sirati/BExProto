@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class SyncHelper implements AsyncHelper {
+public class SyncHelper implements IAsyncHelper {
     private boolean updateThreadName;
     private Queue<SyncTask> queue = new LinkedList<>();
 

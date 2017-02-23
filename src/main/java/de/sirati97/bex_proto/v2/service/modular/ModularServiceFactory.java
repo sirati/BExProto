@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.service.modular;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
@@ -17,7 +17,7 @@ public class ModularServiceFactory implements IServiceFactory<ModularService> {
         this.moduleHandler = moduleHandler;
     }
 
-    public ModularServiceFactory(AsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetHandler) {
+    public ModularServiceFactory(IAsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetHandler) {
         this(new ModuleHandler(asyncHelper, logger, packetHandler));
     }
 
@@ -33,7 +33,7 @@ public class ModularServiceFactory implements IServiceFactory<ModularService> {
     }
 
     @Override
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return moduleHandler.getAsyncHelper();
     }
 

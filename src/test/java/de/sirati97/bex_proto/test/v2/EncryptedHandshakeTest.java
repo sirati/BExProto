@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
@@ -9,7 +9,7 @@ import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
 import de.sirati97.bex_proto.v2.service.modular.ModularService;
@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class EncryptedHandshakeTest implements PacketHandler {
+public class EncryptedHandshakeTest implements IPacketHandler {
     private ILogger log = new SysOutLogger();
     private ThreadPoolAsyncHelper asyncHelper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
     private final Object receiveMutex = new Object();
@@ -38,7 +38,7 @@ public class EncryptedHandshakeTest implements PacketHandler {
         try {
             try {
                 log.info("Encrypted Handshake test preparing");
-                PacketDefinition definition1 = new PacketDefinition((short) 0, this, Type.String_Utf_8);
+                PacketDefinition definition1 = new PacketDefinition((short) 0, this, Types.String_Utf_8);
                 PacketDefinition definition2 = definition1.clone();
                 TestIOHandler pipe1 = new TestIOHandler();
                 TestIOHandler pipe2 = new TestIOHandler();

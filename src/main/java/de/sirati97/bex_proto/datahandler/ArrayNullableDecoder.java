@@ -12,7 +12,7 @@ public class ArrayNullableDecoder<T> extends DecoderBase<T[]> {
 	
 	@Override
 	public T[] decode(CursorByteBuffer dat, boolean header) {
-		Boolean[] nulls = Type.Boolean.asArray().getDecoder().decode(dat);
+		Boolean[] nulls = Types.Boolean.asArray().getDecoder().decode(dat);
 
 		Object[] result = type.createArray(nulls.length);
 		for (int i=0;i<nulls.length;i++) {

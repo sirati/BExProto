@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.builder.Builder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.events.EventHandler;
 import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.GenericEventHandler;
@@ -33,7 +33,7 @@ public class EchoServer implements Listener {
             packet.sendTo(packet.getSender());
         }
     };
-    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, collection, Type.String_Utf_8) {
+    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, collection, Types.String_Utf_8) {
         @Override
         public void execute(ReceivedPacket packet) {
             System.out.println("Received from " + ((BasicService)packet.getSender()).getConnectionName() + ": " + packet.get(0));

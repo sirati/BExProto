@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v1.command.BEx5Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
@@ -9,7 +9,7 @@ public class RegCommand
 		BEx5Command<String, String, Boolean, Integer, Integer> {
 
 	public RegCommand() {
-		super((short) 1, Type.String_US_ASCII, Type.String_US_ASCII, Type.Boolean, Type.Integer, Type.Integer);
+		super((short) 1, Types.String_US_ASCII, Types.String_US_ASCII, Types.Boolean, Types.Integer, Types.Integer);
 	}
 
 	@Override

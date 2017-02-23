@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.builder.Builder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.events.EventHandler;
 import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.GenericEventHandler;
@@ -14,7 +14,7 @@ import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 import de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation;
@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 18.04.2016.
  */
-public class TcpSocketTest implements PacketHandler, Listener {
+public class TcpSocketTest implements IPacketHandler, Listener {
     private final Object receiveMutex = new Object();
     private boolean received = false;
 
@@ -42,7 +42,7 @@ public class TcpSocketTest implements PacketHandler, Listener {
         ThreadPoolAsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.ManualShutdown);
         try {
             try {
-                PacketDefinition definition = new PacketDefinition((short)0, this, Type.String_Utf_8);
+                PacketDefinition definition = new PacketDefinition((short)0, this, Types.String_Utf_8);
                 Builder builder = new Builder<>(ModularService,  definition).stackImplementation(CommonNetworkStackImplementation.AsynchronousIO);
                 InetAddress address = InetAddress.getLocalHost();
                 IServer server = builder.buildServer(new IpPortAddress(address, 12312));//new TcpAIOServer<>(factory, address, 12312);

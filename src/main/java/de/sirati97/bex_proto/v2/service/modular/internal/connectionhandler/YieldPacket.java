@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.service.modular.internal.connectionhandler;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.v2.IPacketCollection;
 import de.sirati97.bex_proto.v2.Packet;
@@ -19,7 +19,7 @@ public class YieldPacket extends SelfHandlingPacketDefinition {
     private final Random rnd = new Random();
 
     public YieldPacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {
-        super((short)1, packetCollection, Type.Long);
+        super((short)1, packetCollection, Types.Long);
         this.parent = parent;
     }
 

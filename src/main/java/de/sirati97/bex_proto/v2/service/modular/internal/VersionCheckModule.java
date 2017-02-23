@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.v2.service.modular.internal;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.service.modular.HandshakeMismatchVersionException;
 import de.sirati97.bex_proto.v2.service.modular.IModuleHandshake;
@@ -13,10 +13,10 @@ import de.sirati97.bex_proto.v2.service.modular.ModularService;
 /**
  * Created by sirati97 on 24.04.2016.
  */
-public class VersionCheckModule extends InternalModule<VersionCheckModule.VersionCheckData> implements PacketHandler, IModuleHandshake{
+public class VersionCheckModule extends InternalModule<VersionCheckModule.VersionCheckData> implements IPacketHandler, IModuleHandshake{
     private static class VersionCheckPacketDefinition extends PacketDefinition {
-        public VersionCheckPacketDefinition(short id, PacketHandler executor) {
-            super(id, executor, Type.Integer);
+        public VersionCheckPacketDefinition(short id, IPacketHandler executor) {
+            super(id, executor, Types.Integer);
         }
     }
     static class VersionCheckData {

@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.EncryptionContainer;
 import de.sirati97.bex_proto.v1.StreamReader;
 import de.sirati97.bex_proto.v1.command.CommandBase;
@@ -34,7 +34,7 @@ public class AdvClient extends NetClient implements AdvCreator, IServerSideConne
 		}
 	};
 	
-	public AdvClient(AsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory) {
+	public AdvClient(IAsyncHelper asyncHelper, String ip, int port, String clientName, boolean generic, CommandBase command, ISocketFactory socketFactory) {
 		super(asyncHelper, ip, port, new StreamReader(new CommandSender(new CommandRegisterBase())), socketFactory);
 		this.clientName = clientName;
 		this.generic = generic;

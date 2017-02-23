@@ -17,7 +17,7 @@ public class JavaEchoClient {
     }
 
     private Socket socket;
-    private boolean started = false;
+    private volatile boolean started = false;
 
     public void start() throws Throwable {
         if (started) {
@@ -34,7 +34,7 @@ public class JavaEchoClient {
                     }
                 }
             }
-        });
+        }, "SocketReaderThread");
         socketReaderThread.start();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String input;
@@ -54,8 +54,6 @@ public class JavaEchoClient {
         socketReaderThread.stop();
     }
 
-
-
     private boolean read() {
         try {
             long result;
@@ -71,17 +69,12 @@ public class JavaEchoClient {
                 return false;
             }
             String message = new String(packet, StandardCharsets.UTF_8);
-            receivedMessage(message);
+            System.out.println("Received: " + message);
             return true;
         } catch (Throwable t) {
             return false;
         }
     }
-
-    private void receivedMessage(String in) {
-        System.out.println("Received: " + in);
-    }
-
 
     private void sendMessage(String in) throws Throwable {
         byte[] packet = in.getBytes(StandardCharsets.UTF_8);
@@ -89,7 +82,4 @@ public class JavaEchoClient {
         socket.getOutputStream().write(packet);
         socket.getOutputStream().flush();
     }
-
-
-
 }

@@ -11,7 +11,7 @@ import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 public class PacketDefinition implements IPacketDefinition, Cloneable{
     private IType[] types;
     private short id;
-    private PacketHandler executor;
+    private IPacketHandler executor;
     private IPacketDefinition parent;
     private Boolean requiresReliableConnection = null;
 
@@ -20,7 +20,7 @@ public class PacketDefinition implements IPacketDefinition, Cloneable{
         this(id, null, null, true, null, types);
     }
 
-    public PacketDefinition(short id, PacketHandler executor, IType... types) {
+    public PacketDefinition(short id, IPacketHandler executor, IType... types) {
         this(id, null, executor, false, null, types);
     }
 
@@ -32,21 +32,21 @@ public class PacketDefinition implements IPacketDefinition, Cloneable{
         this(id, parent, parent==null?null:parent.getStandardExecutor(), selfExecuting, requiresReliableConnection, types);
     }
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, IType... types) {
+    public PacketDefinition(short id, IPacketCollection parent, IPacketHandler executor, IType... types) {
         this(id, parent, executor, false, null, types);
     }
 
 
-    public PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, Boolean requiresReliableConnection, IType... types) {
+    public PacketDefinition(short id, IPacketCollection parent, IPacketHandler executor, Boolean requiresReliableConnection, IType... types) {
         this(id, parent, executor, false, requiresReliableConnection, types);
     }
 
-    private PacketDefinition(short id, IPacketCollection parent, PacketHandler executor, boolean selfExecuting, Boolean requiresReliableConnection, IType... types) {
+    private PacketDefinition(short id, IPacketCollection parent, IPacketHandler executor, boolean selfExecuting, Boolean requiresReliableConnection, IType... types) {
         this.id = id;
         if (parent != null) {
             parent.register(this);
         }
-        this.executor = selfExecuting? (PacketHandler) this :executor;
+        this.executor = selfExecuting? (IPacketHandler) this :executor;
         this.types = types;
         this.requiresReliableConnection = requiresReliableConnection;
     }
@@ -90,7 +90,7 @@ public class PacketDefinition implements IPacketDefinition, Cloneable{
         executor.execute(packet);
     }
 
-    public PacketHandler getExecutor() {
+    public IPacketHandler getExecutor() {
         return executor;
     }
 

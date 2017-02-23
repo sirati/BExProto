@@ -13,7 +13,7 @@ public class ScheduledAsyncHelperExecutorService
 	@SuppressWarnings("unused")
 	private boolean alive = true;
 	
-	public ScheduledAsyncHelperExecutorService(AsyncHelper asyncHelper, String name) {
+	public ScheduledAsyncHelperExecutorService(IAsyncHelper asyncHelper, String name) {
 		super(asyncHelper, name);
 		throw new NotImplementedException("");
 	}

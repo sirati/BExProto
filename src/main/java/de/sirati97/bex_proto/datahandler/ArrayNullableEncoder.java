@@ -17,7 +17,7 @@ public class ArrayNullableEncoder<T> extends EncoderBase<T[]> {
             nulls[i] = data[i]==null;
         }
 
-        Type.Boolean.asArray().getEncoder().encode(Type.Boolean.toObjectArray(nulls), buffer); //contains length
+        Types.Boolean.asArray().getEncoder().encode(Types.Boolean.toObjectArray(nulls), buffer); //contains length
         for (int i=0;i<data.length;i++) {
             if (!nulls[i]) {
                 baseType.getInnerType().getEncoder().encode(data[i], buffer);

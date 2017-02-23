@@ -5,7 +5,7 @@ import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.IEventRegister;
 import de.sirati97.bex_proto.events.Listener;
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -24,13 +24,13 @@ public class BasicService implements IConnection, IEventRegister {
     private final StreamModifiers streamModifiers = new StreamModifiers();
     private String connectionName;
     private StreamReader streamReader;
-    private AsyncHelper asyncHelper;
+    private IAsyncHelper asyncHelper;
     private IOHandler ioHandler;
     private ILogger logger;
     private final EventRegister eventRegister;
 
 
-    public BasicService(String connectionName, AsyncHelper asyncHelper, IOHandler ioHandler, ILogger logger, IPacketDefinition packet) {
+    public BasicService(String connectionName, IAsyncHelper asyncHelper, IOHandler ioHandler, ILogger logger, IPacketDefinition packet) {
         this.connectionName = connectionName;
         this.asyncHelper = asyncHelper;
         this.ioHandler = ioHandler;
@@ -95,7 +95,7 @@ public class BasicService implements IConnection, IEventRegister {
         eventRegister.setLoggerPrefix(newLoggerPrefix);
     }
 
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return asyncHelper;
     }
 

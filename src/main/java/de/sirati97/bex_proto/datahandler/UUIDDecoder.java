@@ -8,8 +8,8 @@ public class UUIDDecoder extends DecoderBase<UUID> {
 
 	@Override
 	public UUID decode(CursorByteBuffer dat, boolean header) {
-		long least = Type.Long.getDecoder().decode(dat);
-		long most = Type.Long.getDecoder().decode(dat);
+		long least = Types.Long.getDecoder().decode(dat);
+		long most = Types.Long.getDecoder().decode(dat);
 		return new UUID(most, least);
 	}
 

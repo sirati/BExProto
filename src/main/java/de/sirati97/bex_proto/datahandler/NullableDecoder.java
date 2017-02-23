@@ -11,7 +11,7 @@ public class NullableDecoder<T> extends DecoderBase<T> {
 
 	@Override
 	public T decode(CursorByteBuffer dat, boolean header) {
-		boolean isNull = (Boolean) Type.Boolean.getDecoder().decode(dat);
+		boolean isNull = (Boolean) Types.Boolean.getDecoder().decode(dat);
 		if (isNull) {
 			return null;
 		} else {

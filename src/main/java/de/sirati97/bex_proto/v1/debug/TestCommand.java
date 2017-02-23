@@ -1,13 +1,13 @@
 package de.sirati97.bex_proto.v1.debug;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v1.command.BEx10Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class TestCommand extends BEx10Command<String, String, String, String, Long, Integer, Short, Byte, Double, int[][]> {
 
 	public TestCommand() {
-		super((short)2, Type.String_Utf_8, Type.String_Utf_16, Type.String_US_ASCII, Type.String_ISO_8859_1, Type.Long, Type.Integer, Type.Short, Type.Byte, Type.Double, Type.Integer.asArray().asArray());
+		super((short)2, Types.String_Utf_8, Types.String_Utf_16, Types.String_US_ASCII, Types.String_ISO_8859_1, Types.Long, Types.Integer, Types.Short, Types.Byte, Types.Double, Types.Integer.asArray().asArray());
 	}
 	
 	@Override

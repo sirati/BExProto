@@ -10,7 +10,7 @@ public class InetAddressDecoder extends DecoderBase<InetAddress> {
 	@Override
 	public InetAddress decode(CursorByteBuffer dat, boolean header) {
 		try {
-			int length = (Integer) Type.Integer.getDecoder().decode(dat);
+			int length = (Integer) Types.Integer.getDecoder().decode(dat);
 			return InetAddress.getByAddress(dat.getMulti(length));
 		} catch (UnknownHostException e) {
 			throw new IllegalArgumentException(e);

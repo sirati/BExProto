@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.builder.Builder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
@@ -32,7 +32,7 @@ public class EchoClient {
             System.out.println("Server welcomed client");
         }
     };
-    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, collection, Type.String_Utf_8) {
+    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, collection, Types.String_Utf_8) {
         @Override
         public void execute(ReceivedPacket packet) {
             System.out.println("Received message from server: " + packet.get(0));

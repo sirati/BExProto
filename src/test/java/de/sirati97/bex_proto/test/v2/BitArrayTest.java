@@ -1,12 +1,12 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.IArrayType;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.PacketManager;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
@@ -18,12 +18,12 @@ import java.util.Random;
 /**
  * Created by sirati97 on 28.04.2016.
  */
-public class BitArrayTest implements PacketHandler {
+public class BitArrayTest implements IPacketHandler {
 
 
     @Test
     public void start() {
-        IArrayType<Boolean> bitArrayType = Type.Boolean.asArray();
+        IArrayType<Boolean> bitArrayType = Types.Boolean.asArray();
         PacketDefinition definition = new PacketDefinition((short)0, this, bitArrayType);
         boolean[] bits = new boolean[256];
         Random rnd = new Random();

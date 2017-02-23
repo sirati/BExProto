@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2.service.modular.internal.connectionhandler;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.v2.IPacketCollection;
@@ -20,22 +20,22 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
     private final ConnectionHandlerModule parent;
 
     public HandshakePacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {
-        super((short)0, packetCollection, Type.Byte, Type.Byte.asArray().asNullable());
+        super((short)0, packetCollection, Types.Byte, Types.Byte.asArray().asNullable());
         this.parent = parent;
     }
 
     protected void send(byte action, String extra, IConnection connection) {
-        Packet packet = new Packet(this, action, Type.String_Utf_8.getEncoder().encodeIndependent(extra).getBytes());
+        Packet packet = new Packet(this, action, Types.String_Utf_8.getEncoder().encodeIndependent(extra).getBytes());
         packet.sendTo(connection);
     }
 
     protected void send(byte action, int extra, IConnection connection) {
-        Packet packet = new Packet(this, action, Type.Integer.getEncoder().encodeIndependent(extra).getBytes());
+        Packet packet = new Packet(this, action, Types.Integer.getEncoder().encodeIndependent(extra).getBytes());
         packet.sendTo(connection);
     }
 
     public void sendError(Throwable t, IConnection connection) {
-        Packet packet = new Packet(this, (byte)-1, Type.JavaThrowable.getEncoder().encodeIndependent(t).getBytes());
+        Packet packet = new Packet(this, (byte)-1, Types.JavaThrowable.getEncoder().encodeIndependent(t).getBytes());
         packet.sendTo(connection);
     }
 
@@ -57,7 +57,7 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
             //Server side
             case 0: //syn
                 data.handshakeState = HandshakeState.State1;
-                data.remoteVersion = Type.Integer.getDecoder().decode(extra);
+                data.remoteVersion = Types.Integer.getDecoder().decode(extra);
                 if (data.remoteVersion < BExStatic.VERSION_INT_MIN) {
                     sendError(connection.internal_CancelMismatchVersion(ConnectionHandlerModule.class, data.remoteVersion) ,connection);
                 } else {
@@ -69,7 +69,7 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
             case 2:
                 if (checkOrder(data, HandshakeState.State1)) {
                     data.handshakeState = HandshakeState.State2;
-                    String name = Type.String_Utf_8.getDecoder().decode(extra);
+                    String name = Types.String_Utf_8.getDecoder().decode(extra);
                     connection.setConnectedWith(name);
                     data.callback.callback(); //internal handshakes are all done. do the rest
                     send((byte)3, connection.getConnectionName(), connection);
@@ -89,7 +89,7 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
             //Client side
             case 1:
                 if (checkOrder(data, HandshakeState.State1)) {
-                    data.remoteVersion = Type.Integer.getDecoder().decode(extra);
+                    data.remoteVersion = Types.Integer.getDecoder().decode(extra);
                     if (data.remoteVersion < BExStatic.VERSION_INT_MIN) {
                         data.callback.error(new HandshakeMismatchVersionException(data.remoteVersion));
                     } else {
@@ -100,7 +100,7 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
 
             case 3:
                 if (checkOrder(data, HandshakeState.State2)) {
-                    String name = Type.String_Utf_8.getDecoder().decode(extra);
+                    String name = Types.String_Utf_8.getDecoder().decode(extra);
                     connection.setConnectedWith(name);
                     data.callback.callback(); //using callback because other modules will run now
                 }
@@ -120,7 +120,7 @@ public class HandshakePacket extends SelfHandlingPacketDefinition {
 
             //Both
             case -1:
-                Throwable t = Type.JavaThrowable.getDecoder().decode(extra);
+                Throwable t = Types.JavaThrowable.getDecoder().decode(extra);
                 if (data != null && data.callback != null && data.handshakeState.isInHandshake()) {
                     data.callback.error(new HandshakeRemoteException(t));
                 } else {

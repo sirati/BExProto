@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.builder;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
@@ -15,13 +15,13 @@ public abstract class ServiceTypes<T extends BasicService> implements IServiceTy
     private ServiceTypes(){}
     public static final ServiceTypes<de.sirati97.bex_proto.v2.service.basic.BasicService> BasicService = new ServiceTypes<de.sirati97.bex_proto.v2.service.basic.BasicService>() {
         @Override
-        public IServiceFactory<de.sirati97.bex_proto.v2.service.basic.BasicService> buildServiceFactory(AsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetProcessor, Options options) {
+        public IServiceFactory<de.sirati97.bex_proto.v2.service.basic.BasicService> buildServiceFactory(IAsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetProcessor, Options options) {
             return new ArtifServiceFactory(asyncHelper, logger, packetProcessor);
         }
     };
     public static final ServiceTypes<de.sirati97.bex_proto.v2.service.modular.ModularService> ModularService = new ServiceTypes<de.sirati97.bex_proto.v2.service.modular.ModularService>() {
         @Override
-        public IServiceFactory<de.sirati97.bex_proto.v2.service.modular.ModularService> buildServiceFactory(AsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetProcessor, Options options) {
+        public IServiceFactory<de.sirati97.bex_proto.v2.service.modular.ModularService> buildServiceFactory(IAsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetProcessor, Options options) {
             return new ModularServiceFactory(asyncHelper, logger, packetProcessor);
         }
     };

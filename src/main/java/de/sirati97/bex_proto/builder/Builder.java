@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.builder;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -31,7 +31,7 @@ public class Builder<ConnectionType extends BasicService> {
     private INetworkProtocol underlyingProtocol = TCP;
     private INetworkStackImplementation stackImplementation = AsynchronousIO;
     private IProvider provider = BExProtoV2Provider.getInstance();
-    private AsyncHelper asyncHelper;
+    private IAsyncHelper asyncHelper;
     private ILogger logger;
     private IPacketDefinition packetProcessor;
     private Options serviceFactoryOptions = new Options();
@@ -84,7 +84,7 @@ public class Builder<ConnectionType extends BasicService> {
         return this;
     }
 
-    public Builder asyncHelper(AsyncHelper asyncHelper) {
+    public Builder asyncHelper(IAsyncHelper asyncHelper) {
         check("");
         this.asyncHelper = asyncHelper;
         return this;
@@ -118,7 +118,7 @@ public class Builder<ConnectionType extends BasicService> {
         return provider;
     }
 
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return asyncHelper;
     }
 

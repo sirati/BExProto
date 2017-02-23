@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network.adv;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.command.BEx3Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
@@ -8,13 +8,13 @@ import de.sirati97.bex_proto.v1.network.NetConnection;
 public class EncryptionCommand extends BEx3Command<Byte, byte[], byte[]> {
 
 	public EncryptionCommand() {
-		super((short)3, Type.Byte, Type.Byte.asArray().asNullable(), Type.Byte.asArray().asNullable());
+		super((short)3, Types.Byte, Types.Byte.asArray().asNullable(), Types.Byte.asArray().asNullable());
 	}
 	
 	@Override
 	public void receive(Byte state, byte[] data, byte[] data2, NetConnection sender) {
 		if (state==States.Error.getId()) {
-			onError(Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, sender)), sender);
+			onError(Types.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, sender)), sender);
 		} else if (state==States.Request.getId()) {
 			onRequest(sender);
 		} else if (state==States.PublicKey.getId()) {
@@ -57,7 +57,7 @@ public class EncryptionCommand extends BEx3Command<Byte, byte[], byte[]> {
 	}
 	
 	public void sendError(String error, NetConnection... connections) {
-		send(States.Error, Type.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connections);
+		send(States.Error, Types.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connections);
 	}
 	
 	public static enum States{

@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.networkmodell;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
@@ -30,7 +30,7 @@ public abstract class ConnectionBase<Connection extends BasicService> implements
     }
 
     @Override
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return getFactory().getAsyncHelper();
     }
 

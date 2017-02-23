@@ -12,7 +12,7 @@ public class ArrayDecoder<T> extends DecoderBase<T[]> {
 	
 	@Override
 	public T[] decode(CursorByteBuffer dat, boolean header) {
-		int length = Type.Integer.getDecoder().decode(dat);
+		int length = Types.Integer.getDecoder().decode(dat);
 		Object[] result = type.createArray(length);
 		for (int i=0;i<length;i++) {
 			result[i] = type.getDecoder().decode(dat);

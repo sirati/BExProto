@@ -14,7 +14,7 @@ public class JavaSerializableDecoder<T extends Serializable> extends DecoderBase
 
     @Override
     public T decode(CursorByteBuffer dat, boolean header) {
-        int length = Type.Integer.getDecoder().decode(dat);
+        int length = Types.Integer.getDecoder().decode(dat);
         byte[] stream = dat.getMulti(length);
         ObjectInputStream deserializer = null;
         try {

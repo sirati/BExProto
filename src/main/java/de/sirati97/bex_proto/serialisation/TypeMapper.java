@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.serialisation;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 
@@ -22,12 +22,12 @@ public class TypeMapper {
     }
 
     public int getMappedType(Object o) {
-        IType type = Type.getByInstance(o, platformIndependent, true);
+        IType type = Types.getByInstance(o, platformIndependent, true);
 
         throw new NotImplementedException("");
     }
 
-    public Type getMappedTypeById(int id) {
+    public Types getMappedTypeById(int id) {
         throw new NotImplementedException("");
 
     }

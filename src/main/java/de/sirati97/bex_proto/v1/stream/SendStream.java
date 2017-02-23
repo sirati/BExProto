@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.stream;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
@@ -23,7 +23,7 @@ public class SendStream implements Stream {
 		if (bytes == null) {
 			bytes = getInnerBytes();
 			bytes.seal();
-			bytes = new ByteBuffer(Type.Integer.getEncoder().encodeIndependent(bytes.getLength()), bytes);
+			bytes = new ByteBuffer(Types.Integer.getEncoder().encodeIndependent(bytes.getLength()), bytes);
 		}
 		return bytes;
 	}

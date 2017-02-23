@@ -4,7 +4,7 @@ import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.IEventRegister;
 import de.sirati97.bex_proto.events.Listener;
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public interface IConnection<Connection extends BasicService> extends IEventRegi
 
     boolean isConnected();
 
-    AsyncHelper getAsyncHelper();
+    IAsyncHelper getAsyncHelper();
 
     Set<Connection> getConnections();
 

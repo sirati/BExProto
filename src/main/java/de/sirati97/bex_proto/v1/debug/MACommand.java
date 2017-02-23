@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v1.debug;
 
 import de.sirati97.bex_proto.datahandler.DynamicObj;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v1.command.BEx1Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
@@ -9,7 +9,7 @@ public class MACommand extends BEx1Command<DynamicObj> {
 
 	
 	public MACommand() {
-		super((short)1, Type.DynamicObj);
+		super((short)1, Types.DynamicObj);
 	}
 	
 	@Override

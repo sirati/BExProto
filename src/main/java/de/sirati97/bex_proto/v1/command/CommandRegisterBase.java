@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 import de.sirati97.bex_proto.v1.stream.Stream;
@@ -23,7 +23,7 @@ public class CommandRegisterBase extends CommandBase {
 	
 	@Override
 	public Void decode(CursorByteBuffer dat, boolean header) {
-		short commandId = Type.Short.getDecoder().decode(dat);
+		short commandId = Types.Short.getDecoder().decode(dat);
 		if (!checkID(commandId, dat))return null;
 		CommandBase command = commands.get(commandId);
 		if (command==null) {

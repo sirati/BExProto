@@ -1,10 +1,10 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.service.modular.IModuleHandshake;
 import de.sirati97.bex_proto.v2.service.modular.ModularService;
@@ -15,10 +15,10 @@ import de.sirati97.bex_proto.v2.service.modular.internal.YieldCause;
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class FastStressModule extends Module<FastStressModule.StressData> implements IModuleHandshake, PacketHandler {
+public class FastStressModule extends Module<FastStressModule.StressData> implements IModuleHandshake, IPacketHandler {
     private static class StressPacketDefinition extends PacketDefinition {
-        public StressPacketDefinition(short id, PacketHandler executor) {
-            super(id, executor, Type.Integer);
+        public StressPacketDefinition(short id, IPacketHandler executor) {
+            super(id, executor, Types.Integer);
         }
     }
     static class StressData {

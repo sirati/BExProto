@@ -1,13 +1,13 @@
 package de.sirati97.bex_proto.test.v2;
 
 import de.sirati97.bex_proto.datahandler.InetAddressPort;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketCollection;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.PacketManager;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import org.junit.Test;
@@ -21,33 +21,33 @@ import static org.junit.Assert.fail;
 /**
  * Created by sirati97 on 15.03.2016.
  */
-public class PacketTest implements PacketHandler {
+public class PacketTest implements IPacketHandler {
 
     @Test
     public void start() {
         try {
             PacketCollection collection = new PacketCollection(this);
             PacketDefinition definition1 = new PacketDefinition((short)0, collection,
-                    Type.Boolean,
-                    Type.Byte, //numbers
-                    Type.Short,
-                    Type.Integer,
-                    Type.Long,
-                    Type.Float,
-                    Type.Double,
-                    Type.String_ISO_8859_1, //strings with different charsets
-                    Type.String_US_ASCII,
-                    Type.String_Utf_8,
-                    Type.String_Utf_16,
-                    Type.String_Utf_16BE,
-                    Type.String_Utf_16LE,
-                    Type.Type, //The Type itself (also sendable)
-                    Type.UUID,
-                    Type.InetAddress,
-                    Type.InetAddressPort,
-                    Type.JavaThrowable, //JavaTypes
-                    Type.Boolean.asNullable(), //tests NullableType
-                    Type.Boolean.asNullable());
+                    Types.Boolean,
+                    Types.Byte, //numbers
+                    Types.Short,
+                    Types.Integer,
+                    Types.Long,
+                    Types.Float,
+                    Types.Double,
+                    Types.String_ISO_8859_1, //strings with different charsets
+                    Types.String_US_ASCII,
+                    Types.String_Utf_8,
+                    Types.String_Utf_16,
+                    Types.String_Utf_16BE,
+                    Types.String_Utf_16LE,
+                    Types.Type, //The Type itself (also sendable)
+                    Types.UUID,
+                    Types.InetAddress,
+                    Types.InetAddressPort,
+                    Types.JavaThrowable, //JavaTypes
+                    Types.Boolean.asNullable(), //tests NullableType
+                    Types.Boolean.asNullable());
 
             Packet packetSend = new Packet(definition1, //Create packet and fill in values
                     true,
@@ -63,7 +63,7 @@ public class PacketTest implements PacketHandler {
                     "Hello World",
                     "Hello World",
                     "Hello World",
-                    Type.DynamicObj.asNullable().asArray().asNullable(),
+                    Types.DynamicObj.asNullable().asArray().asNullable(),
                     UUID.randomUUID(),
                     InetAddress.getByAddress(new byte[]{127,0,0,1}),
                     new InetAddressPort(InetAddress.getByAddress(new byte[]{8,8,8,8}), 20),

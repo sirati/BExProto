@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.service.modular;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
@@ -32,10 +32,10 @@ public class ModuleHandler {
     final List<IModuleHandshake> handshakesHighPriority = new ArrayList<>(1);
     final List<IModuleHandshake> handshakesLowPriority = new ArrayList<>(1);
     final ConnectionHandlerModule connectionHandlerModule = new ConnectionHandlerModule();
-    private final AsyncHelper asyncHelper;
+    private final IAsyncHelper asyncHelper;
     private final ILogger logger;
 
-    public ModuleHandler(AsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetHandler) {
+    public ModuleHandler(IAsyncHelper asyncHelper, ILogger logger, IPacketDefinition packetHandler) {
         this.asyncHelper = asyncHelper;
         this.logger = logger;
         register(new PacketDefinitionWrapper(packetHandler)); //-1
@@ -76,7 +76,7 @@ public class ModuleHandler {
         return packets;
     }
 
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return asyncHelper;
     }
 

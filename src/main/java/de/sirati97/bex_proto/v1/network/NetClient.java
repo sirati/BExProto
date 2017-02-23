@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.v1.StreamReader;
 
 public class NetClient extends NetConnection {
@@ -12,7 +12,7 @@ public class NetClient extends NetConnection {
 	private int port;
 	private ISocketFactory socketFactory;
 	
-	public NetClient(AsyncHelper asyncHelper, String ip, int port, StreamReader streamReader, ISocketFactory socketFactory) {
+	public NetClient(IAsyncHelper asyncHelper, String ip, int port, StreamReader streamReader, ISocketFactory socketFactory) {
 		super(asyncHelper, null, new NetConnectionManager(), streamReader, null, socketFactory);
 		this.ip = ip;
 		this.port = port;

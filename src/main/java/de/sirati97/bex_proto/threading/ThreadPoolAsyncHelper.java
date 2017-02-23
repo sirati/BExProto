@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-public class ThreadPoolAsyncHelper implements AsyncHelper {
+public class ThreadPoolAsyncHelper implements IAsyncHelper {
     private static final AtomicLong unnamedCount = new AtomicLong(0);
     private final Set<AsyncTaskImpl> activeTasks = new HashSet<>();
 	private final Set<AsyncTaskImpl> activeTasksRead = Collections.unmodifiableSet(activeTasks);

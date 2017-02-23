@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
-	private AsyncHelper asyncHelper;
+	private IAsyncHelper asyncHelper;
 	private Socket socket;
 	private boolean enabled = false;
 	private NetConnectionManager netConnectionManager;
@@ -41,8 +41,8 @@ public class NetConnection implements NetCreator, ConnectionInfo, IConnection {
 	private Set<AsyncTask> tasks = new HashSet<>();
 	private String subnet = "";
 	
-	public NetConnection(AsyncHelper asyncHelper, Socket socket,
-			NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory) {
+	public NetConnection(IAsyncHelper asyncHelper, Socket socket,
+                         NetConnectionManager netConnectionManager, StreamReader streamReader, NetCreator creator, ISocketFactory socketFactory) {
 		this.asyncHelper = asyncHelper;
 		this.socket = socket;
 		this.netConnectionManager = netConnectionManager;

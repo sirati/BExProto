@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
@@ -16,10 +16,10 @@ public class PacketCollection implements IPacketCollection {
     private Map<Short, IPacketDefinition> packets = new HashMap<>();
     private short id;
     private IPacketDefinition parent;
-    private PacketHandler standardExecutor;
+    private IPacketHandler standardExecutor;
     private Boolean requiresReliableConnection = null;
 
-    public PacketCollection(PacketHandler standardExecutor) {
+    public PacketCollection(IPacketHandler standardExecutor) {
         this((short) 0, standardExecutor);
     }
 
@@ -31,7 +31,7 @@ public class PacketCollection implements IPacketCollection {
         this(id, null);
     }
 
-    public PacketCollection(short id, PacketHandler standardExecutor) {
+    public PacketCollection(short id, IPacketHandler standardExecutor) {
         this.id = id;
         this.standardExecutor = standardExecutor;
     }
@@ -93,7 +93,7 @@ public class PacketCollection implements IPacketCollection {
     }
 
     @Override
-    public PacketHandler getStandardExecutor() {
+    public IPacketHandler getStandardExecutor() {
         return standardExecutor;
     }
 
@@ -108,7 +108,7 @@ public class PacketCollection implements IPacketCollection {
     }
 
     private static short getShort(CursorByteBuffer buf) {
-        return Type.Short.getDecoder().decode(buf, false);
+        return Types.Short.getDecoder().decode(buf, false);
     }
 
 }

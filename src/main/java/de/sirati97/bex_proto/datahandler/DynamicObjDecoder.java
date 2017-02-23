@@ -6,7 +6,7 @@ public class DynamicObjDecoder extends DecoderBase<DynamicObj> {
 
 	@Override
 	public DynamicObj decode(CursorByteBuffer dat, boolean header) {
-		IType type = Type.Type.getDecoder().decode(dat);
+		IType type = Types.Type.getDecoder().decode(dat);
 		Object value = type.getDecoder().decode(dat);
 		if (type.isArray() && type instanceof IDerivedType && ((IDerivedType)type).isBasePrimitive()) {
 			value = ((IDerivedType)type).getInnerArray().toPrimitiveArray((value));

@@ -30,6 +30,10 @@ public interface IDerivedType<Type,InnerType> extends IType<Type> {
 		public static DerivedFactory get(byte id) {
 			return types.get(id);
 		}
+
+        static {
+            Types.init();
+        }
 	}
 	interface DerivedFactory {
 		byte getDerivedID();

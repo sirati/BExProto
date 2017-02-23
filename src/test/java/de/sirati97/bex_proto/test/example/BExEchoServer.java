@@ -3,12 +3,12 @@ package de.sirati97.bex_proto.test.example;
 import de.sirati97.bex_proto.builder.Builder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
 import de.sirati97.bex_proto.builder.ServiceTypes;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.events.EventHandler;
 import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.GenericEventHandler;
 import de.sirati97.bex_proto.events.Listener;
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
 import de.sirati97.bex_proto.v2.PacketDefinition;
@@ -32,7 +32,7 @@ public class BExEchoServer implements Listener {
         server.start();
     }
 
-    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, Type.String_Utf_8) {
+    private PacketDefinition packetMessage = new SelfHandlingPacketDefinition((short) 1, Types.String_Utf_8) {
         @Override
         public void execute(ReceivedPacket packet) {
             System.out.println("Received: " + packet.get(0));
@@ -41,7 +41,7 @@ public class BExEchoServer implements Listener {
     };
 
     public void start() throws Throwable {
-        AsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.JavaVMShutdownNow);
+        IAsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.JavaVMShutdownNow);
         IServer server = new Builder<>(ServiceTypes.BasicService,  packetMessage).asyncHelper(helper).stackImplementation(AsynchronousIO).buildServer(new IpPortAddress(12312)); //keine addresse -> 0.0.0.0
         server.registerEventListener(this);
         server.startListening();

@@ -1,13 +1,13 @@
 package de.sirati97.bex_proto.v1.debug;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v1.command.BEx1Command;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public class ICountCommand extends BEx1Command<Integer> {
 
 	public ICountCommand(int id, String name) {
-		super((short)id, Type.Integer);
+		super((short)id, Types.Integer);
 		sb = new StringBuilder(name);
 	}
 

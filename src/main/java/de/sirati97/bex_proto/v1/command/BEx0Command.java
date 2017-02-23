@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.command;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 import de.sirati97.bex_proto.v1.stream.MultiStream;
@@ -42,7 +42,7 @@ public class BEx0Command extends CommandBase{
 	
 	@Override
 	public void send(Stream stream, NetConnection... connections) {
-		getParent().send(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), connections);
+		getParent().send(new MultiStream(Types.Short.getEncoder().encodeIndependent(getId()), stream), connections);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class BEx0Command extends CommandBase{
 
 	@Override
 	public Stream generateSendableStream(Stream stream, ConnectionInfo receiver) {
-		return getParent().generateSendableStream(new MultiStream(Type.Short.getEncoder().encodeIndependent(getId()), stream), receiver);
+		return getParent().generateSendableStream(new MultiStream(Types.Short.getEncoder().encodeIndependent(getId()), stream), receiver);
 	}
 	
 }

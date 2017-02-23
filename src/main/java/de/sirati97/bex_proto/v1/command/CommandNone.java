@@ -3,7 +3,7 @@ package de.sirati97.bex_proto.v1.command;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v1.stream.ByteBufferStream;
 import de.sirati97.bex_proto.v1.stream.Stream;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v1.network.NetConnection;
 
 public abstract class CommandNone extends CommandBase {
@@ -51,7 +51,7 @@ public abstract class CommandNone extends CommandBase {
 	}
 
 	public void send(NetConnection... connections) {
-		getParent().send(new ByteBufferStream(Type.Short.getEncoder().encodeIndependent(getId())), connections);
+		getParent().send(new ByteBufferStream(Types.Short.getEncoder().encodeIndependent(getId())), connections);
 	}
 
 	@Override

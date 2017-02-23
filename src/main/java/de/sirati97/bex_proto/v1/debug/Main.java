@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v1.debug;
 
 import de.sirati97.bex_proto.datahandler.DynamicObj;
 import de.sirati97.bex_proto.datahandler.IType;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.threading.ShutdownBehavior;
 import de.sirati97.bex_proto.threading.ThreadPoolAsyncHelper;
@@ -81,7 +81,7 @@ public class Main {
 		Stream stream;
 		IType type;
 		//testdaten zu byte[] 
-		type = Type.Integer.asNullable().asArray().asNullable();
+		type = Types.Integer.asNullable().asArray().asNullable();
 		System.out.println(type.getTypeName());
 		stream = maCommand.send(new DynamicObj(type, new Integer[]{1231, null, 0 ,1, Integer.MAX_VALUE, null, 0, Integer.MIN_VALUE}));
 		
@@ -92,7 +92,7 @@ public class Main {
 
 		
 		//testdaten zu byte[] 
-		type = Type.String_Utf_16;
+		type = Types.String_Utf_16;
 		System.out.println(type.getTypeName());
 		stream = maCommand.send(new DynamicObj(type, "Hallo liebe welt"));
 

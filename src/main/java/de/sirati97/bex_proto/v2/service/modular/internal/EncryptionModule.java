@@ -2,14 +2,14 @@ package de.sirati97.bex_proto.v2.service.modular.internal;
 
 import de.sirati97.bex_proto.datahandler.EncryptionModifier;
 import de.sirati97.bex_proto.datahandler.HashModifier;
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.IEncryptionContainer;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.service.basic.StreamModifiers;
 import de.sirati97.bex_proto.v2.events.TrustPublicKeyEvent;
@@ -39,10 +39,10 @@ import static de.sirati97.bex_proto.v2.service.modular.internal.BouncyCastleHelp
 /**
  * Created by sirati97 on 13.04.2016.
  */
-public class EncryptionModule extends InternalModule<EncryptionModule.EncryptionData> implements IModuleHandshake, PacketHandler {
+public class EncryptionModule extends InternalModule<EncryptionModule.EncryptionData> implements IModuleHandshake, IPacketHandler {
     private static class EncryptionPacketDefinition extends PacketDefinition {
-        public EncryptionPacketDefinition(short id, PacketHandler executor) {
-            super(id, executor, Type.Byte, Type.Byte.asArray().asNullable(), Type.Byte.asArray().asNullable());
+        public EncryptionPacketDefinition(short id, IPacketHandler executor) {
+            super(id, executor, Types.Byte, Types.Byte.asArray().asNullable(), Types.Byte.asArray().asNullable());
         }
     }
     static class EncryptionData {
@@ -97,7 +97,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
     }
 
     protected void sendError(String error, IConnection connection) {
-        send(State.Error, Type.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connection);
+        send(State.Error, Types.String_US_ASCII.getEncoder().encodeIndependent(error).getBytes(), connection);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
         ModularService connection = (ModularService) packet.getSender();
         switch (State.getById(state)) {
             case Error:
-                onError(Type.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, connection)), connection);
+                onError(Types.String_US_ASCII.getDecoder().decode(new CursorByteBuffer(data, connection)), connection);
                 break;
             case ClientPublicKey:
                 onClientPublicKey(data, connection);

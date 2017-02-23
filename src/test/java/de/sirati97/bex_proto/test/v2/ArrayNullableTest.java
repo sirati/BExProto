@@ -1,11 +1,11 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.datahandler.Type;
+import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
-import de.sirati97.bex_proto.v2.PacketHandler;
+import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.PacketManager;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.io.TestIOHandler;
@@ -17,12 +17,12 @@ import java.util.Random;
 /**
  * Created by sirati97 on 28.04.2016.
  */
-public class ArrayNullableTest implements PacketHandler {
+public class ArrayNullableTest implements IPacketHandler {
 
 
     @Test
     public void start() {
-        PacketDefinition definition = new PacketDefinition((short)0, this, Type.Long.asNullable().asArray());
+        PacketDefinition definition = new PacketDefinition((short)0, this, Types.Long.asNullable().asArray());
         Long[] data = new Long[256];
         Random rnd = new Random();
         for (int i = 0; i < data.length; i++) {

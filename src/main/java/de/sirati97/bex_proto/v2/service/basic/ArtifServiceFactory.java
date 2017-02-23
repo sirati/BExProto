@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.service.basic;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
@@ -11,11 +11,11 @@ import de.sirati97.bex_proto.v2.io.IOHandler;
  * Created by sirati97 on 16.04.2016.
  */
 public class ArtifServiceFactory implements IServiceFactory<BasicService> {
-    private final AsyncHelper asyncHelper;
+    private final IAsyncHelper asyncHelper;
     private final ILogger logger;
     private final IPacketDefinition packet;
 
-    public ArtifServiceFactory(AsyncHelper asyncHelper, ILogger logger, IPacketDefinition packet) {
+    public ArtifServiceFactory(IAsyncHelper asyncHelper, ILogger logger, IPacketDefinition packet) {
         this.asyncHelper = asyncHelper;
         this.logger = logger;
         this.packet = packet;
@@ -32,7 +32,7 @@ public class ArtifServiceFactory implements IServiceFactory<BasicService> {
     }
 
     @Override
-    public AsyncHelper getAsyncHelper() {
+    public IAsyncHelper getAsyncHelper() {
         return asyncHelper;
     }
 

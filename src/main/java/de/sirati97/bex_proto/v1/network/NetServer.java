@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v1.network;
 
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.v1.StreamReader;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NetServer implements NetCreator{
-	private AsyncHelper asyncHelper;
+	private IAsyncHelper asyncHelper;
 	private int port;
 	private ServerSocket serverSocket;
 	private boolean enabled = false;
@@ -23,11 +23,11 @@ public class NetServer implements NetCreator{
 	private InetAddress address;
 	private ISocketFactory socketFactory;
 	
-	public NetServer(AsyncHelper asyncHelper, int port, StreamReader streamReader, ISocketFactory socketFactory) {
+	public NetServer(IAsyncHelper asyncHelper, int port, StreamReader streamReader, ISocketFactory socketFactory) {
 		this(asyncHelper, port, null, streamReader, socketFactory);
 	}
 	
-	public NetServer(AsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, ISocketFactory socketFactory) {
+	public NetServer(IAsyncHelper asyncHelper, int port, InetAddress address, StreamReader streamReader, ISocketFactory socketFactory) {
 		this.asyncHelper = asyncHelper;
 		this.port = port;
 		this.streamReader = streamReader;

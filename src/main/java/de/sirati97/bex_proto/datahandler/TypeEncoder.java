@@ -23,12 +23,12 @@ public class TypeEncoder extends EncoderBase<IType> {
             for (int i=0;i<derivedTypes.length;i++) {
                 derivedTypes[derivedTypes.length-i-1]=derivedTypesList.get(i).getDerivedID();
             }
-            Type.Boolean.getEncoder().encode(true, buffer);
-            Type.String_US_ASCII.getEncoder().encode(temp.getTypeName(), buffer);
+            Types.Boolean.getEncoder().encode(true, buffer);
+            Types.String_US_ASCII.getEncoder().encode(temp.getTypeName(), buffer);
             BExStatic.setByteArray(derivedTypes, buffer);
         } else {
-            Type.Boolean.getEncoder().encode(false, buffer);
-            Type.String_US_ASCII.getEncoder().encode(data.getTypeName(), buffer);
+            Types.Boolean.getEncoder().encode(false, buffer);
+            Types.String_US_ASCII.getEncoder().encode(data.getTypeName(), buffer);
         }
     }
 }

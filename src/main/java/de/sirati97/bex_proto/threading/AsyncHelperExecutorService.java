@@ -6,12 +6,12 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class AsyncHelperExecutorService extends AbstractExecutorService{
-	private AsyncHelper asyncHelper;
+	private IAsyncHelper asyncHelper;
 	private String name;
 	private int id=0;
 	//private Set<AsyncTask> asyncTasks = new HashSet<AsyncHelper.AsyncTask>();
 	
-	public AsyncHelperExecutorService(AsyncHelper asyncHelper, String name) {
+	public AsyncHelperExecutorService(IAsyncHelper asyncHelper, String name) {
 		this.asyncHelper = asyncHelper;
 		this.name = name;
 	}

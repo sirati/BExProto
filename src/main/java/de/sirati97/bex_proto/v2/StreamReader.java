@@ -1,7 +1,7 @@
 package de.sirati97.bex_proto.v2;
 
 import de.sirati97.bex_proto.datahandler.BExStatic;
-import de.sirati97.bex_proto.threading.AsyncHelper;
+import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.CursorByteBuffer;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
@@ -12,7 +12,7 @@ public class StreamReader {
 		this.packet = packet;
 	}
 	
-	public byte[] read(StreamChannel channel, byte[] bytes, BasicService sender, AsyncHelper asyncHelper, String name) {
+	public byte[] read(StreamChannel channel, byte[] bytes, BasicService sender, IAsyncHelper asyncHelper, String name) {
 	    synchronized (channel) {
             int location = 0;
             do {
@@ -42,7 +42,7 @@ public class StreamReader {
         }
 	}
 	
-	public void execute(final CursorByteBuffer buf, AsyncHelper asyncHelper, String name) {
+	public void execute(final CursorByteBuffer buf, IAsyncHelper asyncHelper, String name) {
 		asyncHelper.runAsync(new Runnable() {
 			public void run() {
 				packet.extract(buf);
