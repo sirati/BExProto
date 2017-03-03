@@ -162,5 +162,7 @@ public final class BExStatic {
 	public static final int VERSION_INT_MIN = 5;
 	public static final int VERSION_INT_CURRENT = 5;
 
-
+    public static void printStackTrace(Throwable t) {
+        t.printStackTrace();
+    }
 }

@@ -24,7 +24,7 @@ public class InferfaceEventHandlerDelegate {
     public void invoke(Event event) throws InvocationTargetException, IllegalAccessException {
         EventListener listener = (EventListener) instance.get();
         if (listener == null ||
-           (event instanceof Cancelable && !ignoreCancelled && ((Cancelable) event).isCancelled())) {
+           (event instanceof ICancelable && !ignoreCancelled && ((ICancelable) event).isCancelled())) {
             return;
         }
         if (event instanceof GenericEvent) {

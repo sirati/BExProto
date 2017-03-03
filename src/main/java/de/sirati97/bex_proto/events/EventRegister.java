@@ -1,5 +1,6 @@
 package de.sirati97.bex_proto.events;
 
+import de.sirati97.bex_proto.util.NameReceiver;
 import de.sirati97.bex_proto.util.logging.ILogger;
 
 import java.lang.annotation.Annotation;
@@ -21,7 +22,9 @@ public class EventRegister implements IEventRegister{
     private final Map<Class<? extends Event>, EventHandlerDelegateSet> delegates = new HashMap<>();
     private final Map<WeakReference<? extends Listener>, Set<IEventHandlerDelegate>> references = new HashMap<>();
     private final Set<WeakReference<? extends Listener>> listeners = new HashSet<>();
-    private final ReferenceQueue<Listener> referenceQueue = new ReferenceQueue<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") /*Its there to keep the listener alive*/
+    private final Set<Object> manualUnregisterSet = new HashSet<>();
+    private final ReferenceQueue<Listener> referenceQueueListeners = new ReferenceQueue<>();
     private final Set<EventRegister> parents = new HashSet<>();
     private final ILogger logger;
     private final boolean cancelEventOnError;
@@ -38,6 +41,10 @@ public class EventRegister implements IEventRegister{
 
 
     public boolean registerEventListener(Listener listener) {
+        if (listener instanceof IEventDelegateListener) {
+            registerEventDelegateListener((IEventDelegateListener<?>) listener);
+            return true;
+        }
         cleanup();
         for (WeakReference reference:listeners) {
             if (listener == reference.get()) {
@@ -46,7 +53,7 @@ public class EventRegister implements IEventRegister{
         }
         Class<? extends Listener> clazz = listener.getClass();
         EventHelperUtil.checkListenerClass(clazz);
-        WeakReference<Listener> instance = new WeakReference<>(listener, referenceQueue);
+        WeakReference<Listener> instance = new WeakReference<>(listener, referenceQueueListeners);
         Set<IEventHandlerDelegate> referencesSet = new HashSet<>();
 
         Set<Method> methods = new LinkedHashSet<>(Arrays.asList(clazz.getMethods()));
@@ -63,6 +70,34 @@ public class EventRegister implements IEventRegister{
         return result;
     }
 
+
+    public void registerEventDelegateListener(IEventDelegateListener<?> listener) {
+        cleanup();
+        for (WeakReference reference:listeners) {
+            if (listener == reference.get()) {
+                throw new IllegalStateException("This delegate-listener is already listening");
+            }
+        }
+
+        WeakReference<IEventDelegateListener> instance = new WeakReference<IEventDelegateListener>(listener, referenceQueueListeners);
+        Set<IEventHandlerDelegate> referencesSet = new HashSet<>();
+
+        checkHandler(listener.getEventHandler(), listener.getGenericEventHandler(), listener.getEventClass(), EventHelperUtil.DELEGATE_LISTENER_NAME_RECEIVER, listener);
+
+        IEventHandlerDelegate delegate = new EventHandlerDelegateListenerDelegate(instance);
+
+        EventHandlerDelegateSet set = getOrCreateDelegateSet(listener.getEventClass());
+        set.add(delegate);
+        referencesSet.add(delegate);
+
+        listeners.add(instance);
+        references.put(instance, referencesSet);
+
+        if (!listener.autoUnregister()) {
+            manualUnregisterSet.add(listener);
+        }
+    }
+
     private int registerMethods(WeakReference<Listener> instance, Set<IEventHandlerDelegate> referencesSet, Set<Method> methods) {
         int found = 0;
         for (Method method:methods) {
@@ -75,7 +110,7 @@ public class EventRegister implements IEventRegister{
                 if (annotation instanceof GenericEventHandler) {
                     genericEventHandler = (GenericEventHandler) annotation;
                 }
-                if (eventHandler!=null&&genericEventHandler!=null) {
+                if (eventHandler!=null&&genericEventHandler!=null) { //can be optimised
                     break;
                 }
             }
@@ -103,14 +138,33 @@ public class EventRegister implements IEventRegister{
             genericEventHandler = EventHelperUtil.getGenericEventHandlerByMethod(eventClass, method);
         }
 
+        checkHandler(eventHandler, genericEventHandler, eventClass, EventHelperUtil.METHOD_NAME_RECEIVER, method);
+
+        IEventHandlerDelegate delegate = new EventHandlerListenerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled(), genericEventHandler);
+
+        EventHandlerDelegateSet set = getOrCreateDelegateSet(eventClass);
+        set.add(delegate);
+        referencesSet.add(delegate);
+    }
+
+    private EventHandlerDelegateSet getOrCreateDelegateSet(Class<? extends Event> eventClass) {
+        EventHandlerDelegateSet set = delegates.get(eventClass);
+        if (set == null) {
+            set = new EventHandlerDelegateSet();
+            delegates.put(eventClass, set);
+        }
+        return set;
+    }
+
+    private <T> void checkHandler(EventHandler eventHandler, GenericEventHandler genericEventHandler, Class<? extends Event> eventClass, NameReceiver<T> nameReceiver, T named) {
         if (genericEventHandler != null) {
             if (!GenericEvent.class.isAssignableFrom(eventClass)) {
-                throw new IllegalStateException("Method " + method.getName() + " has annotation @GenericEventHandler while parameter is not a generic event.");
+                throw new IllegalStateException("Method " + nameReceiver.getName(named) + " has annotation @GenericEventHandler while parameter is not a generic event.");
             }
             Class[] genericsSuperclasses = EventHelperUtil.getEventGenericsSuperclasses(eventClass);
             Class[] genericsHandler = genericEventHandler.generics();
             if (genericsSuperclasses.length != genericsHandler.length) {
-                throw new IllegalStateException("Method " + method.getName() + " should have " + genericsSuperclasses.length + " generics, but has " + genericsHandler.length + " generics instant");
+                throw new IllegalStateException("Method " + nameReceiver.getName(named) + " should have " + genericsSuperclasses.length + " generics, but has " + genericsHandler.length + " generics instant");
             }
 
             for (int i = 0; i < genericsSuperclasses.length; i++) {
@@ -120,24 +174,14 @@ public class EventRegister implements IEventRegister{
                 }
             }
         }
-        IEventHandlerDelegate delegate = new EventHandlerDelegate(instance, method, eventClass, eventHandler.priority(), eventHandler.ignoreCancelled(), genericEventHandler);
-
-        EventHandlerDelegateSet set = delegates.get(eventClass);
-        if (set == null) {
-            set = new EventHandlerDelegateSet();
-            delegates.put(eventClass, set);
-        }
-        set.add(delegate);
-        referencesSet.add(delegate);
     }
 
     private void cleanup() {
         WeakReference<? extends Listener> reference;
         //noinspection unchecked
-        while ((reference= (WeakReference<? extends Listener>) referenceQueue.poll())!=null) {
+        while ((reference= (WeakReference<? extends Listener>) referenceQueueListeners.poll())!=null) {
             unregister(reference);
         }
-
     }
 
     private void unregister(WeakReference<? extends Listener> reference) {
@@ -152,16 +196,19 @@ public class EventRegister implements IEventRegister{
         }
     }
 
+
     public boolean unregisterEventListener(Listener listener) {
         cleanup();
+        manualUnregisterSet.remove(listener);
         for (WeakReference<? extends Listener> reference:listeners) {
             if (listener == reference.get()) {
                 unregister(reference);
-                return  true;
+                return true;
             }
         }
         return false;
     }
+
 
     public void invokeEvent(Event event) {
         cleanup();

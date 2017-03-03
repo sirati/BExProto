@@ -17,6 +17,15 @@ public class EventSystemTest implements Listener {
     private int state = -1;
 
 
+    public static void main(String... args) throws Throwable {
+        EventSystemTest test = new EventSystemTest();
+        test.start();
+        Thread.sleep(200);
+        test = new EventSystemTest();
+        test.start();
+        Thread.sleep(1000);
+    }
+
     @Test
     public void start() {
         ILogger logger = new SysOutLogger();

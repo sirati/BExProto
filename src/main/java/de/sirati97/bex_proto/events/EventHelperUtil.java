@@ -1,5 +1,7 @@
 package de.sirati97.bex_proto.events;
 
+import de.sirati97.bex_proto.util.NameReceiver;
+
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +12,18 @@ import java.util.Set;
 public class EventHelperUtil {
     private EventHelperUtil() {throw new UnsupportedOperationException();}
     private static final Set<EventClassHelper> eventClassHelpers = new HashSet<>(1);
+    public static final NameReceiver<Method> METHOD_NAME_RECEIVER = new NameReceiver<Method>() {
+        @Override
+        public String getName(Method o) {
+            return o.getName();
+        }
+    };
+    public static final NameReceiver<IEventDelegateListener> DELEGATE_LISTENER_NAME_RECEIVER = new NameReceiver<IEventDelegateListener>() {
+        @Override
+        public String getName(IEventDelegateListener o) {
+            return o.getClass().getSimpleName()+"#"+o.getName();
+        }
+    };
     static {
         eventClassHelpers.add(JavaEventClassHelperImpl.INSTANCE);
     }

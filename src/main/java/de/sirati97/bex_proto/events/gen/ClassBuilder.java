@@ -16,6 +16,7 @@ import org.apache.bcel.generic.Type;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -108,6 +109,14 @@ public class ClassBuilder {
         }
     }
 
+
+    private void makePublic(Method method) throws NoSuchFieldException, IllegalAccessException {
+        int mod = method.getModifiers() & ~Modifier.PRIVATE & ~Modifier.PROTECTED | Modifier.PUBLIC;
+        Field modifiersField = Method.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(method, mod);
+    }
+
     private MethodCaller buildEventCaller(Method method) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String className = "de.sirati97.bex_proto.events.gen.runtime.MethodCaller_RuntimeGenImpl_"+id++;
         Type eventType = Type.getType(method.getParameterTypes()[0]);
@@ -133,7 +142,7 @@ public class ClassBuilder {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JavaClass javaClass = classGen.getJavaClass();
         javaClass.dump(outputStream);
-        Class clazz = classLoader.defineClass(className, outputStream.toByteArray());
+        Class<?> clazz = classLoader.defineClass(className, outputStream.toByteArray());
         //instance
         Constructor constructor = clazz.getConstructor();
         return (MethodCaller) constructor.newInstance();

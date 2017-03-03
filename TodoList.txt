@@ -1,0 +1,9 @@
+Event system:
+- use MethodHandles where possible
+- lambda support
+- dotNet event system support
+- stash indexed classes information
+
+v2:
+- add open encryption support
+- TLS by bouncycastle
