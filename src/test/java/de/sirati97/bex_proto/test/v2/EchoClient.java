@@ -14,7 +14,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 
-import static de.sirati97.bex_proto.builder.ServiceTypes.ModularService;
+import static de.sirati97.bex_proto.v2.service.ServiceTypes.ModularService;
 
 /**
  * Created by sirati97 on 18.04.2016.

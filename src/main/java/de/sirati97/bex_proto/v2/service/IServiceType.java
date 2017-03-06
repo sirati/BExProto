@@ -1,5 +1,6 @@
-package de.sirati97.bex_proto.builder;
+package de.sirati97.bex_proto.v2.service;
 
+import de.sirati97.bex_proto.builder.Options;
 import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;

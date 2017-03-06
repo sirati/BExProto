@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.test.example;
 
 import de.sirati97.bex_proto.builder.BExBuilder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
-import de.sirati97.bex_proto.builder.ServiceTypes;
+import de.sirati97.bex_proto.v2.service.ServiceTypes;
 import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.events.EventHandler;
 import de.sirati97.bex_proto.events.EventPriority;

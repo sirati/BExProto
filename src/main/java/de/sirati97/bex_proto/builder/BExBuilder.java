@@ -7,6 +7,8 @@ import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
+import de.sirati97.bex_proto.v2.service.IServiceType;
+import de.sirati97.bex_proto.v2.service.ServiceTypes;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodel.IArchitectureFunction;
 import de.sirati97.bex_proto.v2.networkmodel.IClient;

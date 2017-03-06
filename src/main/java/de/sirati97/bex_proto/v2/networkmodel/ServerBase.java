@@ -80,7 +80,7 @@ public abstract class ServerBase<Connection extends BasicService> extends Connec
 
     @Override
     public EventRegister getEventRegisterImplementation() {
-        return eventRegister;
+        return getEventRegister();
     }
 
     @Override

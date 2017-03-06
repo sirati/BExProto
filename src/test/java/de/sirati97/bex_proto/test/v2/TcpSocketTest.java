@@ -25,7 +25,7 @@ import org.junit.Test;
 import java.net.InetAddress;
 import java.util.Set;
 
-import static de.sirati97.bex_proto.builder.ServiceTypes.ModularService;
+import static de.sirati97.bex_proto.v2.service.ServiceTypes.ModularService;
 import static org.junit.Assert.fail;
 
 /**
