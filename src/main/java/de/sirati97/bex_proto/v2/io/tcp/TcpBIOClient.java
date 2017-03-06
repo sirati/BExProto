@@ -3,16 +3,16 @@ package de.sirati97.bex_proto.v2.io.tcp;
 import de.sirati97.bex_proto.builder.ITcpAddress;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
-import de.sirati97.bex_proto.v2.networkmodell.ClientBase;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.ClientBase;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.TimeoutException;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.BlockingIO;
 
 /**
  * Created by sirati97 on 18.04.2016.

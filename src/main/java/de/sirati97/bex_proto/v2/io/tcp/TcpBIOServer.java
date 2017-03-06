@@ -5,17 +5,17 @@ import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
-import de.sirati97.bex_proto.v2.networkmodell.ServerBase;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.ServerBase;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.BlockingIO;
 
 /**
  * Created by sirati97 on 17.04.2016.

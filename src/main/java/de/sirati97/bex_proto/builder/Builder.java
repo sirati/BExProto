@@ -8,19 +8,19 @@ import de.sirati97.bex_proto.util.logging.SysOutLogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
-import de.sirati97.bex_proto.v2.networkmodell.IArchitectureFunction;
-import de.sirati97.bex_proto.v2.networkmodell.IClient;
-import de.sirati97.bex_proto.v2.networkmodell.IConnection;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
-import de.sirati97.bex_proto.v2.networkmodell.IPeer;
-import de.sirati97.bex_proto.v2.networkmodell.IServer;
+import de.sirati97.bex_proto.v2.networkmodel.IArchitectureFunction;
+import de.sirati97.bex_proto.v2.networkmodel.IClient;
+import de.sirati97.bex_proto.v2.networkmodel.IConnection;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.IPeer;
+import de.sirati97.bex_proto.v2.networkmodel.IServer;
 
 import java.io.IOException;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.*;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.*;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.AsynchronousIO;
 
 /**
  * Created by sirati97 on 04.01.2017 for BexProto.

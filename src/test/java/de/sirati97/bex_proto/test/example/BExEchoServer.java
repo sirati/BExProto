@@ -15,13 +15,13 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.networkmodell.IServer;
+import de.sirati97.bex_proto.v2.networkmodel.IServer;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.AsynchronousIO;
 
 /**
  * Created by sirati97 on 18.04.2016.

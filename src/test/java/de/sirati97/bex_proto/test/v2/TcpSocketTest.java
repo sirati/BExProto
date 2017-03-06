@@ -17,9 +17,9 @@ import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation;
-import de.sirati97.bex_proto.v2.networkmodell.IClient;
-import de.sirati97.bex_proto.v2.networkmodell.IServer;
+import de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.IClient;
+import de.sirati97.bex_proto.v2.networkmodel.IServer;
 import org.junit.Test;
 
 import java.net.InetAddress;

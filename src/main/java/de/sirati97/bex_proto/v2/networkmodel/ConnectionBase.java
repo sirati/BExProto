@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.v2.networkmodell;
+package de.sirati97.bex_proto.v2.networkmodel;
 
 import de.sirati97.bex_proto.threading.IAsyncHelper;
 import de.sirati97.bex_proto.util.logging.ILogger;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.Peer;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.Peer;
 
 /**
  * Created by sirati97 on 17.04.2016.

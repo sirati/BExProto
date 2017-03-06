@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.v2.networkmodell;
+package de.sirati97.bex_proto.v2.networkmodel;
 
 import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;

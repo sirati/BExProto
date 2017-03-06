@@ -3,21 +3,21 @@ package de.sirati97.bex_proto.builder;
 import de.sirati97.bex_proto.builder.internal.PExProtoIOFactoryHelper;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
-import de.sirati97.bex_proto.v2.networkmodell.IArchitectureFunction;
-import de.sirati97.bex_proto.v2.networkmodell.IConnection;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.IArchitectureFunction;
+import de.sirati97.bex_proto.v2.networkmodel.IConnection;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.Client;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.Server;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.BlockingIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.Client;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.Server;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.AsynchronousIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.BlockingIO;
 
 /**
  * Created by sirati97 on 04.01.2017 for BexProto.

@@ -7,7 +7,7 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
-import de.sirati97.bex_proto.v2.networkmodell.IClient;
+import de.sirati97.bex_proto.v2.networkmodel.IClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

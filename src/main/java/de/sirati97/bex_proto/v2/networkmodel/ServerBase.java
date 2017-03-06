@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.v2.networkmodell;
+package de.sirati97.bex_proto.v2.networkmodel;
 
 import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
@@ -10,7 +10,7 @@ import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
 
 import java.io.IOException;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.Server;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.Server;
 
 /**
  * Created by sirati97 on 17.04.2016.

@@ -13,7 +13,7 @@ import de.sirati97.bex_proto.v2.ReceivedPacket;
 import de.sirati97.bex_proto.v2.SelfHandlingPacketDefinition;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
-import de.sirati97.bex_proto.v2.networkmodell.IServer;
+import de.sirati97.bex_proto.v2.networkmodel.IServer;
 
 import static de.sirati97.bex_proto.builder.ServiceTypes.ModularService;
 

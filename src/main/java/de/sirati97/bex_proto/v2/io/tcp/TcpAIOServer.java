@@ -4,9 +4,9 @@ import de.sirati97.bex_proto.builder.ITcpAddress;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkProtocol;
-import de.sirati97.bex_proto.v2.networkmodell.INetworkStackImplementation;
-import de.sirati97.bex_proto.v2.networkmodell.ServerBase;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
+import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
+import de.sirati97.bex_proto.v2.networkmodel.ServerBase;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -16,8 +16,8 @@ import java.nio.channels.CompletionHandler;
 import java.nio.channels.ShutdownChannelGroupException;
 import java.util.HashSet;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkProtocols.TCP;
-import static de.sirati97.bex_proto.v2.networkmodell.CommonNetworkStackImplementation.AsynchronousIO;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkProtocols.TCP;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementation.AsynchronousIO;
 
 /**
  * Created by sirati97 on 17.04.2016.

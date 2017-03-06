@@ -170,7 +170,7 @@ public class EventRegister implements IEventRegister{
             for (int i = 0; i < genericsSuperclasses.length; i++) {
                 //noinspection unchecked
                 if (!genericsSuperclasses[i].isAssignableFrom(genericsHandler[i])) {
-                    throw new IllegalStateException("Generic " + (i+1) + " has to be a subclass of" + genericsSuperclasses[i].getName());
+                    throw new IllegalStateException("Generic " + (i+1) + " has to be a subclass of " + genericsSuperclasses[i].getName());
                 }
             }
         }

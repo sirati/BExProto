@@ -1,4 +1,4 @@
-package de.sirati97.bex_proto.v2.networkmodell;
+package de.sirati97.bex_proto.v2.networkmodel;
 
 import de.sirati97.bex_proto.events.Event;
 import de.sirati97.bex_proto.events.EventRegister;
@@ -9,7 +9,7 @@ import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.util.HashSet;
 
-import static de.sirati97.bex_proto.v2.networkmodell.CommonArchitectureFunction.Client;
+import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.Client;
 
 /**
  * Created by sirati97 on 17.04.2016.
