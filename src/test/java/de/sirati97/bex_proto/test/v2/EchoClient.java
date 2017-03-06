@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.builder.Builder;
+import de.sirati97.bex_proto.builder.BExBuilder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
 import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.v2.Packet;
@@ -43,7 +43,7 @@ public class EchoClient {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter client name: ");
         String name = in.readLine();
-        IClient client = new Builder<>(ModularService,  collection).buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), name);
+        IClient client = new BExBuilder<>(ModularService,  collection).buildClient(new IpPortAddress(InetAddress.getLocalHost(), 12312), name);
         client.connect();
         Packet packetWelcome = new Packet(this.packetWelcome);
         packetWelcome.sendTo(client.getConnection());

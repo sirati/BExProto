@@ -25,7 +25,7 @@ import static de.sirati97.bex_proto.v2.networkmodel.CommonNetworkStackImplementa
 /**
  * Created by sirati97 on 04.01.2017 for BexProto.
  */
-public class Builder<ConnectionType extends BasicService> {
+public class BExBuilder<ConnectionType extends BasicService> {
     private IServiceType<ConnectionType> factory;
     private IServiceFactory<ConnectionType> serviceFactory;
     private INetworkProtocol underlyingProtocol = TCP;
@@ -36,16 +36,16 @@ public class Builder<ConnectionType extends BasicService> {
     private IPacketDefinition packetProcessor;
     private Options serviceFactoryOptions = new Options();
 
-    public Builder(ServiceTypes<ConnectionType> factory, IPacketDefinition packetProcessor) {
+    public BExBuilder(ServiceTypes<ConnectionType> factory, IPacketDefinition packetProcessor) {
         this((IServiceType<ConnectionType>)factory, packetProcessor);
     }
 
-    public Builder(IServiceType<ConnectionType> factory, IPacketDefinition packetProcessor) {
+    public BExBuilder(IServiceType<ConnectionType> factory, IPacketDefinition packetProcessor) {
         this.factory = factory;
         this.packetProcessor = packetProcessor;
     }
 
-    public Builder stackImplementation(INetworkStackImplementation stackImplementation) {
+    public BExBuilder stackImplementation(INetworkStackImplementation stackImplementation) {
         check(stackImplementation);
         this.stackImplementation = stackImplementation;
         return this;
@@ -60,43 +60,43 @@ public class Builder<ConnectionType extends BasicService> {
         }
     }
 
-    public Builder underlyingProtocol(INetworkProtocol underlyingProtocol) {
+    public BExBuilder underlyingProtocol(INetworkProtocol underlyingProtocol) {
         check(underlyingProtocol);
         this.underlyingProtocol = underlyingProtocol;
         return this;
     }
 
-    public Builder factory(IServiceType<ConnectionType> factory) {
+    public BExBuilder factory(IServiceType<ConnectionType> factory) {
         check(factory);
         this.factory = factory;
         return this;
     }
 
-    public Builder provider(IProvider provider) {
+    public BExBuilder provider(IProvider provider) {
         check(provider);
         this.provider = provider;
         return this;
     }
 
-    public Builder logger(ILogger logger) {
+    public BExBuilder logger(ILogger logger) {
         check("");
         this.logger = logger;
         return this;
     }
 
-    public Builder asyncHelper(IAsyncHelper asyncHelper) {
+    public BExBuilder asyncHelper(IAsyncHelper asyncHelper) {
         check("");
         this.asyncHelper = asyncHelper;
         return this;
     }
 
-    public Builder packetProcessor(IPacketDefinition packetProcessor) {
+    public BExBuilder packetProcessor(IPacketDefinition packetProcessor) {
         check(packetProcessor);
         this.packetProcessor = packetProcessor;
         return this;
     }
 
-    public Builder serviceFactoryOptions(Options serviceFactoryOptions) {
+    public BExBuilder serviceFactoryOptions(Options serviceFactoryOptions) {
         check(serviceFactoryOptions);
         this.serviceFactoryOptions = serviceFactoryOptions;
         return this;

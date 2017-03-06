@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.test.v2;
 
-import de.sirati97.bex_proto.builder.Builder;
+import de.sirati97.bex_proto.builder.BExBuilder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
 import de.sirati97.bex_proto.datahandler.Types;
 import de.sirati97.bex_proto.events.EventHandler;
@@ -42,7 +42,7 @@ public class EchoServer implements Listener {
     };
 
     public void start() throws Throwable {
-        IServer server = new Builder<>(ModularService,  collection).buildServer(new IpPortAddress(12312)); //keine addresse >- *
+        IServer server = new BExBuilder<>(ModularService,  collection).buildServer(new IpPortAddress(12312)); //keine addresse >- *
         server.registerEventListener(this);
         server.startListening();
     }

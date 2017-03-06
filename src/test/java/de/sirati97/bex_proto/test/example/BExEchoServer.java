@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.test.example;
 
-import de.sirati97.bex_proto.builder.Builder;
+import de.sirati97.bex_proto.builder.BExBuilder;
 import de.sirati97.bex_proto.builder.IpPortAddress;
 import de.sirati97.bex_proto.builder.ServiceTypes;
 import de.sirati97.bex_proto.datahandler.Types;
@@ -42,7 +42,7 @@ public class BExEchoServer implements Listener {
 
     public void start() throws Throwable {
         IAsyncHelper helper = new ThreadPoolAsyncHelper(ShutdownBehavior.JavaVMShutdownNow);
-        IServer server = new Builder<>(ServiceTypes.BasicService,  packetMessage).asyncHelper(helper).stackImplementation(AsynchronousIO).buildServer(new IpPortAddress(12312)); //keine addresse -> 0.0.0.0
+        IServer server = new BExBuilder<>(ServiceTypes.BasicService,  packetMessage).asyncHelper(helper).stackImplementation(AsynchronousIO).buildServer(new IpPortAddress(12312)); //keine addresse -> 0.0.0.0
         server.registerEventListener(this);
         server.startListening();
 
