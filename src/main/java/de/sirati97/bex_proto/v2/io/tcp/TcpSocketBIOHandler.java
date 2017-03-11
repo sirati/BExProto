@@ -2,7 +2,7 @@ package de.sirati97.bex_proto.v2.io.tcp;
 
 import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
-import de.sirati97.bex_proto.util.bytebuffer.ByteBufferSegment;
+import de.sirati97.bex_proto.util.bytebuffer.IByteBufferSegment;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class TcpSocketBIOHandler extends IOHandlerBase {
 
     @Override
     protected void sendInternal(ByteBuffer stream, boolean reliable) throws IOException {
-        for (ByteBufferSegment segment:stream) {
+        for (IByteBufferSegment segment:stream) {
             socket.getOutputStream().write(segment.getBytes(), segment.getOffset(), segment.getLength());
         }
         socket.getOutputStream().flush();

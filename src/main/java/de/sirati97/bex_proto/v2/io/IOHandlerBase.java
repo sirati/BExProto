@@ -48,9 +48,9 @@ public abstract class IOHandlerBase extends StreamChannel implements IOHandler {
 
     @Override
     public synchronized final void open() throws IOException {
-        if (isOpen()) throw new IOException("Socket is already open");
+        if (isOpen()) throw new IOException("Pipe is already open");
         if (connection == null) throw new IllegalStateException("Connection not set");
-        if (!isIOOpen()) throw  new IOException("Socket is closed");
+        if (!isIOOpen()) throw  new IOException("Pipe is permanently closed");
         open = true;
 
         startReading();

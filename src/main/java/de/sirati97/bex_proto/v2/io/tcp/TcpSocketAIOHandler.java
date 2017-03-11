@@ -1,6 +1,6 @@
 package de.sirati97.bex_proto.v2.io.tcp;
 
-import de.sirati97.bex_proto.util.bytebuffer.ByteBufferSegment;
+import de.sirati97.bex_proto.util.bytebuffer.IByteBufferSegment;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
     @Override
     protected void sendInternal(de.sirati97.bex_proto.util.bytebuffer.ByteBuffer stream, boolean reliable) throws IOException {
         ByteBuffer nioByteBuffer = ByteBuffer.allocateDirect(stream.getLength());
-        for (ByteBufferSegment segment:stream) {
+        for (IByteBufferSegment segment:stream) {
             nioByteBuffer.put(segment.getBytes(), segment.getOffset(), segment.getLength());
         }
         nioByteBuffer.flip();

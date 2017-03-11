@@ -5,31 +5,34 @@ package de.sirati97.bex_proto.util.bytebuffer;
  */
 public class ByteBufferSegment implements IByteBufferSegment {
     private final byte[] bytes;
-    private ByteBufferSegment next;
+    private IByteBufferSegment next;
 
     public ByteBufferSegment(byte[] bytes) {
         this.bytes = bytes;
     }
 
-    public ByteBufferSegment getNext() {
+    @Override
+    public IByteBufferSegment getNext() {
         return next;
     }
 
+    @Override
     public boolean hasNext() {
         return next!=null;
     }
 
-    public void setNext(ByteBufferSegment next) {
+    @Override
+    public void setNext(IByteBufferSegment next) {
         this.next = next;
     }
 
     @Override
-    public ByteBufferSegment getFirst() {
+    public IByteBufferSegment getFirst() {
         return this;
     }
 
     @Override
-    public ByteBufferSegment getLast() {
+    public IByteBufferSegment getLast() {
         return this;
     }
 
@@ -43,6 +46,7 @@ public class ByteBufferSegment implements IByteBufferSegment {
         return bytes;
     }
 
+    @Override
     public int getOffset() {
         return 0;
     }

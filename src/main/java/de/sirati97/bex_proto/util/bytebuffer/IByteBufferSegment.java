@@ -1,12 +1,14 @@
 package de.sirati97.bex_proto.util.bytebuffer;
 
 /**
- * Created by sirati97 on 17.04.2016.
+ * Created by sirati97 on 09.03.2017 for BexProto.
  */
-public interface IByteBufferSegment {
-    ByteBufferSegment getFirst();
-    ByteBufferSegment getLast();
-    boolean isSealed();
-    byte[] getBytes();
-    int getLength();
+public interface IByteBufferSegment extends IByteBufferCommonBase {
+    IByteBufferSegment getNext();
+
+    boolean hasNext();
+
+    void setNext(IByteBufferSegment next);
+
+    int getOffset();
 }

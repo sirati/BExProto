@@ -5,9 +5,10 @@ import java.util.Iterator;
 /**
  * Created by sirati97 on 17.04.2016.
  */
-public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegment> {
-    private ByteBufferSegment first;
-    private ByteBufferSegment last;
+public class ByteBuffer implements IByteBufferCommonBase, Iterable<IByteBufferSegment> {
+    public static final String BYTE_BUFFER_IS_SEALED = "ByteBuffer is sealed";
+    private IByteBufferSegment first;
+    private IByteBufferSegment last;
     private byte[] result;
     private int length=0;
 
@@ -17,15 +18,15 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
             append(bytes);
         }
     }
-    public ByteBuffer(IByteBufferSegment... buffers) {
-        for (IByteBufferSegment buffer:buffers) {
+    public ByteBuffer(IByteBufferCommonBase... buffers) {
+        for (IByteBufferCommonBase buffer:buffers) {
             append(buffer);
         }
     }
 
-    private void append(ByteBufferSegment newFirst, ByteBufferSegment newLast, int length) {
+    private void append(IByteBufferSegment newFirst, IByteBufferSegment newLast, int length) {
         if (isSealed()) {
-            throw new IllegalStateException("ByteBuffer is sealed");
+            throw new IllegalStateException(BYTE_BUFFER_IS_SEALED);
         }
         if (newFirst == null || newLast == null) {
             return;
@@ -42,19 +43,19 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
 
     public ByteBuffer append(byte[] bytes) {
         if (bytes == null || bytes.length == 0)return this;
-        ByteBufferSegment segment = new ByteBufferSegment(bytes);
+        IByteBufferSegment segment = new ByteBufferSegment(bytes);
         append(segment, segment, segment.getLength());
         return this;
     }
 
     public ByteBuffer append(byte[] bytes, int offset, int length) {
         if (bytes == null || bytes.length == 0)return this;
-        ByteBufferSegment segment = new OffsetByteBufferSegment(bytes, offset, length);
+        IByteBufferSegment segment = new OffsetByteBufferSegment(bytes, offset, length);
         append(segment, segment, segment.getLength());
         return this;
     }
 
-    public ByteBuffer append(IByteBufferSegment byteBuffer) {
+    public ByteBuffer append(IByteBufferCommonBase byteBuffer) {
         if (byteBuffer.isSealed()) {
             append(byteBuffer.getBytes());
         } else {
@@ -63,9 +64,9 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
         return this;
     }
 
-    private void insertFirst(ByteBufferSegment newFirst, ByteBufferSegment newLast, int length) {
+    private void insertFirst(IByteBufferSegment newFirst, IByteBufferSegment newLast, int length) {
         if (isSealed()) {
-            throw new IllegalStateException("ByteBuffer is sealed");
+            throw new IllegalStateException(BYTE_BUFFER_IS_SEALED);
         }
         if (newFirst == null || newLast == null) {
             return;
@@ -82,19 +83,19 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
 
     public ByteBuffer insertFirst(byte[] bytes) {
         if (bytes == null || bytes.length == 0)return this;
-        ByteBufferSegment segment = new ByteBufferSegment(bytes);
+        IByteBufferSegment segment = new ByteBufferSegment(bytes);
         insertFirst(segment, segment,segment.getLength());
         return this;
     }
 
     public ByteBuffer insertFirst(byte[] bytes, int offset, int length) {
         if (bytes == null || bytes.length == 0)return this;
-        ByteBufferSegment segment = new OffsetByteBufferSegment(bytes, offset, length);
+        IByteBufferSegment segment = new OffsetByteBufferSegment(bytes, offset, length);
         insertFirst(segment, segment, segment.getLength());
         return this;
     }
 
-    public ByteBuffer insertFirst(IByteBufferSegment byteBuffer) {
+    public ByteBuffer insertFirst(IByteBufferCommonBase byteBuffer) {
         if (byteBuffer.isSealed()) {
             insertFirst(byteBuffer.getBytes());
         } else {
@@ -104,12 +105,12 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
     }
 
     @Override
-    public ByteBufferSegment getFirst() {
+    public IByteBufferSegment getFirst() {
         return first;
     }
 
     @Override
-    public ByteBufferSegment getLast() {
+    public IByteBufferSegment getLast() {
         return last;
     }
 
@@ -124,19 +125,11 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
 
     public void seal() {
         if (result == null) {
-            int length = 0;
-            ByteBufferSegment current = first;
-            while (current != null) {
-                length += current.getLength();
-                current = current.getNext();
-            }
-            current = first;
             int pos = 0;
             result = new byte[length];
-            while (current != null) {
+            for (IByteBufferSegment current:this) {
                 System.arraycopy(current.getBytes(),current.getOffset(),result,pos,current.getLength());
                 pos += current.getLength();
-                current = current.getNext();
             }
             first = null;
             last = null;
@@ -145,7 +138,7 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
 
     public void unseal() {
         if (result != null) {
-            ByteBufferSegment segment = new ByteBufferSegment(result);
+            IByteBufferSegment segment = new ByteBufferSegment(result);
             result = null;
             first = segment;
             last = segment;
@@ -168,9 +161,9 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
     }
 
     @Override
-    public Iterator<ByteBufferSegment> iterator() {
-        return new Iterator<ByteBufferSegment>() {
-            ByteBufferSegment current = first;
+    public Iterator<IByteBufferSegment> iterator() {
+        return new Iterator<IByteBufferSegment>() {
+            IByteBufferSegment current = first;
 
             @Override
             public boolean hasNext() {
@@ -178,7 +171,7 @@ public class ByteBuffer implements IByteBufferSegment, Iterable<ByteBufferSegmen
             }
 
             @Override
-            public ByteBufferSegment next() {
+            public IByteBufferSegment next() {
                try {
                    return current;
                } finally {
