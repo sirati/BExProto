@@ -5,8 +5,6 @@ package de.sirati97.bex_proto.test.example;
  */
 public class Foo {
 
-
     public static void main(String... args) throws Throwable {
-
     }
 }

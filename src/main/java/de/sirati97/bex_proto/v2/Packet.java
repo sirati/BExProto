@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.v2;
 import de.sirati97.bex_proto.datahandler.IType;
 import de.sirati97.bex_proto.util.IConnection;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Created by sirati97 on 15.03.2016.
@@ -18,9 +19,11 @@ public class Packet {
     public Packet(PacketDefinition definition, Object... data) {
         this.definition = definition;
         this.data = data;
+        Validate.isTrue(data.length == getArgumentLength(), "Packet expects %s parameters", getArgumentLength());
     }
 
     public void set(int i, Object v) {
+        Validate.isTrue(definition.getTypes()[i].isEncodable(v, false), "Packet expects parameter encodable by %s at position %d", definition.getTypes()[i].getTypeName(), i);
         data[i]=v;
     }
 
@@ -49,9 +52,13 @@ public class Packet {
     }
 
     public void sendTo(IConnection... connections) {
-        ByteBuffer stream = createStream(connections);
+        sendTo(createStream(connections), connections);
+    }
+
+    private void sendTo(ByteBuffer stream, IConnection... connections) {
         for (IConnection connection:connections) {
             connection.send(stream, definition.getRequiresReliableConnection());
         }
     }
+
 }

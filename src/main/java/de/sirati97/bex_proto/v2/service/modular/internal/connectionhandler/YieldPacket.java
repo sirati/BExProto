@@ -19,12 +19,12 @@ public class YieldPacket extends SelfHandlingPacketDefinition {
     private final Random rnd = new Random();
 
     public YieldPacket(IPacketCollection packetCollection, ConnectionHandlerModule parent) {
-        super((short)1, packetCollection, Types.Long);
+        super((short)1, packetCollection, Types.Boolean);
         this.parent = parent;
     }
 
-    protected void yieldRemote(IConnection connection) {
-        Packet packet = new Packet(this, rnd.nextLong()); //this is done to prevent guessing encrypted packets
+    protected void yieldRemote(IConnection connection, boolean longYield) {
+        Packet packet = new Packet(this, longYield);
         packet.sendTo(connection);
     }
 
@@ -32,7 +32,8 @@ public class YieldPacket extends SelfHandlingPacketDefinition {
     public void execute(ReceivedPacket packet) {
         ConnectionHandlerData data = parent.getModuleData(packet.getSender());
         if (data != null && data.callback != null) {
-            data.callback.yield(YieldCause.PacketReceived);
+            boolean longYield = packet.get(0);
+            data.callback.yield(longYield?YieldCause.KeepAliveLongReceived:YieldCause.KeepAliveReceived);
         }
     }
 }

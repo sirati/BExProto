@@ -29,7 +29,7 @@ public class RemoteYieldModule extends Module implements IModuleHandshake{
     @Override
     public void onHandshake(ModularService connection, final ICallback callback) {
         for(int i=0;i<10;i++) {
-            callback.yield(YieldCause.KeepAlive);
+            callback.yield(YieldCause.KeepAliveLong);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

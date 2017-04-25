@@ -2,6 +2,7 @@ package de.sirati97.bex_proto.v2.io.tcp;
 
 import de.sirati97.bex_proto.util.bytebuffer.IByteBufferSegment;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -91,7 +92,7 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
             public void completed(Integer result, ByteBuffer buffer) {
                 if (result < 0){ //remote peer has closed channel
                     System.out.println("remote peer has closed channel");
-                    getConnection().disconnect();
+                    getConnection().disconnect(DisconnectReason.RemoteDisconnected);
                     return;
                 }
                 buffer.flip();
@@ -104,7 +105,11 @@ public class TcpSocketAIOHandler extends IOHandlerBase {
             @Override
             public void failed(Throwable exc, ByteBuffer attachment) {
                 if (!isOpen() || exc instanceof InterruptedException || exc instanceof ClosedChannelException || exc instanceof IOException) {
-                    getConnection().disconnect();
+                    if (exc instanceof ClosedChannelException) {
+                        getConnection().disconnect(DisconnectReason.RemoteDisconnected);
+                    } else {
+                        getConnection().disconnect(exc);
+                    }
                     return;
                 }
                 getConnection().onIOException(new IOException(exc));

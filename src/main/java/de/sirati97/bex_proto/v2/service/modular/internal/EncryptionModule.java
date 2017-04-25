@@ -11,6 +11,7 @@ import de.sirati97.bex_proto.v2.Packet;
 import de.sirati97.bex_proto.v2.PacketDefinition;
 import de.sirati97.bex_proto.v2.IPacketHandler;
 import de.sirati97.bex_proto.v2.ReceivedPacket;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 import de.sirati97.bex_proto.v2.service.basic.StreamModifiers;
 import de.sirati97.bex_proto.v2.events.TrustPublicKeyEvent;
 import de.sirati97.bex_proto.v2.service.modular.HandshakeRejectedException;
@@ -192,6 +193,7 @@ public class EncryptionModule extends InternalModule<EncryptionModule.Encryption
 
     private void _closeWithError(String text, ModularService con) {
         sendError(text, con);
+        con.disconnect(DisconnectReason.EncryptionHandshakeFailed);
         //con.stop();
     }
 

@@ -3,6 +3,7 @@ package de.sirati97.bex_proto.v2.service.modular;
 import de.sirati97.bex_proto.util.exception.NotImplementedException;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.io.IOHandler;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 import de.sirati97.bex_proto.v2.service.modular.internal.ICallback;
 import de.sirati97.bex_proto.v2.service.modular.internal.YieldCause;
 import de.sirati97.bex_proto.v2.service.modular.internal.connectionhandler.ConnectionHandlerModule;
@@ -114,7 +115,7 @@ public class ModularService extends BasicService {
                 checkHandshakeCompleted(moduleHandler.handshakesLowPriority);
                 connectionEstablished = true;
             } catch (Throwable e) {
-                disconnect();
+                disconnect(e);
                 throw e;
             }
         }
@@ -210,7 +211,7 @@ public class ModularService extends BasicService {
                         if (e instanceof IOException || e instanceof InterruptedException || e instanceof TimeoutException) {
                             moduleHandler.connectionHandlerModule.sendHandshakeError(e, ModularService.this);
                         }
-                        disconnect();
+                        disconnect(e);
                     }
 
                 }
@@ -241,7 +242,7 @@ public class ModularService extends BasicService {
                         waitOn(expectConnectionCallback);
                     } catch (Throwable e) {
                         getLogger().error("Could not establish connection with client: ", e);
-                        disconnect();
+                        disconnect(e);
                     }
 
                 }
@@ -259,9 +260,9 @@ public class ModularService extends BasicService {
     }
 
     @Override
-    public void disconnect() {
+    protected void disconnect(DisconnectReason reason, Throwable t) {
         connectionEstablished = false;
-        super.disconnect();
+        super.disconnect(reason, t);
     }
 
     private void waitOn(CallbackData data) throws InterruptedException, TimeoutException, HandshakeException {
@@ -296,6 +297,7 @@ public class ModularService extends BasicService {
         public boolean timeout = false;
         public IModuleHandshake activeModule;
         public long nextYield;
+        private boolean lastRemoteYieldLong = false;
         public CallbackData yieldChild;
 
         @Override
@@ -320,15 +322,12 @@ public class ModularService extends BasicService {
         @Override
         public synchronized void yield(YieldCause cause) {
             if (yieldChild != null) {
-                yieldChild.yield(YieldCause.PacketReceived);
+                yieldChild.yield(cause);
             }
-            if (System.currentTimeMillis()<nextYield) {
-                return;
+            if (!cause.isReceived()) {
+                moduleHandler.connectionHandlerModule.yieldRemote(ModularService.this, cause.isLongYield());
             }
-            if (cause == YieldCause.KeepAlive) {
-                moduleHandler.connectionHandlerModule.yieldRemote(ModularService.this);
-            }
-            nextYield = System.currentTimeMillis()+500;
+            nextYield = System.currentTimeMillis()+(cause.isLongYield()?500:50);
             yield = true;
             synchronized (connectMutex) {
                 connectMutex.notifyAll();

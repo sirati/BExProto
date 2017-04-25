@@ -1,9 +1,21 @@
+Todo list of BEx
+
 Event system:
 - use MethodHandles where possible
 - lambda support
-- dotNet event system support
 - stash indexed classes information
+- save compiled MethodCallers (/w option=)
 
-v2:
+
+v3:
+- rewrite v2 to resemble pipeline structure
+- add support for fixed length types
+- add support for headless/implied length types
+- add support for headless protocols
+- easy new types data structure
+- allow for sync packet decoding
+- allow for separate decoding and processing (async)
+- make services from v2 to handshake
+- make services from v2 more object oriented
 - add open encryption support
 - TLS by bouncycastle

@@ -1,12 +1,15 @@
 package de.sirati97.bex_proto.v2.networkmodel;
 
 import de.sirati97.bex_proto.events.Event;
+import de.sirati97.bex_proto.events.EventDelegate;
+import de.sirati97.bex_proto.events.EventPriority;
 import de.sirati97.bex_proto.events.EventRegister;
 import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
-import de.sirati97.bex_proto.v2.service.basic.BasicService;
+import de.sirati97.bex_proto.v2.events.ConnectionClosedEvent;
 import de.sirati97.bex_proto.v2.events.NewConnectionEvent;
+import de.sirati97.bex_proto.v2.service.basic.BasicService;
 
 import java.io.IOException;
 
@@ -18,9 +21,16 @@ import static de.sirati97.bex_proto.v2.networkmodel.CommonArchitectureFunction.S
 public abstract class ServerBase<Connection extends BasicService> extends ConnectionBase<Connection> implements IServer<Connection> {
     private ILogger logger;
     private EventRegister eventRegister;
+    private EventDelegate<ConnectionClosedEvent<Connection>> connectionClosedHandler;
 
     public ServerBase(IServiceFactory<Connection> factory) {
         super(factory);
+        connectionClosedHandler = new EventDelegate<ConnectionClosedEvent<Connection>>(ConnectionClosedEvent.class) {
+            @Override
+            public void onEvent(ConnectionClosedEvent<Connection> event) {
+                unregisterConnection(event.getConnection());
+            }
+        }.generics(factory.getConnectionClass()).priority(EventPriority.Monitor);
     }
 
     /**wraps isListening*/
@@ -52,7 +62,14 @@ public abstract class ServerBase<Connection extends BasicService> extends Connec
     protected void registerConnection(Connection connection) {
         super.registerConnection(connection);
         connection.getEventRegister().addParent(getEventRegister());
-        invokeEvent(new NewConnectionEvent<>(connection, getFactory().getConnectionClass()));
+        connection.getEventRegister().registerEventDelegateListener(connectionClosedHandler);
+        connection.invokeEvent(new NewConnectionEvent<>(connection, getFactory().getConnectionClass()));
+    }
+
+    @Override
+    protected void unregisterConnection(Connection connection) {
+        super.unregisterConnection(connection);
+        connection.getEventRegister().removeParent(getEventRegister());
     }
 
     @Override

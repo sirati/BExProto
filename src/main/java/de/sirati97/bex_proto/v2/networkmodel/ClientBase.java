@@ -6,6 +6,7 @@ import de.sirati97.bex_proto.events.Listener;
 import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IServiceFactory;
 import de.sirati97.bex_proto.v2.service.basic.BasicService;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 
 import java.util.HashSet;
 
@@ -78,7 +79,7 @@ public abstract class ClientBase<Connection extends BasicService> extends Connec
     @Override
     public synchronized void disconnect() {
         if (getConnection().isConnected()) {
-            getConnection().disconnect();
+            getConnection().disconnect(DisconnectReason.ManuallyInvoked);
         }
     }
 
@@ -87,7 +88,7 @@ public abstract class ClientBase<Connection extends BasicService> extends Connec
         disconnect();
         for (Connection connection:new HashSet<>(getConnections())) {
             if (connection.isConnected()) {
-                connection.disconnect();
+                connection.disconnect(DisconnectReason.ManuallyInvoked);
             }
         }
     }

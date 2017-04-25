@@ -4,6 +4,7 @@ import de.sirati97.bex_proto.threading.AsyncTask;
 import de.sirati97.bex_proto.util.bytebuffer.ByteBuffer;
 import de.sirati97.bex_proto.util.bytebuffer.IByteBufferSegment;
 import de.sirati97.bex_proto.v2.io.IOHandlerBase;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,10 @@ public class TcpSocketBIOHandler extends IOHandlerBase {
 
     @Override
     protected void closeIO() throws IOException {
-        socket.close();
+        if (!socket.isClosed()) {
+            socket.getOutputStream().flush();
+            socket.close();
+        }
     }
 
     @Override
@@ -57,22 +61,25 @@ public class TcpSocketBIOHandler extends IOHandlerBase {
                             int available;
                             if ((available=in.available()) > 0) {
                                 byte[] read = new byte[available];
-                                in.read(read);
+                                if(in.read(read)==-1) {
+                                    socket.shutdownOutput();
+                                    getConnection().disconnect(DisconnectReason.RemoteDisconnected);
+                                    return;
+                                }
                                 getConnection().read(TcpSocketBIOHandler.this, read);
                             } else {
                                 Thread.sleep(0, 1);
                             }
-                        } catch (IOException e) {
-                            getConnection().onIOException(e);
                         } catch (InterruptedException e) {
+                            getConnection().disconnect(e);
                             break;
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    getConnection().disconnect(e);
                 } finally {
                     if (getOpenFlag()) {
-                        getConnection().disconnect();
+                        getConnection().disconnect(DisconnectReason.Abnormal);
                     }
                 }
             }

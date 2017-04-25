@@ -12,7 +12,9 @@ import de.sirati97.bex_proto.util.logging.ILogger;
 import de.sirati97.bex_proto.v2.IPacketDefinition;
 import de.sirati97.bex_proto.v2.StreamChannel;
 import de.sirati97.bex_proto.v2.StreamReader;
+import de.sirati97.bex_proto.v2.events.ConnectionClosedEvent;
 import de.sirati97.bex_proto.v2.io.IOHandler;
+import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -65,11 +67,28 @@ public class BasicService implements IConnection, IEventRegister {
     }
 
     public void connect() throws TimeoutException, InterruptedException, IOException {
+        closed = false;
         openIOHandler();
     }
 
-    public void disconnect() {
+    public void disconnect(Throwable t) {
+        disconnect(DisconnectReason.Error, t);
+    }
+
+
+    public void disconnect(DisconnectReason reason) {
+        disconnect(reason, null);
+    }
+
+    private boolean closed = true;
+    protected void disconnect(DisconnectReason reason, Throwable t) {
+        if (!closed) {
+            return;
+        }
+        closed = true;
         ioHandler.close();
+        Validate.isTrue((t!=null)==(reason == DisconnectReason.Error));
+        invokeEvent(new ConnectionClosedEvent<>(this, reason, t, this.getClass()));
     }
 
     /**Should be called server side to make the connection ready*/
@@ -99,7 +118,7 @@ public class BasicService implements IConnection, IEventRegister {
         return asyncHelper;
     }
 
-    public IOHandler getIoHandler() {
+    public IOHandler getIOHandler() {
         return ioHandler;
     }
 

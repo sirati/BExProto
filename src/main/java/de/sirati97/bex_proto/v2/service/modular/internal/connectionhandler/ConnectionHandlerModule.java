@@ -80,8 +80,8 @@ public class ConnectionHandlerModule extends InternalModule<ConnectionHandlerMod
         connection.getLogger().info((connection instanceof IServerConnection ?"Client":"New peer")+ " with name '" + connection.getConnectedWith() + "' completed Handshake");
     }
 
-    public void yieldRemote(IConnection connection) {
-        yieldPacket.yieldRemote(connection);
+    public void yieldRemote(IConnection connection, boolean longYield) {
+        yieldPacket.yieldRemote(connection, longYield);
     }
 
     @Override
