@@ -8,6 +8,7 @@ import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
 import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodel.ServerBase;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -88,7 +89,7 @@ public class TcpBIOServer<Connection extends BasicService> extends ServerBase<Co
     public void stop() {
         stopListening();
         for (Connection connection:new HashSet<>(getConnections())) {
-            connection.disconnect();
+            connection.disconnect(DisconnectReason.ManuallyInvoked);
         }
     }
 

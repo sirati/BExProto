@@ -7,6 +7,7 @@ import de.sirati97.bex_proto.v2.service.basic.BasicService;
 import de.sirati97.bex_proto.v2.networkmodel.INetworkProtocol;
 import de.sirati97.bex_proto.v2.networkmodel.INetworkStackImplementation;
 import de.sirati97.bex_proto.v2.networkmodel.ServerBase;
+import de.sirati97.bex_proto.v2.service.basic.DisconnectReason;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -84,7 +85,7 @@ public class TcpAIOServer<Connection extends BasicService> extends ServerBase<Co
     @Override
     public void stop() {
         for (Connection connection:new HashSet<>(getConnections())) {
-            connection.disconnect();
+            connection.disconnect(DisconnectReason.ManuallyInvoked);
         }
         stopListening();
     }

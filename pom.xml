@@ -75,9 +75,9 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="E:/UserData/sirati97/Dev/Epicpvp/TestServer1/lib"/>
+                                <!--<copy file="${project.build.directory}/${project.build.finalName}.jar" todir="E:/UserData/sirati97/Dev/Epicpvp/TestServer1/lib"/>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="E:/UserData/sirati97/Dev/Epicpvp/TestServer2/lib"/>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="E:/UserData/sirati97/Dev/Epicpvp/Lobby/lib"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="E:/UserData/sirati97/Dev/Epicpvp/Lobby/lib"/>-->
                             </tasks>
                         </configuration>
                         <goals>
